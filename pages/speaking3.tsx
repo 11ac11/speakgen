@@ -3,6 +3,7 @@ import styles from '../styles/speaking3.module.css';
 import { topics } from '../data';
 import { Topic } from '../types/topics';
 import Nav from '../components/nav';
+import Questionbtn from '../components/questionbtn';
 
 export default function SpeakingThree() {
   const [question, setQuestion] = useState<Topic | undefined>();
@@ -23,7 +24,7 @@ export default function SpeakingThree() {
   return (
     <>
       <div className={styles.container}>
-        <button onClick={handleSelectQuestion}>Get Question</button>
+        <Questionbtn onClick={handleSelectQuestion} />
 
         {question ? (
           <div className={styles.questionCont}>

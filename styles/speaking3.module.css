@@ -45,6 +45,10 @@
   font-size: 1.6rem;
   padding: 1rem;
   border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .messageCont {
