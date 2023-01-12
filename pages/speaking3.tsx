@@ -2,7 +2,6 @@ import { useState } from 'react';
 import styles from '../styles/speaking3.module.css';
 import { topics } from '../data';
 import { Topic } from '../types/topics';
-import Nav from '../components/nav';
 import Questionbtn from '../components/questionbtn';
 
 export default function SpeakingThree() {
@@ -24,42 +23,44 @@ export default function SpeakingThree() {
   return (
     <>
       <div className={styles.container}>
-        <Questionbtn onClick={handleSelectQuestion} />
-
         {question ? (
-          <div className={styles.questionCont}>
-            <div className={styles.pointsCont}>
-              <div className={styles.themePoint}>
-                {question.points
-                  .slice(0, question.points.length / 2)
-                  .map((question, index) => (
-                    <div className={`${styles.question} glass`} key={index}>
-                      <p>{question}</p>
-                    </div>
-                  ))}
+          <>
+            <Questionbtn onClick={handleSelectQuestion} />
+            <div className={styles.questionCont}>
+              <div className={styles.pointsCont}>
+                <div className={styles.themePoint}>
+                  {question.points
+                    .slice(0, question.points.length / 2)
+                    .map((question, index) => (
+                      <div className={`${styles.question} glass`} key={index}>
+                        <p>{question}</p>
+                      </div>
+                    ))}
+                </div>
               </div>
-            </div>
-            <div className={`${styles.themeCont} glass`}>
-              <div>
+              <div className={`${styles.themeCont} glass`}>
                 <h2>{question.topic}</h2>
               </div>
-            </div>
-            <div className={styles.pointsCont}>
-              <div className={styles.themePoint}>
-                {question.points
-                  .slice(question.points.length / 2)
-                  .map((question, index) => (
-                    <div className={`${styles.question} glass`} key={index}>
-                      <p>{question}</p>
-                    </div>
-                  ))}
+              <div className={styles.pointsCont}>
+                <div className={styles.themePoint}>
+                  {question.points
+                    .slice(question.points.length / 2)
+                    .map((question, index) => (
+                      <div className={`${styles.question} glass`} key={index}>
+                        <p>{question}</p>
+                      </div>
+                    ))}
+                </div>
               </div>
             </div>
-          </div>
+          </>
         ) : (
-          <div className={styles.messageCont}>
-            <p>Click the button to get a question</p>
-          </div>
+          <>
+            <div className={styles.messageCont}>
+              <Questionbtn onClick={handleSelectQuestion} />
+              <p>Click the button to get a question</p>
+            </div>
+          </>
         )}
       </div>
     </>

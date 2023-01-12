@@ -71,7 +71,14 @@ button:active {
 
 
 main {
-  max-height: 0vh;
+  /* padding: 1rem; */
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  height: 90vh;
+  max-width: 85%;
+  margin: auto;
 }
 
 @keyframes gradient {
