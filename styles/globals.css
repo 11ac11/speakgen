@@ -53,10 +53,30 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.27);
   padding: 1rem;
   font-size: 1.4rem;
+  overflow: hidden;
 }
 
 button:active {
   background: rgba(255, 255, 255, 0.4);
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+button:after {
+    content: '';
+    position: absolute;
+    top: 0%;
+    right: 0%;
+    bottom: 0%;
+    left: 0%;
+    background: linear-gradient(to bottom, rgba(189, 189, 189, 0), rgba(225, 225, 225, 0.678) 50%, rgba(192, 192, 192, 0));
+    transform: rotateZ(60deg) translate(-1em, 4.5em);
+}
+
+button:hover::after, button:active::after {
+  animation: sheen 1s forwards;
 }
 
 .glass {
@@ -79,6 +99,12 @@ main {
   height: 90vh;
   max-width: 85%;
   margin: auto;
+}
+
+@keyframes sheen {
+  100% {
+    transform: rotateZ(60deg) translate(0em, -9em);
+  }
 }
 
 @keyframes gradient {
