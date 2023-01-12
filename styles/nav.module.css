@@ -1,0 +1,14 @@
+.navbar {
+  padding: 1rem;
+  height: 10vh;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 0;
+  border: none;
+}
+
+.rightNav ul {
+  display: flex;
+  gap: 2rem;
+}

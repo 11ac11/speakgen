@@ -1,9 +1,27 @@
+@import url('https://fonts.googleapis.com/css2?family=Sofia+Sans+Semi+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap');
+
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: 'Sofia Sans Semi Condensed', sans-serif;
+  max-width: 100vw;
+
+  background: #1D976C;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #93F9B9, #1D976C);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #93F9B9, #1D976C); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  color:rgba(0, 0, 0, 0.8);
+  font-size: 1.1rem;
+}
+
+p {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+h2 {
+  font-size: 2rem;
+  margin: 0;
 }
 
 a {
@@ -11,16 +29,45 @@ a {
   text-decoration: none;
 }
 
-* {
-  box-sizing: border-box;
+a:hover {
+  color:#1D976C;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-  body {
-    color: white;
-    background: black;
-  }
+a:active {
+  color: black;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Sofia Sans Semi Condensed', sans-serif;
+}
+
+button {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 1rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8.2px);
+  -webkit-backdrop-filter: blur(8.2px);
+  border: 1px solid rgba(255, 255, 255, 0.27);
+  padding: 1rem;
+  font-size: 1.4rem;
+}
+
+button:active {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.33);
+  border-radius: 1rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(7.1px);
+  -webkit-backdrop-filter: blur(7.1px);
+  border: 1px solid rgba(255, 255, 255, 0.27);
+}
+
+
+
+main {
+  max-height: 0vh;
 }
