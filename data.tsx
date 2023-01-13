@@ -72,3 +72,28 @@ export const topics: Topics = [
     ],
   },
 ];
+
+export type Part1Questions = {
+  theme: string;
+  question: string;
+};
+
+export const part1Questions: Part1Questions[] = [
+  {
+    theme: 'Your country',
+    question: 'Is there anything you would like to learn about your country?',
+  },
+  {
+    theme: 'Your country',
+    question:
+      'Which area of your country would you like to get to know better?',
+  },
+  {
+    theme: 'Daily Life',
+    question: "Tell us about a day you've really enjoyed recently.",
+  },
+  {
+    theme: 'Daily Life',
+    question: 'Are you planning to do anything special this weekend?',
+  },
+];
