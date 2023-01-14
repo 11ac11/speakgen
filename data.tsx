@@ -97,3 +97,25 @@ export const part1Questions: Part1Questions[] = [
     question: 'Are you planning to do anything special this weekend?',
   },
 ];
+
+export type Part2Questions = {
+  question: string;
+  image1: string;
+  image2: string;
+  followUp: string;
+};
+
+export const part2Questions: Part2Questions[] = [
+  {
+    question: 'Why might these people be spending time outside?',
+    image1: 'https://unsplash.com/photos/4hcpIbqQM8c',
+    image2: 'https://unsplash.com/photos/AWu2De0kt_s',
+    followUp: 'What are your favourite outdoor activities?',
+  },
+  {
+    question: 'What could people enjoy about these sports?',
+    image1: 'https://unsplash.com/photos/i8XiabUW3mw',
+    image2: 'https://unsplash.com/photos/Lbl0ANDarsM',
+    followUp: 'Which sport would you prefer to do and why?',
+  },
+];
