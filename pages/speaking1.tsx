@@ -24,18 +24,18 @@ export default function SpeakingOne() {
 
   return (
     <>
-      <Questionbtn onClick={handleSelectQuestion} />
-      <>
-        {question ? (
-          <div className={`${styles.container}`}>
+      <div className={`${styles.container}`}>
+        <Questionbtn onClick={handleSelectQuestion} />
+        <>
+          {question ? (
             <div className={`${styles.themeCont} glass`}>
               <h2>{question.question}</h2>
             </div>
-          </div>
-        ) : (
-          <p>Click for q</p>
-        )}
-      </>
+          ) : (
+            <p>Click for q</p>
+          )}
+        </>
+      </div>
     </>
   );
 }
