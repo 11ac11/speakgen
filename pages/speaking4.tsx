@@ -33,7 +33,17 @@ export default function SpeakingFour() {
               <h2>{question.questions[0]}</h2>
             </div>
           ) : (
-            <p>Click for q</p>
+            <>
+              <h3>Instructions:</h3>
+              <p>
+                The examiner will ask you questions related to the topic from
+                part 3. You should answer the questions, but also ask your
+                partners opinions and ideas. It's meant to be a conversation
+                between 3 people.
+              </p>
+              <h3>Speak to:</h3>
+              <p>The examiner and your partner</p>
+            </>
           )}
         </>
       </div>
