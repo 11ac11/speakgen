@@ -32,7 +32,15 @@ export default function SpeakingOne() {
               <h2>{question.question}</h2>
             </div>
           ) : (
-            <p>Click for q</p>
+            <>
+              <h3>Instructions:</h3>
+              <p>
+                The examiner will ask your name and then roughly 3-6 of these
+                types of questions. They will be from a variety of topics.
+              </p>
+              <h3>Speak to:</h3>
+              <p>The examiner</p>
+            </>
           )}
         </>
       </div>
