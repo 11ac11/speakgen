@@ -3,7 +3,7 @@ import Image from 'next/image';
 
 import Questionbtn from '../components/questionbtn';
 import { part2Questions, Part2Questions } from '../data';
-import styles from '../styles/speaking3.module.css';
+import styles from '../styles/speaking2.module.css';
 
 export default function SpeakingOne() {
   const [question, setQuestion] = useState<Part2Questions | undefined>();
@@ -26,31 +26,24 @@ export default function SpeakingOne() {
 
   return (
     <>
-      <Questionbtn onClick={handleSelectQuestion} />
-      <>
-        {question ? (
-          <div className={`${styles.container}`}>
-            <div className={`${styles.themeCont} glass`}>
-              <h2>{question.question}</h2>
-            </div>
-            <div className={styles.imgsCont}>
-              <div className={styles.imgCont}>
-                <img src={question.image1}></img>
+      <div className={`${styles.container}`}>
+        <Questionbtn onClick={handleSelectQuestion} />
+        <>
+          {question ? (
+            <>
+              <div className={`${styles.themeCont} glass`}>
+                <h2>{question.question}</h2>
               </div>
-              <div className={styles.imgCont}>
-                <Image
-                  src="/photo-1522163182402-834f871fd851?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=803&q=80"
-                  alt="text"
-                  width={500}
-                  height={500}
-                />
+              <div className={styles.imgsCont}>
+                <img src={question.image1} alt="text" className={styles.img} />
+                <img src={question.image2} alt="text" className={styles.img} />
               </div>
-            </div>
-          </div>
-        ) : (
-          <p>Click for q</p>
-        )}
-      </>
+            </>
+          ) : (
+            <p>Click for q</p>
+          )}
+        </>
+      </div>
     </>
   );
 }
