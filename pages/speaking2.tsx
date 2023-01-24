@@ -40,7 +40,17 @@ export default function SpeakingOne() {
               </div>
             </>
           ) : (
-            <p>Click for q</p>
+            <>
+              <h3>Instructions:</h3>
+              <p>
+                The examiner will ask you/your partner to compare two
+                photographs relating to a question. They will then ask a short
+                question related to the photographs to the other person. Then
+                they will change photographs for the next person.
+              </p>
+              <h3>Speak to:</h3>
+              <p>The examiner</p>
+            </>
           )}
         </>
       </div>
