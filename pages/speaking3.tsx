@@ -58,7 +58,17 @@ export default function SpeakingThree() {
           <>
             <div className={styles.messageCont}>
               <Questionbtn onClick={handleSelectQuestion} />
-              <p>Click the button to get a question</p>
+              <>
+                <h3>Instructions:</h3>
+                <p>
+                  The examiner will ask you to have a conversation with your
+                  partner and discuss an idea with some prompts to help you.
+                  After around 2 minutes, the examiner will ask you to try and
+                  decide the most suitable prompt in your opinion.
+                </p>
+                <h3>Speak to:</h3>
+                <p>Your partner</p>
+              </>
             </div>
           </>
         )}
