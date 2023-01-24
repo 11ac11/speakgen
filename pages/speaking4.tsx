@@ -38,8 +38,8 @@ export default function SpeakingFour() {
               <p>
                 The examiner will ask you questions related to the topic from
                 part 3. You should answer the questions, but also ask your
-                partners opinions and ideas. It's meant to be a conversation
-                between 3 people.
+                partners opinions and ideas. It should be a conversation between
+                3 people.
               </p>
               <h3>Speak to:</h3>
               <p>The examiner and your partner</p>
