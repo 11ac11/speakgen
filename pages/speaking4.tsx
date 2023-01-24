@@ -3,6 +3,7 @@ import styles from '../styles/speaking4.module.css';
 import { Part4Questions, part4Questions } from '../data';
 import { Topic } from '../types/topics';
 import Questionbtn from '../components/questionbtn';
+import Timer from '../components/timer';
 
 export default function SpeakingFour() {
   const [question, setQuestion] = useState<Part4Questions | undefined>();
@@ -25,7 +26,18 @@ export default function SpeakingFour() {
   return (
     <>
       <div className={`${styles.container}`}>
-        <Questionbtn onClick={handleSelectQuestion} />
+        <div className={styles.topBar}>
+          <Questionbtn onClick={handleSelectQuestion} />
+          {question ? (
+            <Questionbtn
+              onClick={() => setQuestion(undefined)}
+              text="Instructions"
+            />
+          ) : (
+            ''
+          )}
+          <Timer time={60} />
+        </div>
         <>
           {question ? (
             <div className={`${styles.themeCont} glass`}>
@@ -33,7 +45,7 @@ export default function SpeakingFour() {
               <h2>{question.questions[0]}</h2>
             </div>
           ) : (
-            <>
+            <div className={styles.instructionBox}>
               <h3>Instructions:</h3>
               <p>
                 The examiner will ask you questions related to the topic from
@@ -43,7 +55,7 @@ export default function SpeakingFour() {
               </p>
               <h3>Speak to:</h3>
               <p>The examiner and your partner</p>
-            </>
+            </div>
           )}
         </>
       </div>
