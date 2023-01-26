@@ -1,16 +1,31 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '../styles/speaking3.module.css';
 import { part3 } from '../dataPart3';
 import { Part3QStructure } from '../types/types';
 import Questionbtn from '../components/questionbtn';
 import Instructions from '../components/instructions';
+import Secondarybtn from '../components/secondarybtn';
+import Timer from '../components/timer';
 
 export default function SpeakingThree() {
   const [question, setQuestion] = useState<Part3QStructure | undefined>();
   const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
+  const [timeLeft, setTimeLeft] = useState<number | undefined>();
 
   const themes = part3.questionsByTheme;
+
+  useEffect(() => {
+    const interval = setInterval(
+      () =>
+        timeLeft !== undefined
+          ? setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0)
+          : '',
+      1000
+    );
+
+    return () => clearInterval(interval);
+  }, [timeLeft]);
 
   const handleSelectQuestion = () => {
     let i = parseFloat((Math.random() * (themes.length - 1)).toFixed(0));
@@ -22,18 +37,33 @@ export default function SpeakingThree() {
       setTheme(themes[i].theme);
       setQuestion(themes[i].questions[j]);
       setQuestionNum(j);
-      console.log(theme, question);
+      setTimeLeft(part3.time);
       return;
     }
     handleSelectQuestion();
   };
 
   return (
-    <>
-      <div className="container">
+    <div className="container">
+      <div className="btn-bar">
         <Questionbtn onClick={handleSelectQuestion} />
         {question ? (
-          <>
+          <Secondarybtn
+            onClick={() => {
+              setQuestion(undefined);
+              setTimeLeft(undefined);
+            }}
+            text="Instructions"
+          />
+        ) : (
+          ''
+        )}
+      </div>
+      <>
+        {timeLeft !== 0 ? <Timer time={timeLeft} /> : handleSelectQuestion()}
+
+        <>
+          {question ? (
             <div className={styles.questionCont}>
               <div className={styles.pointsCont}>
                 <div className={styles.themePoint}>
@@ -62,14 +92,14 @@ export default function SpeakingThree() {
                 </div>
               </div>
             </div>
-          </>
-        ) : (
-          <Instructions
-            instructions={part3.instructions}
-            speakTo={part3.speakTo}
-          />
-        )}
-      </div>
-    </>
+          ) : (
+            <Instructions
+              instructions={part3.instructions}
+              speakTo={part3.speakTo}
+            />
+          )}
+        </>
+      </>
+    </div>
   );
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import styles from '../styles/speaking4.module.css';
 import Questionbtn from '../components/questionbtn';
 import Timer from '../components/timer';
 import { part4 } from '../dataPart4';
