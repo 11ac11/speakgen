@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import styles from '../styles/speaking4.module.css';
 import { Part4Questions, part4Questions } from '../data';
 import { Topic } from '../types/topics';
@@ -8,6 +8,17 @@ import Timer from '../components/timer';
 export default function SpeakingFour() {
   const [question, setQuestion] = useState<Part4Questions | undefined>();
   const [questionNum, setQuestionNum] = useState<number>();
+  const [timeLeft, setTimeLeft] = useState(60);
+
+  useEffect(() => {
+    console.log('hi');
+    const interval = setInterval(
+      () => setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0),
+      1000
+    );
+
+    return () => clearInterval(interval);
+  }, [timeLeft]);
 
   const handleSelectQuestion = () => {
     let i = parseFloat(
@@ -16,11 +27,10 @@ export default function SpeakingFour() {
     if (i !== questionNum) {
       setQuestion(part4Questions[i]);
       setQuestionNum(i);
-      console.log(question);
+      setTimeLeft(60);
       return;
     }
     handleSelectQuestion();
-    console.log(question);
   };
 
   return (
@@ -30,13 +40,16 @@ export default function SpeakingFour() {
           <Questionbtn onClick={handleSelectQuestion} />
           {question ? (
             <Questionbtn
-              onClick={() => setQuestion(undefined)}
+              onClick={() => {
+                setQuestion(undefined);
+                setTimeLeft(0);
+              }}
               text="Instructions"
             />
           ) : (
             ''
           )}
-          <Timer time={60} />
+          <Timer time={timeLeft} />
         </div>
         <>
           {question ? (

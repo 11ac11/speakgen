@@ -1,0 +1,10 @@
+.timerBox {
+  position: absolute;
+  top: 12vh;
+  right: 5vw;
+}
+
+.timerFont {
+  font-size: 3rem;
+  color: white;
+}
