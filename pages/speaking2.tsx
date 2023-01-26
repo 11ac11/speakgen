@@ -1,17 +1,32 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { part2 } from '../dataPart2';
 
 import Questionbtn from '../components/questionbtn';
 import styles from '../styles/speaking2.module.css';
 import Instructions from '../components/instructions';
 import { Part2QStructure } from '../types/types';
+import Timer from '../components/timer';
+import Secondarybtn from '../components/secondarybtn';
 
-export default function SpeakingOne() {
+export default function SpeakingTwo() {
   const [question, setQuestion] = useState<Part2QStructure | undefined>();
   const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
+  const [timeLeft, setTimeLeft] = useState<number | undefined>();
 
   const themes = part2.questionsByTheme;
+
+  useEffect(() => {
+    const interval = setInterval(
+      () =>
+        timeLeft !== undefined
+          ? setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0)
+          : '',
+      1000
+    );
+
+    return () => clearInterval(interval);
+  }, [timeLeft]);
 
   const handleSelectQuestion = () => {
     let i = parseFloat((Math.random() * (themes.length - 1)).toFixed(0));
@@ -23,7 +38,7 @@ export default function SpeakingOne() {
       setTheme(themes[i].theme);
       setQuestion(themes[i].questions[j]);
       setQuestionNum(j);
-      console.log(theme, question);
+      setTimeLeft(part2.time);
       return;
     }
     handleSelectQuestion();
@@ -32,11 +47,27 @@ export default function SpeakingOne() {
   return (
     <>
       <div className="container">
-        <Questionbtn onClick={handleSelectQuestion} />
+        <div className="btn-bar">
+          <Questionbtn onClick={handleSelectQuestion} />
+          {question ? (
+            <Secondarybtn
+              onClick={() => {
+                setQuestion(undefined);
+                setTimeLeft(undefined);
+              }}
+              text="Instructions"
+            />
+          ) : (
+            ''
+          )}
+        </div>
+        <>
+          {timeLeft !== 0 ? <Timer time={timeLeft} /> : handleSelectQuestion()}
+        </>
         <>
           {question ? (
             <>
-              <div className="themeCont glass">
+              <div className="themeCont themeContPart2 glass">
                 <h2>{question.statement}</h2>
               </div>
               <div className={styles.imgsCont}>

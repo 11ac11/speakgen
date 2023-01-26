@@ -18,12 +18,7 @@
   border-radius: 1rem;
   padding: 1rem;
   flex-direction: column;
-  height: 50%;
+  min-height: 50%;
   width: 70%;
   text-align: center;
-}
-
-.themeText {
-  position: absolute;
-  top: 8%;
 }

@@ -4,6 +4,7 @@ import Questionbtn from '../components/questionbtn';
 import Timer from '../components/timer';
 import { part4 } from '../dataPart4';
 import Instructions from '../components/instructions';
+import Secondarybtn from '../components/secondarybtn';
 
 export default function SpeakingFour() {
   const [question, setQuestion] = useState<string | undefined>();
@@ -44,10 +45,10 @@ export default function SpeakingFour() {
   return (
     <>
       <div className="container">
-        <div className={styles.topBar}>
+        <div className="btn-bar">
           <Questionbtn onClick={handleSelectQuestion} />
           {question ? (
-            <Questionbtn
+            <Secondarybtn
               onClick={() => {
                 setQuestion(undefined);
                 setTimeLeft(undefined);

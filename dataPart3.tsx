@@ -4,7 +4,7 @@ export const part3: Part3 = {
   instructions:
     'The examiner will ask you to have a conversation with your partner and discuss an idea with some prompts to help you. After around 2 minutes, the examiner will ask you to try and decide the most suitable prompt in your opinion.',
   time: 180,
-  speakTo: 'The examiner',
+  speakTo: 'Your partner',
   questionsByTheme: [
     {
       theme: 'Food',

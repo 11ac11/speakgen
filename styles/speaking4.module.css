@@ -1,16 +1,1 @@
-.topBar {
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  gap: 2%;
-  justify-content: center;
-}
 
-.instructionBox {
-  max-width: 50%;
-}
-
-.instructionBox h3 {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
