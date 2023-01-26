@@ -1,4 +1,4 @@
-import { Topics } from './types/topics';
+import { Topics } from './types/types';
 
 export const topics: Topics = [
   {

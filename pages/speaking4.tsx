@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/speaking4.module.css';
 import { Part4Questions, part4Questions } from '../data';
-import { Topic } from '../types/topics';
+import { Topic } from '../types/types';
 import Questionbtn from '../components/questionbtn';
 import Timer from '../components/timer';
 

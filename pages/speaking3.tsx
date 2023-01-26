@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import styles from '../styles/speaking3.module.css';
 import { topics } from '../data';
-import { Topic } from '../types/topics';
+import { Topic } from '../types/types';
 import Questionbtn from '../components/questionbtn';
 
 export default function SpeakingThree() {
