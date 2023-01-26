@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import Questionbtn from '../components/questionbtn';
-import { Part2QStructure, Part3QStructure } from '../types/types';
 import { part1 } from '../dataPart1';
 import styles from '../styles/speaking1.module.css';
 import Timer from '../components/timer';
 import Instructions from '../components/instructions';
 
 export default function SpeakingOne() {
-  const [question, setQuestion] = useState<
-    string | Part2QStructure | Part3QStructure
-  >();
+  const [question, setQuestion] = useState<string | undefined>();
   const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
 
@@ -25,7 +22,7 @@ export default function SpeakingOne() {
       setTheme(themes[i].theme);
       setQuestion(themes[i].questions[j]);
       setQuestionNum(j);
-      console.log(theme, question);
+      console.log(themes);
       return;
     }
     handleSelectQuestion();
@@ -33,12 +30,12 @@ export default function SpeakingOne() {
 
   return (
     <>
-      <div className={`${styles.container}`}>
+      <div className="container">
         <Questionbtn onClick={handleSelectQuestion} />
         <Timer time={part1.time} />
         <>
-          {question && typeof question === 'string' ? (
-            <div className={`${styles.themeCont} glass`}>
+          {question ? (
+            <div className="themeCont glass">
               <p className={styles.themeText}>{theme}</p>
               <h2>{question}</h2>
             </div>

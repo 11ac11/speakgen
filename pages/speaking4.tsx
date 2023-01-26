@@ -1,17 +1,19 @@
 import { useEffect, useState } from 'react';
 import styles from '../styles/speaking4.module.css';
-import { Part4Questions, part4Questions } from '../data';
-import { Topic } from '../types/types';
 import Questionbtn from '../components/questionbtn';
 import Timer from '../components/timer';
+import { part4 } from '../dataPart4';
+import Instructions from '../components/instructions';
 
 export default function SpeakingFour() {
-  const [question, setQuestion] = useState<Part4Questions | undefined>();
+  const [question, setQuestion] = useState<string | undefined>();
+  const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(-1);
+
+  const themes = part4.questionsByTheme;
 
   useEffect(() => {
-    console.log('hi');
     const interval = setInterval(
       () => setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0),
       1000
@@ -21,13 +23,16 @@ export default function SpeakingFour() {
   }, [timeLeft]);
 
   const handleSelectQuestion = () => {
-    let i = parseFloat(
-      (Math.random() * (part4Questions.length - 1)).toFixed(0)
+    let i = parseFloat((Math.random() * (themes.length - 1)).toFixed(0));
+    let j = parseFloat(
+      (Math.random() * (themes[i].questions.length - 1)).toFixed(0)
     );
-    if (i !== questionNum) {
-      setQuestion(part4Questions[i]);
-      setQuestionNum(i);
-      setTimeLeft(60);
+
+    if (j !== questionNum) {
+      setTheme(themes[i].theme);
+      setQuestion(themes[i].questions[j]);
+      setQuestionNum(j);
+      setTimeLeft(part4.time);
       return;
     }
     handleSelectQuestion();
@@ -35,7 +40,7 @@ export default function SpeakingFour() {
 
   return (
     <>
-      <div className={`${styles.container}`}>
+      <div className="container">
         <div className={styles.topBar}>
           <Questionbtn onClick={handleSelectQuestion} />
           {question ? (
@@ -49,26 +54,21 @@ export default function SpeakingFour() {
           ) : (
             ''
           )}
-          <Timer time={timeLeft} />
         </div>
         <>
+          {timeLeft !== 0 ? <Timer time={timeLeft} /> : handleSelectQuestion()}
+        </>
+        <>
           {question ? (
-            <div className={`${styles.themeCont} glass`}>
-              <p>{question.theme}</p>
-              <h2>{question.questions[0]}</h2>
+            <div className="themeCont glass">
+              <p>{theme}</p>
+              <h2>{question}</h2>
             </div>
           ) : (
-            <div className={styles.instructionBox}>
-              <h3>Instructions:</h3>
-              <p>
-                The examiner will ask you questions related to the topic from
-                part 3. You should answer the questions, but also ask your
-                partners opinions and ideas. It should be a conversation between
-                3 people.
-              </p>
-              <h3>Speak to:</h3>
-              <p>The examiner and your partner</p>
-            </div>
+            <Instructions
+              instructions={part4.instructions}
+              speakTo={part4.speakTo}
+            />
           )}
         </>
       </div>

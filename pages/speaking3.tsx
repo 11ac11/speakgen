@@ -1,20 +1,28 @@
 import { useState } from 'react';
 import styles from '../styles/speaking3.module.css';
-import { topics } from '../data';
-import { Topic } from '../types/types';
+import { part3 } from '../dataPart3';
+import { Part3QStructure } from '../types/types';
 import Questionbtn from '../components/questionbtn';
+import Instructions from '../components/instructions';
 
 export default function SpeakingThree() {
-  const [question, setQuestion] = useState<Topic | undefined>();
+  const [question, setQuestion] = useState<Part3QStructure | undefined>();
+  const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
 
-  const handleSelectQuestion = () => {
-    let i = parseFloat((Math.random() * (topics.length - 1)).toFixed(0));
+  const themes = part3.questionsByTheme;
 
-    if (i !== questionNum) {
-      setQuestion(topics[i]);
-      setQuestionNum(i);
-      console.log(i);
+  const handleSelectQuestion = () => {
+    let i = parseFloat((Math.random() * (themes.length - 1)).toFixed(0));
+    let j = parseFloat(
+      (Math.random() * (themes[i].questions.length - 1)).toFixed(0)
+    );
+
+    if (j !== questionNum) {
+      setTheme(themes[i].theme);
+      setQuestion(themes[i].questions[j]);
+      setQuestionNum(j);
+      console.log(theme, question);
       return;
     }
     handleSelectQuestion();
@@ -22,10 +30,10 @@ export default function SpeakingThree() {
 
   return (
     <>
-      <div className={styles.container}>
+      <div className="container">
+        <Questionbtn onClick={handleSelectQuestion} />
         {question ? (
           <>
-            <Questionbtn onClick={handleSelectQuestion} />
             <div className={styles.questionCont}>
               <div className={styles.pointsCont}>
                 <div className={styles.themePoint}>
@@ -38,8 +46,9 @@ export default function SpeakingThree() {
                     ))}
                 </div>
               </div>
-              <div className={`${styles.themeCont} glass`}>
-                <h2>{question.topic}</h2>
+              <div className="themeCont glass">
+                <p>{theme}</p>
+                <h2>{question.statement}</h2>
               </div>
               <div className={styles.pointsCont}>
                 <div className={styles.themePoint}>
@@ -55,22 +64,10 @@ export default function SpeakingThree() {
             </div>
           </>
         ) : (
-          <>
-            <div className={styles.messageCont}>
-              <Questionbtn onClick={handleSelectQuestion} />
-              <>
-                <h3>Instructions:</h3>
-                <p>
-                  The examiner will ask you to have a conversation with your
-                  partner and discuss an idea with some prompts to help you.
-                  After around 2 minutes, the examiner will ask you to try and
-                  decide the most suitable prompt in your opinion.
-                </p>
-                <h3>Speak to:</h3>
-                <p>Your partner</p>
-              </>
-            </div>
-          </>
+          <Instructions
+            instructions={part3.instructions}
+            speakTo={part3.speakTo}
+          />
         )}
       </div>
     </>

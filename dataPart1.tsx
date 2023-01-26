@@ -1,6 +1,6 @@
-import { QuestionStructure } from './types/types';
+import { Part1and4 } from './types/types';
 
-export const part1: QuestionStructure = {
+export const part1: Part1and4 = {
   instructions:
     'The examiner will ask your name and then roughly 3-6 of these types of questions. They will be from a variety of topics.',
   time: 60,

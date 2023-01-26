@@ -1,23 +1,36 @@
-export type QuestionStructure = {
+export type Part1and4 = {
   instructions: string;
   time: number;
   speakTo: string;
   questionsByTheme:
-    | Part1Questions[]
-    | Part2Questions[]
-    | Part3Questions[]
-    | Part4Questions[];
+    {
+      theme: string,
+      questions: string[]
+    }[]
 };
 
-export type Part1Questions = {
-  theme: string;
-  questions: string[];
+export type Part2 = {
+  instructions: string;
+  time: number;
+  speakTo: string;
+  questionsByTheme:
+    {
+      theme: string,
+      questions: Part2QStructure[]
+    }[]
 };
 
-export type Part2Questions = {
-  theme: string;
-  questions: Part2QStructure[];
+export type Part3 = {
+  instructions: string;
+  time: number;
+  speakTo: string;
+  questionsByTheme:
+    {
+      theme: string,
+      questions: Part3QStructure[]
+    }[]
 };
+
 export type Part2QStructure = {
   statement: string;
   image1: string;
@@ -25,16 +38,7 @@ export type Part2QStructure = {
   followUp: string;
 };
 
-export type Part3Questions = {
-  theme: string;
-  questions: Part3QStructure[];
-};
 export type Part3QStructure = {
   statement: string;
   points: string[];
-};
-
-export type Part4Questions = {
-  theme: string;
-  questions: string[];
 };
