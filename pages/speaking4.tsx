@@ -9,13 +9,16 @@ export default function SpeakingFour() {
   const [question, setQuestion] = useState<string | undefined>();
   const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
-  const [timeLeft, setTimeLeft] = useState(-1);
+  const [timeLeft, setTimeLeft] = useState<number | undefined>();
 
   const themes = part4.questionsByTheme;
 
   useEffect(() => {
     const interval = setInterval(
-      () => setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0),
+      () =>
+        timeLeft !== undefined
+          ? setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0)
+          : '',
       1000
     );
 
@@ -47,7 +50,7 @@ export default function SpeakingFour() {
             <Questionbtn
               onClick={() => {
                 setQuestion(undefined);
-                setTimeLeft(0);
+                setTimeLeft(undefined);
               }}
               text="Instructions"
             />
