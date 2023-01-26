@@ -4,6 +4,7 @@ import { Part2QStructure, Part3QStructure } from '../types/types';
 import { part1 } from '../dataPart1';
 import styles from '../styles/speaking3.module.css';
 import Timer from '../components/timer';
+import Instructions from '../components/instructions';
 
 export default function SpeakingOne() {
   const [question, setQuestion] = useState<
@@ -40,12 +41,10 @@ export default function SpeakingOne() {
               <h2>{question}</h2>
             </div>
           ) : (
-            <>
-              <h3>Instructions:</h3>
-              <p>{part1.instructions}</p>
-              <h3>Speak to:</h3>
-              <p>{part1.speakTo}</p>
-            </>
+            <Instructions
+              instructions={part1.instructions}
+              speakTo={part1.speakTo}
+            />
           )}
         </>
       </div>
