@@ -20,5 +20,12 @@ export const part1: QuestionStructure = {
         'Are you planning to do anything special this weekend?',
       ],
     },
+    {
+      theme: 'Sports',
+      questions: [
+        'Tell us about an unusal sport someone you know likes',
+        'What is the most popular sport where you live?',
+      ],
+    },
   ],
 };
