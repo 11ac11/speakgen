@@ -1,11 +1,12 @@
 export type QuestionStructure = {
   instructions: string;
   time: number;
+  speakTo: string;
   questionsByTheme:
-    | Part1Questions
-    | Part2Questions
-    | Part3Questions
-    | Part4Questions;
+    | Part1Questions[]
+    | Part2Questions[]
+    | Part3Questions[]
+    | Part4Questions[];
 };
 
 export type Part1Questions = {
