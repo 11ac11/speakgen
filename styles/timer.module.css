@@ -1,10 +1,23 @@
 .timerBox {
   position: absolute;
-  top: 12vh;
-  right: 5vw;
+  align-self: center;
+  right: 0;
+  z-index: 2;
 }
 
 .timerFont {
   font-size: 3rem;
   color: white;
+}
+
+@media only screen and (max-width: 1000px) {
+  .timerBox {
+    right: 1rem;
+  }
+}
+
+@media only screen and (max-width: 768px) {
+  .timerFont {
+    font-size: 2rem;
+  }
 }

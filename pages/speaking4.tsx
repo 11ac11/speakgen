@@ -45,22 +45,28 @@ export default function SpeakingFour() {
     <>
       <div className="container">
         <div className="btn-bar">
-          <Questionbtn onClick={handleSelectQuestion} />
-          {question ? (
-            <Secondarybtn
-              onClick={() => {
-                setQuestion(undefined);
-                setTimeLeft(undefined);
-              }}
-              text="Instructions"
-            />
-          ) : (
-            ''
-          )}
+          <div className="btns">
+            <Questionbtn onClick={handleSelectQuestion} />
+            {question ? (
+              <Secondarybtn
+                onClick={() => {
+                  setQuestion(undefined);
+                  setTimeLeft(undefined);
+                }}
+                text="Instructions"
+              />
+            ) : (
+              ''
+            )}
+          </div>
+          <>
+            {timeLeft !== 0 ? (
+              <Timer time={timeLeft} />
+            ) : (
+              handleSelectQuestion()
+            )}
+          </>
         </div>
-        <>
-          {timeLeft !== 0 ? <Timer time={timeLeft} /> : handleSelectQuestion()}
-        </>
         <>
           {question ? (
             <div className="themeCont glass">

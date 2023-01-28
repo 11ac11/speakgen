@@ -136,9 +136,17 @@ button:hover::after, button:active::after {
 
 .btn-bar {
   display: flex;
+  position: relative;
   flex-direction: row;
+  width: 70%;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btns {
+  display: flex;
   width: 100%;
-  gap: 2%;
+  gap: 1rem;
   justify-content: center;
 }
 
@@ -182,6 +190,10 @@ button:hover::after, button:active::after {
 }
 
 @media only screen and (max-width: 1000px) {
+  .btn-bar {
+    position: unset;
+  }
+
   .instructionBox {
     max-width: 80%;
     padding: 2rem;
@@ -205,11 +217,22 @@ button:hover::after, button:active::after {
 
   .themeCont {
     width: 100%;
-    min-height: 33%;
+    min-height: unset;
     padding: 0.5rem;
   }
 
   .instructionBox {
     max-width: 100%;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  h2 {
+    font-size: 1.4rem;
+  }
+
+  button {
+    padding: 0.6rem;
+    font-size: 0.8rem;
   }
 }
