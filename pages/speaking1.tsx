@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import Questionbtn from '../components/questionbtn';
 import { part1 } from '../dataPart1';
-import styles from '../styles/speaking1.module.css';
 import Timer from '../components/timer';
 import Instructions from '../components/instructions';
 import Secondarybtn from '../components/secondarybtn';
@@ -65,7 +64,7 @@ export default function SpeakingOne() {
         <>
           {question ? (
             <div className="themeCont glass">
-              <p className={styles.themeText}>{theme}</p>
+              <p className="themeText">{theme}</p>
               <h2>{question}</h2>
             </div>
           ) : (

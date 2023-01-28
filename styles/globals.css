@@ -27,7 +27,6 @@ main {
   margin: auto;
 }
 
-
 * {
   box-sizing: border-box;
   font-family: 'Sofia Sans Semi Condensed', sans-serif;
@@ -180,4 +179,31 @@ button:hover::after, button:active::after {
 	100% {
 		background-position: 0% 50%;
 	}
+}
+
+@media only screen and (max-width: 1000px) {
+  .instructionBox {
+    max-width: 80%;
+    padding: 2rem;
+  }
+
+}
+
+@media only screen and (max-width: 768px) {
+
+}
+
+@media only screen and (max-width: 600px) {
+  h2 {
+    font-size: 1.6rem;
+  }
+
+  .themeCont {
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  .instructionBox {
+    max-width: 100%;
+  }
 }
