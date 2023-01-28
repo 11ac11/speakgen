@@ -1,6 +1,6 @@
 .imgsCont {
   display: flex;
-  gap: 2%;
+  gap: 1rem;
   max-height: 60%;
 }
 
@@ -9,4 +9,14 @@
   object-fit: cover;
   overflow: hidden;
   border-radius: 1rem;
+}
+
+@media only screen and (max-width: 768px) {
+  .imgsCont {
+    flex-direction: column;
+  }
+
+  .img {
+    width: 100%;
+  }
 }
