@@ -9,11 +9,21 @@ export default function Nav() {
       </div>
       <div className={styles.rightNav}>
         <ul>
-          <Link href="/">Home</Link>
-          <Link href="/speaking1">Part 1</Link>
-          <Link href="/speaking2">Part 2</Link>
-          <Link href="/speaking3">Part 3</Link>
-          <Link href="/speaking4">Part 4</Link>
+          <li>
+            <Link href="/">Home</Link>
+          </li>
+          <li>
+            <Link href="/speaking1">Part 1</Link>
+          </li>
+          <li>
+            <Link href="/speaking2">Part 2</Link>
+          </li>
+          <li>
+            <Link href="/speaking3">Part 3</Link>
+          </li>
+          <li>
+            <Link href="/speaking4">Part 4</Link>
+          </li>
         </ul>
       </div>
     </div>
