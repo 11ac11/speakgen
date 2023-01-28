@@ -8,7 +8,40 @@
   border: none;
 }
 
+.navbar h1 {
+  font-size: 2rem;
+}
+
 .rightNav ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
   display: flex;
-  gap: 2rem;
+  gap: 1rem;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+@media only screen and (max-width: 768px) {
+  .navbar h1 {
+    font-size: 1.4rem;
+  }
+
+  .rightNav ul {
+    gap: 1rem;
+  }
+
+  .rightNav ul a {
+    font-size: 0.8rem;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .navbar {
+    height: 8vh;
+  }
+
+  .rightNav {
+    display: none;
+  }
 }
