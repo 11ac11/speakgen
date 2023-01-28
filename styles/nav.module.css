@@ -25,6 +25,7 @@
 @media only screen and (max-width: 768px) {
   .navbar h1 {
     font-size: 1.4rem;
+    margin: 0;
   }
 
   .rightNav ul {
@@ -39,9 +40,8 @@
 @media only screen and (max-width: 600px) {
   .navbar {
     height: 8vh;
+    flex-direction: column;
+    justify-content: space-around;
   }
 
-  .rightNav {
-    display: none;
-  }
 }
