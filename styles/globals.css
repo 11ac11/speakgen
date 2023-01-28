@@ -205,6 +205,7 @@ button:hover::after, button:active::after {
 
   .themeCont {
     width: 100%;
+    min-height: 33%;
     padding: 0.5rem;
   }
 
