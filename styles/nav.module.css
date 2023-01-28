@@ -1,15 +1,21 @@
 .navbar {
   padding: 1rem;
-  height: 10vh;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   border-radius: 0;
   border: none;
 }
 
+.navCont {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 70%;
+  margin: auto;
+}
+
 .navbar h1 {
   font-size: 2rem;
+  margin: 0;
 }
 
 .rightNav ul {
@@ -22,7 +28,17 @@
   align-items: center;
 }
 
+@media only screen and (max-width: 1200px) {
+  .navCont {
+    width: 90%;
+  }
+}
+
 @media only screen and (max-width: 768px) {
+  .navCont {
+    width: 100%;
+  }
+
   .navbar h1 {
     font-size: 1.4rem;
     margin: 0;
@@ -39,7 +55,10 @@
 
 @media only screen and (max-width: 600px) {
   .navbar {
-    height: 8vh;
+    padding: 0.5rem;
+  }
+
+  .navCont {
     flex-direction: column;
     justify-content: space-around;
   }
