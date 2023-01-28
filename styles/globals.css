@@ -198,6 +198,11 @@ button:hover::after, button:active::after {
     font-size: 1.6rem;
   }
 
+  button {
+    padding: 0.8rem;
+    font-size: 1.2rem;
+  }
+
   .themeCont {
     width: 100%;
     padding: 0.5rem;
