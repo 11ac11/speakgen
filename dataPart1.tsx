@@ -27,5 +27,47 @@ export const part1: Part1and4 = {
         'What is the most popular sport where you live?',
       ],
     },
+    {
+      theme: 'Fashion',
+      questions: [
+        'What type of clothes do you like to wear?',
+        'What are your favourite clothes shops?',
+      ],
+    },
+    {
+      theme: 'Environment',
+      questions: [
+        'What do you do to help the environment?',
+        'How important is saving the environment to you?',
+      ],
+    },
+    {
+      theme: 'Family',
+      questions: [
+        'Describe a friend or family member who you look up to',
+        'Do you prefer to spend time with your friends or family?',
+      ],
+    },
+    {
+      theme: 'Food',
+      questions: [
+        'Tell us about a strange food you have tried',
+        'What is your perfect meal?',
+      ],
+    },
+    {
+      theme: 'Education',
+      questions: [
+        'Do you learn more from listening/reading or by doing?',
+        'Tell us about your school/college/university',
+      ],
+    },
+    {
+      theme: 'TV/Film',
+      questions: [
+        'What is your favourite genre of movie?',
+        'How often do you watch TV/series?',
+      ],
+    },
   ],
 };
