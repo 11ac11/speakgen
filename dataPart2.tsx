@@ -45,7 +45,8 @@ export const part2: Part2 = {
             'https://images.unsplash.com/photo-1542037104857-ffbb0b9155fb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=754&q=80',
           image2:
             'https://images.unsplash.com/photo-1628191013085-990d39ec25b8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
-          followUp: 'Which sport would you prefer to do and why?',
+          followUp:
+            'What types of activites do you enjoy doing with your family?',
         },
       ],
     },
