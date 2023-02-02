@@ -50,5 +50,28 @@ export const part2: Part2 = {
         },
       ],
     },
+    {
+      theme: 'Environment',
+      questions: [
+        {
+          statement: 'How are these people helping the environment?',
+          image1:
+            'https://images.unsplash.com/photo-1474625417279-a1308b1bb4a2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1174&q=80',
+          image2:
+            'https://images.unsplash.com/photo-1565803974275-dccd2f933cbb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1171&q=80',
+          followUp: 'What do you do to help save the environment?',
+        },
+        {
+          statement:
+            'What effects do these energy sources have on the environment?',
+          image1:
+            'https://images.unsplash.com/photo-1624397640148-949b1732bb0a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=774&q=80',
+          image2:
+            'https://images.unsplash.com/photo-1547505906-49fd5d7824bc?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1176&q=80',
+          followUp:
+            'Do you think using greener energy is one of the most important things our governments should focus on?',
+        },
+      ],
+    },
   ],
 };
