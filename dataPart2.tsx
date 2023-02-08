@@ -140,5 +140,27 @@ export const part2: Part2 = {
         },
       ],
     },
+    {
+      theme: 'Nature',
+      questions: [
+        {
+          statement: 'Which of these disasters is the easiest to prepare for?',
+          image1:
+            'https://images.unsplash.com/photo-1527482937786-6608f6e14c15?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+          image2:
+            'https://images.unsplash.com/photo-1580250642511-1660fe42ad58?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=725&q=80',
+          followUp:
+            'What are the most common natural disasters in your country?',
+        },
+        {
+          statement: 'Why do people like doing these activities with animals?',
+          image1:
+            'https://images.unsplash.com/photo-1494947665470-20322015e3a8?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+          image2:
+            'https://images.unsplash.com/photo-1617938544737-cf7b41829226?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80',
+          followUp: 'Do you spend much time with animals?',
+        },
+      ],
+    },
   ],
 };
