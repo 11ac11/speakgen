@@ -1,6 +1,19 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Speakgen FCE
+https://speakgen.vercel.app/
+*README last updated: Sept 2024*
 
-## Getting Started
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/7c77654f-55bc-4fc6-aef3-a23cfcaed8a8">
+<img width="1440" alt="image" src="https://github.com/user-attachments/assets/3716c45c-0c7a-4cd2-9502-f6e7406728d8">
+
+## App description
+Speakgen is a generator that helps First Certificate English (FCE) students practise the speaking exam. It has example questions from all 4 parts and timers showing how long they have left to continue answering the question.
+
+## Repo Description
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app), deployed on vercel.
+
+## Set-up
+
+### Development
 
 First, run the development server:
 
@@ -18,17 +31,8 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
-## Learn More
+### Production
+The application is hosted on Vercel, and each push to master is pushed to production as CI/CD.
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Pages & Features
+Each page contains an introduction to the question, with instructions and a 'Get Question' button. When the user clicks the button, they are randomly assigned a question from the db. Each question also has the alloted time to respond to the questions, counting down in the top right corner.
