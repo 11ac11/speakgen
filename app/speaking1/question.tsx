@@ -1,24 +1,26 @@
-import { useEffect, useState } from 'react';
-import Questionbtn from '../components/questionbtn';
-import Timer from '../components/timer';
-import { part4 } from '../dataPart4';
-import Instructions from '../components/instructions';
-import Secondarybtn from '../components/secondarybtn';
+"use client";
 
-export default function SpeakingFour() {
+import { useEffect, useState } from "react";
+import Questionbtn from "../../components/questionbtn";
+import { part1 } from "../../dataPart1";
+import Timer from "../../components/timer";
+import Instructions from "../../components/instructions";
+import Secondarybtn from "../../components/secondarybtn";
+
+export default function Question() {
   const [question, setQuestion] = useState<string | undefined>();
   const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
   const [timeLeft, setTimeLeft] = useState<number | undefined>();
 
-  const themes = part4.questionsByTheme;
+  const themes = part1.questionsByTheme;
 
   useEffect(() => {
     const interval = setInterval(
       () =>
         timeLeft !== undefined
           ? setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0)
-          : '',
+          : "",
       1000
     );
 
@@ -35,7 +37,7 @@ export default function SpeakingFour() {
       setTheme(themes[i].theme);
       setQuestion(themes[i].questions[j]);
       setQuestionNum(j);
-      setTimeLeft(part4.time);
+      setTimeLeft(part1.time);
       return;
     }
     handleSelectQuestion();
@@ -56,27 +58,27 @@ export default function SpeakingFour() {
                 text="Instructions"
               />
             ) : (
-              ''
+              ""
             )}
           </div>
-          <>
+          {/* <>
             {timeLeft !== 0 ? (
               <Timer time={timeLeft} />
             ) : (
               handleSelectQuestion()
             )}
-          </>
+          </> */}
         </div>
         <>
           {question ? (
             <div className="themeCont glass">
-              <p>{theme}</p>
+              <p className="themeText">{theme}</p>
               <h2>{question}</h2>
             </div>
           ) : (
             <Instructions
-              instructions={part4.instructions}
-              speakTo={part4.speakTo}
+              instructions={part1.instructions}
+              speakTo={part1.speakTo}
             />
           )}
         </>

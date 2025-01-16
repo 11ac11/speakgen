@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import styles from '../styles/speaking3.module.css';
-import { part3 } from '../dataPart3';
-import { Part3QStructure } from '../types/types';
-import Questionbtn from '../components/questionbtn';
-import Instructions from '../components/instructions';
-import Secondarybtn from '../components/secondarybtn';
-import Timer from '../components/timer';
+import { useEffect, useState } from "react";
+import styles from "../styles/speaking3.module.css";
+import { part3 } from "../../dataPart3";
+import { Part3QStructure } from "../../types/types";
+import Questionbtn from "../../components/questionbtn";
+import Instructions from "../../components/instructions";
+import Secondarybtn from "../../components/secondarybtn";
+import Timer from "../../components/timer";
 
 export default function SpeakingThree() {
   const [question, setQuestion] = useState<Part3QStructure | undefined>();
@@ -20,7 +20,7 @@ export default function SpeakingThree() {
       () =>
         timeLeft !== undefined
           ? setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0)
-          : '',
+          : "",
       1000
     );
 
@@ -57,12 +57,12 @@ export default function SpeakingThree() {
               text="Instructions"
             />
           ) : (
-            ''
+            ""
           )}
         </div>
-        <>
+        {/* <>
           {timeLeft !== 0 ? <Timer time={timeLeft} /> : handleSelectQuestion()}
-        </>
+        </> */}
       </div>
       <>
         <>

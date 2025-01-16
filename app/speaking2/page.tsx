@@ -1,24 +1,27 @@
-import { useEffect, useState } from 'react';
-import Questionbtn from '../components/questionbtn';
-import { part1 } from '../dataPart1';
-import Timer from '../components/timer';
-import Instructions from '../components/instructions';
-import Secondarybtn from '../components/secondarybtn';
+import { useEffect, useState } from "react";
+import { part2 } from "../../dataPart2";
 
-export default function SpeakingOne() {
-  const [question, setQuestion] = useState<string | undefined>();
+import Questionbtn from "../../components/questionbtn";
+import styles from "../../styles/speaking2.module.css";
+import Instructions from "../../components/instructions";
+import { Part2QStructure } from "../../types/types";
+import Timer from "../../components/timer";
+import Secondarybtn from "../../components/secondarybtn";
+
+export default function SpeakingTwo() {
+  const [question, setQuestion] = useState<Part2QStructure | undefined>();
   const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
   const [timeLeft, setTimeLeft] = useState<number | undefined>();
 
-  const themes = part1.questionsByTheme;
+  const themes = part2.questionsByTheme;
 
   useEffect(() => {
     const interval = setInterval(
       () =>
         timeLeft !== undefined
           ? setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0)
-          : '',
+          : "",
       1000
     );
 
@@ -35,7 +38,7 @@ export default function SpeakingOne() {
       setTheme(themes[i].theme);
       setQuestion(themes[i].questions[j]);
       setQuestionNum(j);
-      setTimeLeft(part1.time);
+      setTimeLeft(part2.time);
       return;
     }
     handleSelectQuestion();
@@ -56,27 +59,32 @@ export default function SpeakingOne() {
                 text="Instructions"
               />
             ) : (
-              ''
+              ""
             )}
           </div>
-          <>
+          {/* <>
             {timeLeft !== 0 ? (
               <Timer time={timeLeft} />
             ) : (
               handleSelectQuestion()
             )}
-          </>
+          </> */}
         </div>
         <>
           {question ? (
-            <div className="themeCont glass">
-              <p className="themeText">{theme}</p>
-              <h2>{question}</h2>
-            </div>
+            <>
+              <div className="themeCont themeContPart2 glass">
+                <h2>{question.statement}</h2>
+              </div>
+              <div className={styles.imgsCont}>
+                <img src={question.image1} alt="text" className={styles.img} />
+                <img src={question.image2} alt="text" className={styles.img} />
+              </div>
+            </>
           ) : (
             <Instructions
-              instructions={part1.instructions}
-              speakTo={part1.speakTo}
+              instructions={part2.instructions}
+              speakTo={part2.speakTo}
             />
           )}
         </>
