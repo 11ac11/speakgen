@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 import Questionbtn from "../../components/questionbtn";
 import Timer from "../../components/timer";
@@ -5,7 +7,7 @@ import { part4 } from "../../dataPart4";
 import Instructions from "../../components/instructions";
 import Secondarybtn from "../../components/secondarybtn";
 
-export default function SpeakingFour() {
+export default function Question() {
   const [question, setQuestion] = useState<string | undefined>();
   const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
