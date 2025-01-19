@@ -17,11 +17,32 @@ const ImagesContainer = styled.div`
   height: 60%;
   max-height: 60%;
   position: relative;
+
+  @media only screen and (max-width: 768px) {
+    flex-direction: column;
+    img {
+      width: 100%;
+    }
+  }
 `;
 
 const ImageContainter = styled.div`
   position: relative;
   width: 50%;
+
+  @media only screen and (max-width: 768px) {
+    width: 100%;
+    height: 60%;
+  }
+`;
+
+const Statement = styled.span`
+  font-size: 2rem;
+  margin: 0.5rem 1rem;
+
+  @media only screen and (max-width: 768px) {
+    font-size: 1rem;
+  }
 `;
 
 const imageStyle: CSSProperties = {
@@ -53,7 +74,7 @@ export default function Question({
     return (
       <>
         <div className="themeCont themeContPart2 glass">
-          <h2>{statement}</h2>
+          <Statement>{statement}</Statement>
         </div>
         <ImagesContainer>
           <ImageContainter>
