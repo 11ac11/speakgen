@@ -1,8 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import SecureInput from "../../components/ui/Input";
-import Button from "../../components/ui/Button";
+import styled from "styled-components";
+import { SecureInput, Button } from "../../components/ui/index";
+
+const StyledForm = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+`;
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");
@@ -17,7 +23,7 @@ const LoginForm = () => {
   };
 
   return (
-    <form>
+    <StyledForm>
       <SecureInput
         label="Username"
         type="text"
@@ -43,7 +49,7 @@ const LoginForm = () => {
         text={"Log In"}
         isAsync={false}
       />
-    </form>
+    </StyledForm>
   );
 };
 

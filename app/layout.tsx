@@ -2,6 +2,7 @@ import React from "react";
 import "../styles/globals.css";
 import StyledComponentsRegistry from "../lib/registry";
 import Navbar from "../components/Nav";
+import BackgroundToggle from "../components/BackgroundToggle";
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -17,6 +18,7 @@ export default function RootLayout({
           <Navbar />
           <main>{children}</main>
         </StyledComponentsRegistry>
+        <BackgroundToggle />
       </body>
     </html>
   );

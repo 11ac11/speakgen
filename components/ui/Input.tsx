@@ -10,16 +10,17 @@ const Wrap = styled.div`
 const Label = styled.label``;
 
 const StyledInput = styled.input`
-  height: 2rem;
-  border-radius: 2px;
+  border-radius: 1rem;
   border: none;
   outline: none;
-  padding: 10px;
+  padding: 0.5rem 1rem;
   font-size: 20px;
 `;
 
 const ErrorMessage = styled.span`
+  margin-top: 10px;
   color: red;
+  font-size: 14px;
 `;
 
 // Types for the component's props
