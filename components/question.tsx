@@ -1,79 +1,79 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React from "react";
 import styles from "../styles/speaking3.module.css";
 import {
-  QuestionTypes,
   QuestionStructures,
   Part2QStructure,
   Part3QStructure,
 } from "../types/types";
-import Questionbtn from "./questionbtn";
-import Instructions from "./instructions";
-import Secondarybtn from "./secondarybtn";
-import Question2 from "./question2";
-import Timer from "./timer";
 
-export default function Question({ questions }: { questions: QuestionTypes }) {
-  const { part, instructions, time, speakTo, questionsByTheme } =
-    questions || {};
-
-  const [question, setQuestion] = useState<QuestionStructures | undefined>();
-  const [theme, setTheme] = useState<string>();
-  const [questionNum, setQuestionNum] = useState<number>();
-
-  const themes = questionsByTheme;
-
-  console.log("question:", question);
-
-  const handleSelectQuestion = () => {
-    let i = parseFloat((Math.random() * (themes.length - 1)).toFixed(0));
-    let j = parseFloat(
-      (Math.random() * (themes[i].questions.length - 1)).toFixed(0)
-    );
-
-    if (j !== questionNum) {
-      setTheme(themes[i].theme);
-      setQuestion(themes[i].questions[j]);
-      setQuestionNum(j);
-    } else {
-      handleSelectQuestion();
-    }
-  };
-
-  return (
-    <div className="container">
-      <div className="btn-bar">
-        <div className="btns">
-          <Questionbtn onClick={handleSelectQuestion} />
-          {question ? (
-            <Secondarybtn
-              onClick={() => {
-                setQuestion(undefined);
-              }}
-              text="Instructions"
-            />
-          ) : (
-            ""
-          )}
-        </div>
-        <>{!!question && <Timer question={question} timeLeft={time} />}</>
+export default function Question({
+  question,
+  theme,
+  part,
+}: {
+  question: QuestionStructures | String;
+  theme: string | undefined;
+  part: string | undefined;
+}) {
+  if (part === "part1/4") {
+    return (
+      <div className="themeCont glass">
+        <p className="themeText">{theme}</p>
+        <h2>{`${question}`}</h2>
       </div>
+    );
+  }
+
+  if (part === "part2") {
+    const { image1, image2, statement } = question as Part2QStructure;
+
+    return (
       <>
-        {question ? (
-          <Question2
-            part={part}
-            question={question}
-            theme={theme}
-            points={(question as Part3QStructure).points}
-            statement={
-              (question as Part2QStructure | Part3QStructure).statement
-            }
-          />
-        ) : (
-          <Instructions instructions={instructions} speakTo={speakTo} />
-        )}
+        <div className="themeCont themeContPart2 glass">
+          <h2>{statement}</h2>
+        </div>
+        <div className={styles.imgsCont}>
+          <img src={image1} alt="text" className={styles.img} />
+          <img src={image2} alt="text" className={styles.img} />
+        </div>
       </>
-    </div>
-  );
+    );
+  }
+
+  if (part === "part3") {
+    const { points, statement } = question as Part3QStructure;
+
+    return (
+      <>
+        <div className={styles.questionCont}>
+          <div className={styles.pointsCont}>
+            <div className={styles.themePoint}>
+              {points.slice(0, points.length / 2).map((question, index) => (
+                <div className={`${styles.question} glass`} key={index}>
+                  <p>{question}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="themeCont glass">
+            <p>{theme}</p>
+            <h2>{statement}</h2>
+          </div>
+          <div className={styles.pointsCont}>
+            <div className={styles.themePoint}>
+              {points.slice(points.length / 2).map((question, index) => (
+                <div className={`${styles.question} glass`} key={index}>
+                  <p>{question}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  return null;
 }

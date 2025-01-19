@@ -1,5 +1,7 @@
-import Question from "./question";
+import React from "react";
+import QuestionContainer from "../../components/QuestionContainer";
+import { part2data } from "../../dataPart2";
 
 export default function SpeakingTwo() {
-  return <Question />;
+  return <QuestionContainer questions={part2data} />;
 }
