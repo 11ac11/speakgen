@@ -1,4 +1,6 @@
+import React from "react";
 import "../styles/globals.css";
+import StyledComponentsRegistry from "../lib/registry";
 import Navbar from "../components/Nav";
 
 export default function RootLayout({
@@ -11,8 +13,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
-        {children}
+        <StyledComponentsRegistry>
+          <Navbar />
+          <main>{children}</main>
+        </StyledComponentsRegistry>
       </body>
     </html>
   );

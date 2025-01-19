@@ -3,7 +3,7 @@
 import React from "react";
 import { useState } from "react";
 import { QuestionTypes, QuestionStructures } from "../types/types";
-import Questionbtn from "./QuestionBtn";
+import Button from "../components/ui/Button";
 import Instructions from "./Instructions";
 import Secondarybtn from "./SecondaryBtn";
 import Question from "./Question";
@@ -44,13 +44,18 @@ export default function QuestionContainer({
     <div className="container">
       <div className="btn-bar">
         <div className="btns">
-          <Questionbtn onClick={handleSelectQuestion} />
+          <Button
+            text="Get Question"
+            onClick={handleSelectQuestion}
+            isAsync={false}
+          />
           {question ? (
-            <Secondarybtn
+            <Button
               onClick={() => {
                 setQuestion(undefined);
               }}
               text="Instructions"
+              secondary
             />
           ) : (
             ""

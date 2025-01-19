@@ -26,6 +26,9 @@ export default function Nav() {
             <li>
               <Link href="/speaking4">Part 4</Link>
             </li>
+            <li>
+              <Link href="/login">Login</Link>
+            </li>
           </ul>
         </div>
       </div>

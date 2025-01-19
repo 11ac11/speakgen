@@ -1,0 +1,92 @@
+import React, { useState } from "react";
+import styled from "styled-components";
+
+type StyledButtonProps = {
+  $secondary?: boolean; // Optional secondary prop
+};
+
+const Wrap = styled.div``;
+
+const StyledButton = styled.button<StyledButtonProps>`
+  cursor: pointer;
+  background: ${({ $secondary }) =>
+    $secondary ? "transparent" : "rgba(255, 255, 255, 0.8)"};
+  border-radius: 1rem;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(8.2px);
+  -webkit-backdrop-filter: blur(8.2px);
+  border: 1px solid rgba(255, 255, 255, 0.27);
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  overflow: hidden;
+  ${({ $secondary }) =>
+    $secondary &&
+    `
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.27);
+  `}
+
+  &:active {
+    background: rgba(255, 255, 255, 0.4);
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+type ButtonProps = {
+  onClick: () => Promise<void> | void; // Can be either async or sync
+  text: string; // The text to be displayed on the button
+  loadingText?: string; // Optional text to show when loading
+  isAsync: boolean; // Determines whether the button is asynchronous
+  disabled?: boolean; // Optional prop to manually disable the button
+  secondary?: boolean; // Optional to use secondary styles
+};
+
+const Button: React.FC<ButtonProps> = ({
+  onClick,
+  text,
+  loadingText = "Loading...",
+  isAsync,
+  disabled = false,
+  secondary,
+}) => {
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleClick = async () => {
+    if (isLoading || disabled) return;
+
+    if (isAsync) {
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        await onClick(); // Trigger the async function
+      } catch (err) {
+        setError("An error occurred. Please try again.");
+      } finally {
+        setIsLoading(false); // Reset loading state after async operation completes
+      }
+    } else {
+      onClick(); // Trigger the normal (sync) function
+    }
+  };
+
+  return (
+    <Wrap>
+      <StyledButton
+        onClick={handleClick}
+        disabled={isLoading || disabled}
+        className={isLoading ? "loading" : ""}
+        $secondary={secondary}
+      >
+        {isLoading ? loadingText : text}
+      </StyledButton>
+      {error && <p className="error-message">{error}</p>}
+    </Wrap>
+  );
+};
+
+export default Button;
