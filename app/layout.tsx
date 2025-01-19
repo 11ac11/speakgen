@@ -17,8 +17,8 @@ export default function RootLayout({
         <StyledComponentsRegistry>
           <Navbar />
           <main>{children}</main>
+          <BackgroundToggle />
         </StyledComponentsRegistry>
-        <BackgroundToggle />
       </body>
     </html>
   );
