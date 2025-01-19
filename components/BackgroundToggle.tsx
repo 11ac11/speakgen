@@ -24,7 +24,7 @@ const BackgroundToggle = () => {
   useEffect(() => {
     if (backgroundType === "gradient") {
       document.body.style.background =
-        "linear-gradient(to right, #ff7e5f, #feb47b)";
+        "linear-gradient(to right, #62cc54, #bfe285)";
     } else {
       document.body.style.background = "white";
     }

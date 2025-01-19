@@ -22,8 +22,6 @@ export default function QuestionContainer({
 
   const themes = questionsByTheme;
 
-  console.log("question:", question);
-
   const handleSelectQuestion = () => {
     let i = parseFloat((Math.random() * (themes.length - 1)).toFixed(0));
     let j = parseFloat(
