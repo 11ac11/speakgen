@@ -39,7 +39,7 @@ type ButtonProps = {
   onClick: () => Promise<void> | void; // Can be either async or sync
   text: string; // The text to be displayed on the button
   loadingText?: string; // Optional text to show when loading
-  isAsync: boolean; // Determines whether the button is asynchronous
+  isAsync?: boolean; // Determines whether the button is asynchronous
   disabled?: boolean; // Optional prop to manually disable the button
   secondary?: boolean; // Optional to use secondary styles
 };
@@ -48,7 +48,7 @@ const Button: React.FC<ButtonProps> = ({
   onClick,
   text,
   loadingText = "Loading...",
-  isAsync,
+  isAsync = false,
   disabled = false,
   secondary,
 }) => {

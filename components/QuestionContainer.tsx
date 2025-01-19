@@ -5,7 +5,6 @@ import { useState } from "react";
 import { QuestionTypes, QuestionStructures } from "../types/types";
 import Button from "../components/ui/Button";
 import Instructions from "./Instructions";
-import Secondarybtn from "./SecondaryBtn";
 import Question from "./Question";
 import Timer from "./Timer";
 
