@@ -20,7 +20,7 @@ const LoginForm = () => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (password !== confirmPassword) {
+      if (!!confirmPassword && password !== confirmPassword) {
         setPasswordError("Passwords do not match");
       } else {
         setPasswordError(""); // Clear error if passwords match
@@ -114,8 +114,6 @@ const LoginForm = () => {
         placeholder=""
         error={passwordError}
       />
-      {passwordError ||
-        (emailError && <span>{passwordError || emailError}</span>)}
       <Button
         onClick={() => console.log("button click")}
         text={"Sign up"}
