@@ -24,9 +24,13 @@ const StyledInput = styled.input<StyledInputProps>`
   padding: 0.5rem 1rem;
   font-size: 20px;
 
-  ${({ error }) => !!error && "border-color: red;"}
-
-  transition: border 0.3s ease-in;
+  ${({ error }) =>
+    !!error &&
+    `
+    border-color: rgba(255, 0, 0);
+    box-shadow: 0 0 5px 2px rgba(255, 0, 0, 0.5);
+  `}
+  transition: border-color 0.3s, box-shadow 0.3s;
 `;
 
 const ErrorMessage = styled.span`
