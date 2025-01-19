@@ -8,7 +8,7 @@ type StyledButtonProps = {
 const Wrap = styled.div``;
 
 const StyledButton = styled.button<StyledButtonProps>`
-  cursor: pointer;
+  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
   background: ${({ $secondary }) =>
     $secondary ? "transparent" : "rgba(255, 255, 255, 0.8)"};
   border-radius: 1rem;
@@ -26,8 +26,10 @@ const StyledButton = styled.button<StyledButtonProps>`
     border: 2px solid rgba(255, 255, 255, 0.27);
   `}
 
+  transition: color 0.3s linear;
+
   &:active {
-    background: rgba(255, 255, 255, 0.4);
+    ${({ disabled }) => !disabled && "background: rgba(255, 255, 255, 0.4)"};
   }
 
   &:hover {

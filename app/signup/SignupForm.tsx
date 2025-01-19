@@ -66,6 +66,9 @@ const LoginForm = () => {
     }
   };
 
+  const allFieldsCompleted =
+    !!email && !!password && !!confirmPassword && !!username;
+
   return (
     <StyledForm>
       <SecureInput
@@ -117,6 +120,7 @@ const LoginForm = () => {
         onClick={() => console.log("button click")}
         text={"Sign up"}
         isAsync={false}
+        disabled={!allFieldsCompleted || !!passwordError || !!emailError}
       />
     </StyledForm>
   );
