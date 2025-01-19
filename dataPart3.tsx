@@ -1,125 +1,125 @@
-import { Part3 } from './types/types';
+import { Part3 } from "./types/types";
 
-export const part3: Part3 = {
+export const part3data: Part3 = {
   instructions:
-    'The examiner will ask you to have a conversation with your partner and discuss an idea with some prompts to help you. After around 2 minutes, the examiner will ask you to try and decide the most suitable prompt in your opinion.',
+    "The examiner will ask you to have a conversation with your partner and discuss an idea with some prompts to help you. After around 2 minutes, the examiner will ask you to try and decide the most suitable prompt in your opinion.",
   time: 180,
-  speakTo: 'Your partner',
+  speakTo: "Your partner",
   questionsByTheme: [
     {
-      theme: 'Food',
+      theme: "Food",
       questions: [
         {
-          statement: 'What are the benefits of a vegetarian diet?',
-          points: ['Nutrition', 'Environment', 'Ethics', 'Variety', 'Health'],
+          statement: "What are the benefits of a vegetarian diet?",
+          points: ["Nutrition", "Environment", "Ethics", "Variety", "Health"],
         },
       ],
     },
     {
-      theme: 'Environment',
+      theme: "Environment",
       questions: [
         {
-          statement: 'What impact is pollution having on the environment?',
-          points: ['Air', 'Water', 'Land', 'Wildlife', 'Climate'],
+          statement: "What impact is pollution having on the environment?",
+          points: ["Air", "Water", "Land", "Wildlife", "Climate"],
         },
         {
-          statement: 'Which is the most devasting effect of climate change?',
+          statement: "Which is the most devasting effect of climate change?",
           points: [
-            'Weather',
-            'Sea level',
-            'Ecosystems',
-            'Agriculture',
-            'Health',
-          ],
-        },
-      ],
-    },
-    {
-      theme: 'Education',
-      questions: [
-        {
-          statement: 'What is the most importance part of education?',
-          points: [
-            'Knowledge',
-            'Skills',
-            'Opportunities',
-            'Confidence',
-            'Success',
-          ],
-        },
-        {
-          statement: 'What are the advantages of learning a foreign language?',
-          points: [
-            'Communication',
-            'Culture',
-            'Employment',
-            'Travel',
-            'Thinking',
+            "Weather",
+            "Sea level",
+            "Ecosystems",
+            "Agriculture",
+            "Health",
           ],
         },
       ],
     },
     {
-      theme: 'Travel',
+      theme: "Education",
       questions: [
         {
-          statement: 'Why would these ideas attract more tourists to the town?',
+          statement: "What is the most importance part of education?",
           points: [
-            'building a large nightclub',
-            'putting up security cameras',
-            'building holiday flats',
-            'providing parks',
-            'having more shops',
+            "Knowledge",
+            "Skills",
+            "Opportunities",
+            "Confidence",
+            "Success",
           ],
         },
         {
-          statement: 'How could each item be useful on a camping trip?',
+          statement: "What are the advantages of learning a foreign language?",
           points: [
-            'a mobile phone',
-            'a torch',
-            'a rope',
-            'a first aid kit',
-            'a camping gas stove',
-          ],
-        },
-        {
-          statement: 'Why do people like to go on these types of holidays?',
-          points: [
-            'a beach holiday',
-            'skiing',
-            'a city break',
-            'camping',
-            'adventure holidays',
+            "Communication",
+            "Culture",
+            "Employment",
+            "Travel",
+            "Thinking",
           ],
         },
       ],
     },
     {
-      theme: 'Fashion',
+      theme: "Travel",
       questions: [
         {
-          statement: 'Why might people choose to wear these different clothes?',
+          statement: "Why would these ideas attract more tourists to the town?",
           points: [
-            'suit and tie',
-            'shorts and t-shirt',
-            'tracksuit and trainers',
-            'jeans and a jumper',
-            'dress and high heels',
+            "building a large nightclub",
+            "putting up security cameras",
+            "building holiday flats",
+            "providing parks",
+            "having more shops",
+          ],
+        },
+        {
+          statement: "How could each item be useful on a camping trip?",
+          points: [
+            "a mobile phone",
+            "a torch",
+            "a rope",
+            "a first aid kit",
+            "a camping gas stove",
+          ],
+        },
+        {
+          statement: "Why do people like to go on these types of holidays?",
+          points: [
+            "a beach holiday",
+            "skiing",
+            "a city break",
+            "camping",
+            "adventure holidays",
           ],
         },
       ],
     },
     {
-      theme: 'Hobbies',
+      theme: "Fashion",
       questions: [
         {
-          statement: 'Why do people enjoy doing these activities?',
+          statement: "Why might people choose to wear these different clothes?",
           points: [
-            'drawing/painting',
-            'playing a team sport',
-            'jogging',
-            'listening to music',
-            'gardening',
+            "suit and tie",
+            "shorts and t-shirt",
+            "tracksuit and trainers",
+            "jeans and a jumper",
+            "dress and high heels",
+          ],
+        },
+      ],
+    },
+    {
+      theme: "Hobbies",
+      questions: [
+        {
+          statement: "Why do people enjoy doing these activities?",
+          points: [
+            "drawing/painting",
+            "playing a team sport",
+            "jogging",
+            "listening to music",
+            "gardening",
           ],
         },
       ],

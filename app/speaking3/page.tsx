@@ -1,5 +1,6 @@
-import Question from "./question";
+import Question from "../../components/question";
+import { part3data } from "../../dataPart3";
 
 export default function SpeakingThree() {
-  return <Question />;
+  return <Question questions={part3data} />;
 }
