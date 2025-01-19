@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import styles from "../styles/speaking3.module.css";
-import { QuestionTypes, QuestionStructures } from "../types/types";
+import {
+  QuestionTypes,
+  QuestionStructures,
+  Part2QStructure,
+  Part3QStructure,
+} from "../types/types";
 import Questionbtn from "./questionbtn";
 import Instructions from "./instructions";
 import Secondarybtn from "./secondarybtn";
@@ -13,26 +18,13 @@ export default function Question({ questions }: { questions: QuestionTypes }) {
   const { part, instructions, time, speakTo, questionsByTheme } =
     questions || {};
 
-  console.log("questions:", questions);
-
   const [question, setQuestion] = useState<QuestionStructures | undefined>();
   const [theme, setTheme] = useState<string>();
   const [questionNum, setQuestionNum] = useState<number>();
-  const [timeLeft, setTimeLeft] = useState<number | undefined>();
 
   const themes = questionsByTheme;
 
-  useEffect(() => {
-    const interval = setInterval(
-      () =>
-        timeLeft !== undefined
-          ? setTimeLeft(timeLeft > 0 ? timeLeft - 1 : 0)
-          : "",
-      1000
-    );
-
-    return () => clearInterval(interval);
-  }, [timeLeft]);
+  console.log("question:", question);
 
   const handleSelectQuestion = () => {
     let i = parseFloat((Math.random() * (themes.length - 1)).toFixed(0));
@@ -44,10 +36,9 @@ export default function Question({ questions }: { questions: QuestionTypes }) {
       setTheme(themes[i].theme);
       setQuestion(themes[i].questions[j]);
       setQuestionNum(j);
-      setTimeLeft(time);
-      return null;
+    } else {
+      handleSelectQuestion();
     }
-    handleSelectQuestion();
   };
 
   return (
@@ -59,7 +50,6 @@ export default function Question({ questions }: { questions: QuestionTypes }) {
             <Secondarybtn
               onClick={() => {
                 setQuestion(undefined);
-                setTimeLeft(undefined);
               }}
               text="Instructions"
             />
@@ -67,18 +57,22 @@ export default function Question({ questions }: { questions: QuestionTypes }) {
             ""
           )}
         </div>
-        <>
-          {timeLeft !== 0 ? <Timer time={timeLeft} /> : handleSelectQuestion()}
-        </>
+        <>{!!question && <Timer question={question} timeLeft={time} />}</>
       </div>
       <>
-        <>
-          {question ? (
-            <Question2 part={part} question={question} theme={theme} />
-          ) : (
-            <Instructions instructions={instructions} speakTo={speakTo} />
-          )}
-        </>
+        {question ? (
+          <Question2
+            part={part}
+            question={question}
+            theme={theme}
+            points={(question as Part3QStructure).points}
+            statement={
+              (question as Part2QStructure | Part3QStructure).statement
+            }
+          />
+        ) : (
+          <Instructions instructions={instructions} speakTo={speakTo} />
+        )}
       </>
     </div>
   );
