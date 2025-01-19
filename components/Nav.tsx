@@ -27,7 +27,10 @@ export default function Nav() {
               <Link href="/speaking4">Part 4</Link>
             </li>
             <li>
-              <Link href="/login">Login</Link>
+              <Link href="/login">Log in</Link>
+            </li>
+            <li>
+              <Link href="/signup">Sign up</Link>
             </li>
           </ul>
         </div>
