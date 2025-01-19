@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import Navbar from "../components/nav";
+import Navbar from "../components/Nav";
 
 export default function RootLayout({
   // Layouts must accept a children prop.

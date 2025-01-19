@@ -33,9 +33,6 @@ const CountdownTimer = ({
     };
   }, [seconds]); // Effect triggers when 'seconds' change
 
-  // console.log("timeLeft:", timeLeft);
-  // console.log("seconds:", seconds);
-
   return (
     <div className={styles.timerBox}>
       <p className={styles.timerFont}>{seconds.toString()}</p>

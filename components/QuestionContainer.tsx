@@ -1,19 +1,13 @@
 "use client";
 
 import React from "react";
-import { useEffect, useState } from "react";
-import styles from "../styles/speaking3.module.css";
-import {
-  QuestionTypes,
-  QuestionStructures,
-  Part2QStructure,
-  Part3QStructure,
-} from "../types/types";
-import Questionbtn from "./questionbtn";
-import Instructions from "./instructions";
-import Secondarybtn from "./secondarybtn";
+import { useState } from "react";
+import { QuestionTypes, QuestionStructures } from "../types/types";
+import Questionbtn from "./QuestionBtn";
+import Instructions from "./Instructions";
+import Secondarybtn from "./SecondaryBtn";
 import Question from "./Question";
-import Timer from "./timer";
+import Timer from "./Timer";
 
 export default function QuestionContainer({
   questions,
