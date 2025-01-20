@@ -9,12 +9,19 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.731.1",
+    "@aws-sdk/rds-signer": "^3.731.1",
     "@types/node": "18.11.15",
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3",
+    "@vercel/functions": "^1.5.2",
+    "@vercel/postgres": "^0.10.0",
+    "dotenv": "^16.4.7",
     "eslint": "8.29.0",
     "eslint-config-next": "15.1.4",
     "next": "15.1.4",
+    "pg": "^8.13.1",
+    "postgres": "^3.4.5",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "styled-components": "^6.1.14",
@@ -23,5 +30,8 @@
   "overrides": {
     "@types/react": "19.0.7",
     "@types/react-dom": "19.0.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.11.10"
   }
 }
