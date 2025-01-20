@@ -3,10 +3,12 @@ import QuestionContainer from "../../components/QuestionContainer";
 import ConnectionTest from "./connectionTest";
 import { part4data } from "../../dataPart4";
 
+const NEXT_PUBLIC_API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
+
 // Directly call the API in the server component
 export default async function SpeakingFour() {
   try {
-    const res = await fetch("http://localhost:3001/api/aws-rds"); // Adjust URL if necessary
+    const res = await fetch(`${NEXT_PUBLIC_API_BASE_URL}/aws-rds`); // Adjust URL if necessary
     if (!res.ok) {
       throw new Error("Failed to fetch data");
     }
