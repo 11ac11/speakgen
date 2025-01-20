@@ -1,8 +1,31 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import styles from "../styles/timer.module.css";
+import styled from "styled-components";
 import { QuestionStructures } from "../types/types";
+
+const TimerBox = styled.div`
+  position: absolute;
+  align-self: center;
+  right: 0;
+  z-index: 2;
+
+  & > span {
+    font-size: 3rem;
+    color: white;
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media only screen and (max-width: 1000px) {
+    right: 1rem;
+  }
+
+  @media only screen and (max-width: 768px) {
+    & > span {
+      font-size: 2rem;
+    }
+  }
+`;
 
 const CountdownTimer = ({
   timeLeft,
@@ -34,9 +57,9 @@ const CountdownTimer = ({
   }, [seconds]); // Effect triggers when 'seconds' change
 
   return (
-    <div className={styles.timerBox}>
-      <p className={styles.timerFont}>{seconds.toString()}</p>
-    </div>
+    <TimerBox>
+      <span>{seconds.toString()}</span>
+    </TimerBox>
   );
 };
 
