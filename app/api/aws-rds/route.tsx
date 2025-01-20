@@ -1,5 +1,6 @@
 "use server";
 
+import { NextResponse } from "next/server";
 import { Pool } from "pg";
 import { awsCredentialsProvider } from "@vercel/functions/oidc";
 import { Signer } from "@aws-sdk/rds-signer";
@@ -54,7 +55,14 @@ export async function GET() {
 
     console.log("Serialized results:", plainRows);
     // cloned so can be accessed by client-side components
-    const cloned = structuredClone(rows);
-    return cloned;
-  } catch {}
+    // const cloned = structuredClone(rows);
+    // return cloned;
+    return NextResponse.json(rows); // Correctly wraps the data in a Response object.
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    return NextResponse.json(
+      { error: "Failed to fetch data" },
+      { status: 500 }
+    );
+  }
 }
