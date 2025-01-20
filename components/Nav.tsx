@@ -32,6 +32,9 @@ export default function Nav() {
             <li>
               <Link href="/signup">Sign up</Link>
             </li>
+            <li>
+              <Link href="/create-question">Create</Link>
+            </li>
           </ul>
         </div>
       </div>

@@ -22,8 +22,9 @@ const StyledButton = styled.button<StyledButtonProps>`
   ${({ $secondary }) =>
     $secondary &&
     `
+    background-color: rgba(0, 0, 0, 0.5);
     color: white;
-    border: 2px solid rgba(255, 255, 255, 0.27);
+    border: 1px solid rgba(0, 0, 0, 0);
   `}
 
   transition: color 0.3s linear;

@@ -1,5 +1,27 @@
 @import url("https://fonts.googleapis.com/css2?family=Sofia+Sans+Semi+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap");
 
+:root {
+  --slategrey: rgb(30, 30, 30, 0.2);
+}
+
+/*
+background: -webkit-linear-gradient(
+  -45deg,
+  #ee7752,
+  #e73c7e,
+  #23a6d5,
+  #23d5ab
+); Chrome 10-25, Safari 5.1-6
+background: linear-gradient(
+  -45deg,
+  #ee7752,
+  #e73c7e,
+  #23a6d5,
+  #23d5ab
+); W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+
+background-size: 400% 400%;
+animation: gradient 15s ease infinite; */
+
 html,
 body {
   padding: 0;
@@ -7,28 +29,13 @@ body {
   font-family: "Sofia Sans Semi Condensed", sans-serif;
   max-width: 100vw;
   min-height: 100vh;
-  background: #23d5ab; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    -45deg,
-    #ee7752,
-    #e73c7e,
-    #23a6d5,
-    #23d5ab
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    -45deg,
-    #ee7752,
-    #e73c7e,
-    #23a6d5,
-    #23d5ab
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background-size: 400% 400%;
-  animation: gradient 15s ease infinite;
+  background: rgb(254, 254, 254);
   color: rgb(30, 30, 30);
   font-size: 1.1rem;
 }
 
 main {
+  padding-top: 2rem;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
@@ -81,6 +88,11 @@ a:active {
   border: 1px solid rgba(255, 255, 255, 0.27);
 }
 
+.shadow {
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(1, 1, 1, 0.1);
+}
+
 .container {
   padding: 1rem;
   display: flex;
@@ -124,6 +136,7 @@ a:active {
   width: 100%;
   gap: 1rem;
   justify-content: center;
+  margin-bottom: 1rem;
 }
 
 .instructionBox {

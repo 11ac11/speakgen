@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import styled from "styled-components";
-import { SecureInput, Button } from "../../components/ui/index";
+import { Input, Button } from "../../components/ui/index";
 
 const StyledForm = styled.form`
   display: flex;
@@ -24,7 +24,7 @@ const LoginForm = () => {
 
   return (
     <StyledForm>
-      <SecureInput
+      <Input
         label="Username"
         type="text"
         value={username}
@@ -34,7 +34,7 @@ const LoginForm = () => {
         maxLength={20}
         placeholder="Enter your username"
       />
-      <SecureInput
+      <Input
         label="Password"
         type="password"
         value={password}
