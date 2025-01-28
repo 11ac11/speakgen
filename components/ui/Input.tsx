@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const Wrap = styled.div`
+const Wrap = styled.div<StyledWrapProps>`
   display: flex;
   flex-direction: column;
-  width: 300px;
+  ${({ width }) => width && `width: ${width};`}
 `;
 
 const Label = styled.label`
@@ -13,6 +13,10 @@ const Label = styled.label`
 
 type StyledInputProps = {
   error?: string;
+};
+
+type StyledWrapProps = {
+  width?: string;
 };
 
 const StyledInput = styled.input<StyledInputProps>`
@@ -53,6 +57,7 @@ type SecureInputProps = {
   maxLength?: number;
   error?: string;
   isDropdown?: boolean;
+  width?: string;
 };
 
 const SecureInput: React.FC<SecureInputProps> = ({
@@ -69,6 +74,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
   maxLength,
   error,
   isDropdown,
+  width,
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
 
@@ -99,7 +105,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
     !!onBlur ? onBlur() : null;
 
   return (
-    <Wrap>
+    <Wrap className={className} width={width}>
       <Label>{label}</Label>
       <StyledInput
         type={type}

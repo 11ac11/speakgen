@@ -50,19 +50,21 @@ const DropdownOptions = styled.div`
 `;
 
 const StyledInput = styled(Input)`
-  text-align: center;
-  caret-color: transparent;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  width: 100px;
+  & input {
+    text-align: center;
+    caret-color: transparent;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100px;
+  }
 
-  &:hover {
+  & input:hover {
     cursor: pointer;
     border: 1px solid var(--slategrey);
     outline: 1px solid var(--slategrey);
   }
 
-  &:focus {
+  & input:focus {
     border: 1px solid var(--slategrey);
     outline: 1px solid var(--slategrey);
   }

@@ -3,9 +3,9 @@ import SubmitQuestionForm from "./SubmitQuestionForm";
 
 const CreateQuestion = () => {
   return (
-    <div>
+    <>
       <SubmitQuestionForm />
-    </div>
+    </>
   );
 };
 

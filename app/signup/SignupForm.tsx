@@ -8,6 +8,7 @@ const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
   gap: 15px;
+  width: 300px;
 `;
 
 const LoginForm = () => {
