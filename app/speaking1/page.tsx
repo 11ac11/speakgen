@@ -1,7 +1,16 @@
 import React from "react";
-import QuestionContainer from "../../components/QuestionContainer";
-import { part1data } from "../../dataPart1";
+// import {
+//   getPartOneQuestions,
+//   getRandomPartOneQuestion,
+// } from "../../services/part1Service";
+// import PartOneQuestion from "../../components/PartOneQuestion";
+import QuestionContainer from "../../components/QuestionContainer2";
+import { getRandomPartOneQuestion } from "../../services/part1Service";
 
-export default function SpeakingOne() {
-  return <QuestionContainer questions={part1data} />;
+export default async function SpeakingOne() {
+  // have instructions here for the part
+  // pass the questions as props to the question container, then render a singular question inside that
+  // const newQuestion = await getRandomPartOneQuestion();
+
+  return <QuestionContainer />;
 }

@@ -31,7 +31,7 @@ export type Part3 = {
   }[];
 };
 
-export type QuestionTypes = Part1and4 | Part2 | Part3;
+export type QuestionTypes = Part1and4 | Part2 | Part3 | NewPart1QStructure;
 
 export type QuestionStructures = Part2QStructure | Part3QStructure | string;
 
@@ -45,4 +45,10 @@ export type Part2QStructure = {
 export type Part3QStructure = {
   statement: string;
   points: string[];
+};
+
+export type NewPart1QStructure = {
+  id: number;
+  question: string;
+  themes: string[];
 };
