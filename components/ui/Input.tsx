@@ -48,6 +48,7 @@ type SecureInputProps = {
   label: string;
   type: "text" | "password" | "email" | "number" | "select"; // Support for more input types
   value: string;
+  name: string;
   onChange: (value: string) => void;
   onClick?: () => void;
   onBlur?: () => void;
@@ -64,6 +65,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
   className,
   label,
   type,
+  name,
   value,
   onChange,
   onClick,
@@ -110,6 +112,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
       <StyledInput
         type={type}
         value={value}
+        name={name}
         onChange={handleChange}
         onClick={onClick}
         onBlur={handleBlur}

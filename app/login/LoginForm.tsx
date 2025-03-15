@@ -3,6 +3,9 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Input, Button } from "../../components/ui/index";
+import { useActionState } from "react";
+import { authenticate } from "../../lib/actions";
+import { useSearchParams } from "next/navigation";
 
 const StyledForm = styled.form`
   display: flex;
@@ -12,11 +15,17 @@ const StyledForm = styled.form`
 `;
 
 const LoginForm = () => {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const [errorMessage, formAction, isPending] = useActionState(
+    authenticate,
+    undefined
+  );
 
-  const handleUsernameChange = (newValue: string) => {
-    setUsername(newValue);
+  const handleEmailChange = (newValue: string) => {
+    setEmail(newValue);
   };
 
   const handlePasswordChange = (newValue: string) => {
@@ -24,20 +33,22 @@ const LoginForm = () => {
   };
 
   return (
-    <StyledForm>
+    <StyledForm action={formAction}>
       <Input
-        label="Username"
-        type="text"
-        value={username}
-        onChange={handleUsernameChange}
+        label="Email"
+        name="email"
+        type="email"
+        value={email}
+        onChange={handleEmailChange}
         required
         minLength={3}
         maxLength={20}
-        placeholder="Enter your username"
+        placeholder="Enter your Email"
       />
       <Input
         label="Password"
         type="password"
+        name="password"
         value={password}
         onChange={handlePasswordChange}
         required
@@ -49,7 +60,14 @@ const LoginForm = () => {
         onClick={() => console.log("button click")}
         text={"Log In"}
         isAsync={false}
+        aria-disabled={isPending}
       />
+      <input type="hidden" name="redirectTo" value={callbackUrl} />
+      {errorMessage && (
+        <>
+          <p>{errorMessage}</p>
+        </>
+      )}
     </StyledForm>
   );
 };
