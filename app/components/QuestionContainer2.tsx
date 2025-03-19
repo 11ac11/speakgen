@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { getRandomPartOneQuestion } from "../services/part1Service";
+import { getRandomPartOneQuestion } from "@/services/part1Service";
 import Button from "./ui/Button";
 import Instructions from "./Instructions";
 import PartOneQuestion from "./PartOneQuestion";

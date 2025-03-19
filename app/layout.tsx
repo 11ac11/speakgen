@@ -1,8 +1,11 @@
+"use client";
+
 import React from "react";
 import "../styles/globals.css";
 import StyledComponentsRegistry from "../lib/registry";
-import Navbar from "../components/Nav";
-import BackgroundToggle from "../components/BackgroundToggle";
+import Navbar from "@/app/components/Nav";
+import BackgroundToggle from "@/app/components/BackgroundToggle";
+import { SessionProvider } from "next-auth/react";
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -12,14 +15,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
-      <body>
-        <StyledComponentsRegistry>
-          <Navbar />
-          <main>{children}</main>
-          {/* <BackgroundToggle /> */}
-        </StyledComponentsRegistry>
-      </body>
-    </html>
+    <SessionProvider>
+      <html lang="en">
+        <body>
+          <StyledComponentsRegistry>
+            <Navbar />
+            <main>{children}</main>
+            {/* <BackgroundToggle /> */}
+          </StyledComponentsRegistry>
+        </body>
+      </html>
+    </SessionProvider>
   );
 }

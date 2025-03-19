@@ -2,9 +2,9 @@
 
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Input, Button } from "../../components/ui/index";
+import { Input, Button } from "@/app/components/ui/index";
 import { useActionState } from "react";
-import { authenticate } from "../../lib/actions";
+import { authenticate } from "@/lib/actions";
 import { useSearchParams } from "next/navigation";
 
 const StyledForm = styled.form`

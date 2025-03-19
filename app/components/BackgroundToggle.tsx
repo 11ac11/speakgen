@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Button } from "./ui";
+import { Button } from "@/app/components/ui";
 
 const FloatingToggle = styled.div`
   position: absolute;

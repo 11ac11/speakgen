@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import { Input, Button } from "../../components/ui/index";
+import { Input, Button } from "@/app/components/ui/index";
 
 const StyledForm = styled.form`
   display: flex;

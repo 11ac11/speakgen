@@ -14,6 +14,10 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./*"]
+    },
     "plugins": [
       {
         "name": "next"
@@ -21,9 +25,5 @@
     ]
   },
   "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"],
-  "baseUrl": ".", // Use the root of the project as the base directory.
-  "paths": {
-    "@/*": ["./*"] // This tells TypeScript to resolve imports starting from the root.
-  }
+  "exclude": ["node_modules"]
 }
