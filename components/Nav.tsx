@@ -7,7 +7,7 @@ export default function Nav() {
     <div className={`${styles.navbar} glass`}>
       <div className={styles.navCont}>
         <div className={styles.leftNav}>
-          <h1>First Certificate Speaking</h1>
+          <h1>Speakgen</h1>
         </div>
         <div className={styles.rightNav}>
           <ul>

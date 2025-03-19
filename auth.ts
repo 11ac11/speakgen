@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { authConfig } from "./auth.config";
 import { z } from "zod";
@@ -37,27 +36,33 @@ export const { auth, signIn, signOut } = NextAuth({
           })
           .safeParse(credentials);
 
-        // If validation fails, log errors and return null
         if (!parsedCredentials.success) {
           console.error("Validation failed:", parsedCredentials.error.errors);
-          return null; // or throw an error depending on your error handling
-        }
-
-        const { email, password } = parsedCredentials.data;
-
-        // Here you should authenticate the user, e.g., by checking credentials against your DB
-        const user = await getUser(email);
-
-        if (!user) {
-          console.error("Invalid credentials for:", email);
           return null;
         }
 
-        return user; // Return the user object to be used in NextAuth session
+        const { email, password } = parsedCredentials.data;
+        const user = await getUser(email);
+
+        if (!user) {
+          console.error("User not found:", email);
+          return null;
+        }
+
+        // Verify password
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+          console.error("Invalid password for:", email);
+          return null;
+        }
+
+        // Omit password before returning user
+        const { password: _, ...userWithoutPassword } = user;
+        return userWithoutPassword;
       },
     }),
   ],
   pages: {
-    signIn: "/login", // Custom login page
+    signIn: "/login",
   },
 });

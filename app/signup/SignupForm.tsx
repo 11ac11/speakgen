@@ -70,6 +70,35 @@ const LoginForm = () => {
   const allFieldsCompleted =
     !!email && !!password && !!confirmPassword && !!username;
 
+  const handleSignup = async () => {
+    if (!allFieldsCompleted || passwordError || emailError) return;
+
+    try {
+      const response = await fetch("/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Something went wrong");
+      }
+
+      alert("Signup successful! You can now log in.");
+    } catch (error) {
+      console.error("Signup failed:", error);
+
+      // Type guard to check if error is an instance of Error
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unknown error occurred");
+      }
+    }
+  };
+
   return (
     <StyledForm>
       <Input
@@ -81,6 +110,7 @@ const LoginForm = () => {
         minLength={3}
         maxLength={20}
         placeholder="Enter your username"
+        name="username"
       />
       <Input
         label="Email"
@@ -93,6 +123,7 @@ const LoginForm = () => {
         maxLength={20}
         placeholder="Enter your email"
         error={emailError}
+        name="email"
       />
       <Input
         label="Password"
@@ -103,6 +134,7 @@ const LoginForm = () => {
         minLength={3}
         maxLength={20}
         placeholder=""
+        name="password"
       />
       <Input
         label="Confirm Password"
@@ -114,9 +146,10 @@ const LoginForm = () => {
         maxLength={20}
         placeholder=""
         error={passwordError}
+        name="password2"
       />
       <Button
-        onClick={() => console.log("button click")}
+        onClick={handleSignup}
         text={"Sign up"}
         isAsync={false}
         disabled={!allFieldsCompleted || !!passwordError || !!emailError}
