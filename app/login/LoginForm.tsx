@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Input, Button } from "@/app/components/ui/index";
-import { useActionState } from "react";
-import { authenticate } from "@/lib/actions";
+// import { useActionState } from "react";
+// import { authenticate } from "@/lib/actions";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 

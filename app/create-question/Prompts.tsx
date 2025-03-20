@@ -1,6 +1,6 @@
 import React from "react";
 import styled from "styled-components";
-import { Input } from "../../components/ui";
+import { Input } from "@/app/components/ui";
 
 const Wrap = styled.div`
   max-width: 500px;
@@ -47,6 +47,7 @@ const Prompts = ({
       <PromptContainer>
         {paddedPrompts.map((prompt, index) => (
           <StyledInput
+            name={`prompt${index}`}
             key={index}
             label={`${index + 1}`}
             type="text"

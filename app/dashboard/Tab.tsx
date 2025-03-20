@@ -1,9 +1,12 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
 import styled from "styled-components";
 
-const StyledTab = styled.div`
+type StyledTabProps = {
+  $isActive?: boolean; // Optional secondary prop
+};
+
+const StyledTab = styled.div<StyledTabProps>`
   border-bottom: ${({ $isActive }) => ($isActive ? "2px solid #62cc54" : "")};
   width: 250px;
   padding-bottom: 5px;
