@@ -6,6 +6,7 @@ import { Input, Button } from "@/app/components/ui/index";
 import { useActionState } from "react";
 import { authenticate } from "@/lib/actions";
 import { useSearchParams } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 const StyledForm = styled.form`
   display: flex;
@@ -19,10 +20,21 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/";
-  const [errorMessage, formAction, isPending] = useActionState(
-    authenticate,
-    undefined
-  );
+  // const [errorMessage, formAction, isPending] = useActionState(
+  //   authenticate,
+  //   undefined
+  // );
+
+  const credentialsAction = (formData: FormData) => {
+    const formObject: { [key: string]: string } = {};
+
+    formData.forEach((value, key) => {
+      formObject[key] = value.toString();
+    });
+
+    // Now you can pass the extracted data to the signIn function
+    signIn("credentials", formObject);
+  };
 
   const handleEmailChange = (newValue: string) => {
     setEmail(newValue);
@@ -33,7 +45,7 @@ const LoginForm = () => {
   };
 
   return (
-    <StyledForm action={formAction}>
+    <StyledForm action={credentialsAction}>
       <Input
         label="Email"
         name="email"
@@ -60,14 +72,14 @@ const LoginForm = () => {
         onClick={() => console.log("button click")}
         text={"Log In"}
         isAsync={false}
-        aria-disabled={isPending}
+        // aria-disabled={isPending}
       />
       <input type="hidden" name="redirectTo" value={callbackUrl} />
-      {errorMessage && (
+      {/* {errorMessage && (
         <>
           <p>{errorMessage}</p>
         </>
-      )}
+      )} */}
     </StyledForm>
   );
 };

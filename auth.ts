@@ -19,8 +19,8 @@ async function getUser(email: string): Promise<User | undefined> {
 }
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  debug: true,
   ...authConfig,
+  debug: true,
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -43,6 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         const { email, password } = parsedCredentials.data;
+        console.log("email:", email);
         const user = await getUser(email);
 
         if (!user) {
@@ -63,4 +64,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  session: {
+    strategy: "jwt", // Uses JSON Web Tokens instead of database sessions
+  },
+  secret: process.env.AUTH_SECRET, // Required for JWT encryption
 });
