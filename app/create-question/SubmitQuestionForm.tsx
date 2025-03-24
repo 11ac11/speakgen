@@ -57,7 +57,7 @@ const SubmitQuestionForm = () => {
     const requestData = {
       question: statement,
       themes: tags,
-      owner_id: null,
+      owner_id: "2", // TODO: make dynamic
       public: true,
       part,
     };

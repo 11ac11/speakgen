@@ -3,7 +3,7 @@
 import styled from "styled-components";
 
 type StyledTabProps = {
-  $isActive?: boolean; // Optional secondary prop
+  $isActive?: Boolean; // Optional secondary prop
 };
 
 const StyledTab = styled.div<StyledTabProps>`

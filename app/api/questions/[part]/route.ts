@@ -57,7 +57,7 @@ export async function POST(
   req: NextRequest,
   context: { params: { part: string } }
 ) {
-  const { part } = context.params;
+  const { part } = await context.params;
 
   if (!["1", "2", "3", "4"].includes(part)) {
     return NextResponse.json({ error: "Invalid part number" }, { status: 400 });
