@@ -26,7 +26,7 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: "Sofia Sans Semi Condensed", sans-serif;
+  /* font-family: "Sofia Sans Semi Condensed", sans-serif; */
   max-width: 100vw;
   min-height: 100vh;
   background: rgb(254, 254, 254);
@@ -47,7 +47,8 @@ main {
 
 * {
   box-sizing: border-box;
-  font-family: "Sofia Sans Semi Condensed", sans-serif;
+  /* font-family: "Sofia Sans Semi Condensed", sans-serif; */
+  font-family: sans-serif;
 }
 
 h2 {

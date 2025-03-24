@@ -8,7 +8,7 @@ import {
   QuestionStructures,
   Part2QStructure,
   Part3QStructure,
-} from "../types/types";
+} from "@/types/types";
 
 const ImagesContainer = styled.div`
   width: 100%;

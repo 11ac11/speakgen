@@ -8,7 +8,8 @@ const Wrap = styled.div<StyledWrapProps>`
 `;
 
 const Label = styled.label`
-  margin-bottom: 5px;
+  margin-bottom: 10px;
+  font-size: 18px;
 `;
 
 type StyledInputProps = {
@@ -25,7 +26,8 @@ const StyledInput = styled.input<StyledInputProps>`
   border-width: 1px;
   outline: none;
   padding: 0.5rem 1rem;
-  font-size: 20px;
+  font-size: 16px;
+  font-weight: 300;
 
   ${({ error }) =>
     !!error &&
