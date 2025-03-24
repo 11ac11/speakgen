@@ -82,7 +82,9 @@ export default function Nav() {
     <Navbar>
       <NavContainer>
         <div>
-          <Title>Speakgen</Title>
+          <Title>
+            <Link href="/">Speakgen</Link>
+          </Title>
         </div>
         <RightNav>
           <NavList>
@@ -102,9 +104,14 @@ export default function Nav() {
               <Link href="/speaking4">Part 4</Link> */}
             {/* </NavItem> */}
             {isAuthenticated ? (
-              <NavItem onClick={() => signOut()}>
-                <Link href="/login">Sign Out</Link>
-              </NavItem>
+              <>
+                <NavItem>
+                  <Link href="/dashboard">Dashboard</Link>
+                </NavItem>
+                <NavItem onClick={() => signOut()}>
+                  <Link href="/">Sign Out</Link>
+                </NavItem>
+              </>
             ) : (
               <>
                 <NavItem>
@@ -115,9 +122,6 @@ export default function Nav() {
                 </NavItem>
               </>
             )}
-            {/* <NavItem>
-              <Link href="/create-question">Create</Link>
-            </NavItem> */}
           </NavList>
         </RightNav>
       </NavContainer>

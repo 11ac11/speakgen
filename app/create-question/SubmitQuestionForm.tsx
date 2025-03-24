@@ -105,7 +105,7 @@ const SubmitQuestionForm = () => {
             maxLength={200} // Increased for better usability
             placeholder={generatePlaceholderByPart()}
           />
-          {level === "C1" && (
+          {level === "C1" && part === "2" && (
             <Input
               name="statement-2"
               label="Statement 2"
