@@ -27,7 +27,7 @@ export default function TabContainer({
             onClick={() => router.push("/create-question")}
           />
           <div>
-            <h1>My Questions</h1>
+            {/* <h1>My Questions</h1> */}
             <Table ownerId={ownerId} />
           </div>
         </>

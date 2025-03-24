@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
+import styled from "styled-components";
+import Pill from "./Pill";
 
 interface Question {
   part: string;
   id: number;
   question: string;
-  themes: string | null;
+  themes: string[] | null;
   owner_id: string;
   public: boolean;
 }
+
+const TableHeader = styled.th`
+  text-align: left;
+  max-width: 50px;
+`;
+const TableData = styled.td`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 50px;
+`;
 
 export default function QuestionsTable({ ownerId }: { ownerId: string }) {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -40,11 +53,10 @@ export default function QuestionsTable({ ownerId }: { ownerId: string }) {
     <table style={{ width: "100%", borderCollapse: "collapse" }}>
       <thead>
         <tr>
-          <th>Part</th>
-          <th>ID</th>
-          <th>Question</th>
-          <th>Themes</th>
-          <th>Public</th>
+          <TableHeader>Part</TableHeader>
+          <TableHeader>Question</TableHeader>
+          <TableHeader>Themes</TableHeader>
+          <TableHeader>Public</TableHeader>
         </tr>
       </thead>
       <tbody>
@@ -57,11 +69,16 @@ export default function QuestionsTable({ ownerId }: { ownerId: string }) {
         ) : (
           questions.map((q) => (
             <tr key={`${q.part}-${q.id}`}>
-              <td>{q.part}</td>
-              <td>{q.id}</td>
-              <td>{q.question}</td>
-              <td>{q.themes || "N/A"}</td>
-              <td>{q.public ? "Yes" : "No"}</td>
+              <TableData>
+                <Pill text={`Part ${q.part}`} />
+              </TableData>
+              <TableData>{q.question}</TableData>
+              <TableData>
+                {q?.themes?.map((theme) => {
+                  return <Pill text={theme} useLightPalette key={theme} />;
+                }) || "N/A"}
+              </TableData>
+              <TableData>{q.public ? "Yes" : "No"}</TableData>
             </tr>
           ))
         )}
