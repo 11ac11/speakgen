@@ -11,10 +11,15 @@ interface Question {
   public: boolean;
 }
 
+const TableRow = styled.tr`
+  height: 30px;
+`;
+
 const TableHeader = styled.th`
   text-align: left;
   max-width: 50px;
 `;
+
 const TableData = styled.td`
   white-space: nowrap;
   overflow: hidden;
@@ -50,25 +55,27 @@ export default function QuestionsTable({ ownerId }: { ownerId: string }) {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse" }}>
+    <table
+      style={{ width: "100%", borderCollapse: "collapse", minWidth: "800px" }}
+    >
       <thead>
-        <tr>
+        <TableRow>
           <TableHeader>Part</TableHeader>
           <TableHeader>Question</TableHeader>
           <TableHeader>Themes</TableHeader>
           <TableHeader>Public</TableHeader>
-        </tr>
+        </TableRow>
       </thead>
       <tbody>
         {questions.length === 0 ? (
-          <tr>
+          <TableRow>
             <td colSpan={5} style={{ textAlign: "center" }}>
               No questions found.
             </td>
-          </tr>
+          </TableRow>
         ) : (
           questions.map((q) => (
-            <tr key={`${q.part}-${q.id}`}>
+            <TableRow key={`${q.part}-${q.id}`}>
               <TableData>
                 <Pill text={`Part ${q.part}`} />
               </TableData>
@@ -79,7 +86,7 @@ export default function QuestionsTable({ ownerId }: { ownerId: string }) {
                 }) || "N/A"}
               </TableData>
               <TableData>{q.public ? "Yes" : "No"}</TableData>
-            </tr>
+            </TableRow>
           ))
         )}
       </tbody>

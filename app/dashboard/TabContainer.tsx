@@ -8,6 +8,10 @@ import Table from "../components/Table";
 
 const Container = styled.div`
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center;
 `;
 
 export default function TabContainer({
