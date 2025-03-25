@@ -196,8 +196,6 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
             })}
         </tbody>
       </table>
-      <div>{table.getRowModel().rows.length.toLocaleString()} Rows</div>
-      <pre>{JSON.stringify(sorting, null, 2)}</pre>
     </div>
   );
 }
