@@ -54,6 +54,8 @@ export default function QuestionsTable({ ownerId }: { ownerId: string }) {
   if (loading) return <p>Loading questions...</p>;
   if (error) return <p>Error: {error}</p>;
 
+  console.log("test:");
+
   return (
     <table
       style={{ width: "100%", borderCollapse: "collapse", minWidth: "800px" }}
