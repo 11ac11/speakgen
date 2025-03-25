@@ -9,11 +9,16 @@ export default function Pill({
   useLightPalette?: boolean;
 }) {
   const backgroundColor = useMemo(
-    () => generateColor(text, useLightPalette),
-    [text, useLightPalette]
+    () => generateColor(text, false, true),
+    [text]
   );
+  const textColor = useMemo(() => generateColor(text, false, false), [text]);
 
-  return <StyledPill style={{ backgroundColor }}>{text}</StyledPill>;
+  return (
+    <StyledPill style={{ backgroundColor, color: textColor }}>
+      {text}
+    </StyledPill>
+  );
 }
 
 // Styled component for the pill
@@ -23,7 +28,6 @@ const StyledPill = styled.div`
   border-radius: 3px;
   font-size: 12px;
   font-weight: bold;
-  color: #fff;
   text-transform: capitalize;
   white-space: nowrap;
   margin-right: 5px;
@@ -37,82 +41,59 @@ const PREDEFINED_COLORS: { [key: string]: string } = {
   "part 4": "#356240", // Dark Green
 };
 
-// Function to generate color based on text (with predefined mappings)
-function generateColor(text: string, useLightPalette: boolean) {
-  // Normalize text (case-insensitive check for parts)
+// Function to generate color based on text
+function generateColor(text: string, useLightPalette: boolean, forBg: boolean) {
   const normalizedText = text.trim().toLowerCase();
 
-  // Check for predefined part mappings
-  if (PREDEFINED_COLORS[normalizedText]) {
-    let color = PREDEFINED_COLORS[normalizedText];
+  // if (PREDEFINED_COLORS[normalizedText]) {
+  //   return PREDEFINED_COLORS[normalizedText];
+  // }
 
-    // Lighten if needed
-    if (useLightPalette) {
-      color = lightenColor(color);
-    }
-
-    return color;
-  }
-
-  // For other text values, generate a color based on the first two characters
-  return generateColorFromText(text, useLightPalette);
+  return generateColorFromText(text, useLightPalette, forBg);
 }
 
-// Function to generate color from first two characters of text
-function generateColorFromText(text: string, useLightPalette: boolean) {
-  if (text.length < 2) return "#ccc"; // Fallback color
+// Function to generate color from text
+function generateColorFromText(
+  text: string,
+  useLightPalette: boolean,
+  forBg: boolean
+) {
+  if (text.length < 2 || BASE_COLORS.length === 0) return "#ccc"; // Fallback color
 
-  // Get the first two characters and calculate their ASCII sum
   const char1 = text.charCodeAt(0);
   const char2 = text.charCodeAt(1);
   const index = (char1 + char2) % BASE_COLORS.length;
 
-  // Get the base color from a predefined list
-  let [r, g, b] = BASE_COLORS[index];
+  let [r, g, b] = forBg ? BASE_COLORS[index].bg : BASE_COLORS[index].text;
 
-  // Apply pastel effect if needed
+  // Apply pastel effect if needed (mix with white)
   if (useLightPalette) {
-    r = Math.min(255, r + 80);
-    g = Math.min(255, g + 80);
-    b = Math.min(255, b + 80);
+    r = Math.round(r + (255 - r) * 0.5);
+    g = Math.round(g + (255 - g) * 0.5);
+    b = Math.round(b + (255 - b) * 0.5);
   }
 
   return `rgb(${r}, ${g}, ${b})`;
 }
 
-// Predefined base colors for text-based color generation
+// Predefined base colors with high contrast text colors
+// Predefined base colors with adjusted high contrast text colors
 const BASE_COLORS = [
-  [220, 20, 60], // Crimson
-  [30, 144, 255], // Dodger Blue
-  [34, 139, 34], // Forest Green
-  [255, 165, 0], // Orange
-  [128, 0, 128], // Purple
-  [255, 69, 0], // Red-Orange
-  [0, 128, 128], // Teal
-  [218, 112, 214], // Orchid
-  [255, 105, 180], // Hot Pink
-  [60, 179, 113], // Medium Sea Green
+  { bg: [255, 235, 178], text: [66, 47, 0] },
+  { bg: [208, 230, 242], text: [7, 35, 50] },
+  { bg: [248, 200, 220], text: [58, 0, 23] },
+  { bg: [230, 230, 250], text: [3, 3, 54] },
+  { bg: [255, 218, 185], text: [66, 26, 0] },
+  { bg: [245, 197, 66], text: [63, 44, 4] },
+  { bg: [200, 230, 201], text: [14, 43, 15] },
+  { bg: [165, 214, 167], text: [14, 43, 15] },
+  { bg: [255, 204, 188], text: [66, 8, 0] },
+  { bg: [195, 177, 225], text: [24, 11, 45] },
+  { bg: [178, 235, 242], text: [1, 49, 55] },
+  { bg: [255, 235, 238], text: [66, 0, 1] },
+  { bg: [197, 225, 165], text: [30, 47, 9] },
+  { bg: [174, 213, 129], text: [30, 47, 9] },
+  { bg: [255, 204, 128], text: [66, 36, 0] },
+  { bg: [248, 187, 208], text: [59, 0, 19] },
+  { bg: [179, 157, 219], text: [23, 11, 46] },
 ];
-
-// Function to lighten a color (pastel effect)
-function lightenColor(hex: string) {
-  let r: number, g: number, b: number;
-
-  if (hex.startsWith("#")) {
-    r = parseInt(hex.slice(1, 3), 16);
-    g = parseInt(hex.slice(3, 5), 16);
-    b = parseInt(hex.slice(5, 7), 16);
-  } else {
-    [r, g, b] = hex
-      .slice(4, -1)
-      .split(",")
-      .map((n) => parseInt(n.trim(), 10));
-  }
-
-  // Lighten the color by adding to RGB values
-  r = Math.min(255, r + 80);
-  g = Math.min(255, g + 80);
-  b = Math.min(255, b + 80);
-
-  return `rgb(${r}, ${g}, ${b})`;
-}
