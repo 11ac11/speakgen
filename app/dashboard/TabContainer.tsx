@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { Button } from "../components/ui";
 import { useRouter } from "next/navigation";
 import Table from "../components/Table";
+import ReactTable from "../components/ReactTable";
 
 const Container = styled.div`
   width: 100%;
@@ -33,6 +34,7 @@ export default function TabContainer({
           <div>
             {/* <h1>My Questions</h1> */}
             <Table ownerId={ownerId} />
+            <ReactTable ownerId={ownerId} />
           </div>
         </>
       )}

@@ -29,6 +29,7 @@ const TableData = styled.td`
 
 export default function QuestionsTable({ ownerId }: { ownerId: string }) {
   const [questions, setQuestions] = useState<Question[]>([]);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
