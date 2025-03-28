@@ -2,5 +2,6 @@ import Input from "./Input";
 import Button from "./Button";
 import { Dropdown } from "./Dropdown";
 import Pill from "./Pill";
+import Actions from "./Actions";
 
-export { Button, Input, Dropdown, Pill };
+export { Button, Input, Dropdown, Pill, Actions };

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
-import { Pill } from "./ui";
+import { Pill, Actions } from "./ui";
 import { THEME_VALUES_FOR_PILLS, PART_VALUES_FOR_PILLS } from "@/constants";
 import {
   ColumnDef,
@@ -23,6 +23,11 @@ interface Question {
 
 const TableRow = styled.tr`
   height: 30px;
+  font-size: 14px;
+
+  &:hover .actions {
+    opacity: 1;
+  }
 `;
 
 const TableHeader = styled.th`
@@ -135,6 +140,14 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
           return null;
         },
       },
+      {
+        header: "",
+        accessorKey: "actions",
+        size: 100,
+        cell: ({ row }) => (
+          <Actions questionId={row.original.id} part={row.original.part} />
+        ),
+      },
     ],
     []
   );
@@ -224,6 +237,8 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
                         style={{
                           width: `${cell.column.getSize()}px`,
                           maxWidth: `${cell.column.getSize()}px`,
+                          textAlign:
+                            cell.column.id === "public" ? "center" : "left",
                         }}
                       >
                         {flexRender(
