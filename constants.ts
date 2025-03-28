@@ -1,4 +1,4 @@
-export const THEMES: {
+export const THEME_VALUES_FOR_PILLS: {
   value: string;
   label: string;
   colors: { bg: string; text: string };
@@ -85,7 +85,7 @@ export const THEMES: {
   },
 ];
 
-const PARTS: {
+export const PART_VALUES_FOR_PILLS: {
   value: string;
   label: string;
   colors: { bg: string; text: string };
@@ -94,20 +94,20 @@ const PARTS: {
     value: "part1",
     label: "Part 1",
     colors: { bg: "#b3efb2", text: "#1f3b1e" },
-  }, // Light Green bg, Dark Green text
+  },
   {
     value: "part2",
     label: "Part 2",
-    colors: { bg: "#7a9e7e", text: "#1e2b20" },
-  }, // Muted Green bg, Darker Green text
+    colors: { bg: "#A3B18A", text: "#1e2b20" },
+  },
   {
     value: "part3",
     label: "Part 3",
     colors: { bg: "#31493c", text: "#dff3e2" },
-  }, // Dark Green bg, Light text
+  },
   {
     value: "part4",
     label: "Part 4",
-    colors: { bg: "#356240", text: "#d7f5de" },
-  }, // Dark Green bg, Light text
+    colors: { bg: "#D2D9CC", text: "#344E41" },
+  },
 ];

@@ -5,7 +5,7 @@ import styled from "styled-components";
 import { Input, Button, Dropdown, Pill } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion } from "@/services/part1Service";
-import { THEMES } from "@/constants";
+import { THEME_VALUES_FOR_PILLS } from "@/constants";
 
 const StyledForm = styled.form`
   display: flex;
@@ -144,7 +144,7 @@ const SubmitQuestionForm = () => {
         </>
       )}
       <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
-        {THEMES?.map((theme) => {
+        {THEME_VALUES_FOR_PILLS?.map((theme) => {
           return (
             <Pill
               key={theme.value}

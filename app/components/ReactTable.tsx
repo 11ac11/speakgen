@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
 import { Pill } from "./ui";
-import { THEMES } from "@/constants";
+import { THEME_VALUES_FOR_PILLS, PART_VALUES_FOR_PILLS } from "@/constants";
 import {
   ColumnDef,
   flexRender,
@@ -68,14 +68,26 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
         header: "Part",
         accessorKey: "part",
         cell: ({ row }) => {
-          return <Pill text={`Part ${row.original.part}`} />;
+          const storedPart = PART_VALUES_FOR_PILLS.find((part) =>
+            part.value.includes(row.original?.part)
+          );
+          if (storedPart) {
+            return (
+              <Pill
+                key={storedPart.value}
+                text={storedPart.label}
+                bgColor={storedPart.colors.bg}
+                textColor={storedPart.colors.text}
+              />
+            );
+          }
         },
-        size: 100,
+        size: 70,
       },
       {
         header: "Question",
         accessorKey: "question",
-        size: 300,
+        size: 400,
       },
       {
         header: "Themes",
@@ -83,7 +95,7 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
         cell: ({ row }) => {
           return row.original?.themes?.map((themeFromData) => {
             // match the value so we can apply the correct colours to the pill
-            const storedTheme = THEMES.find(
+            const storedTheme = THEME_VALUES_FOR_PILLS.find(
               (theme) => theme.value === themeFromData
             );
             if (storedTheme) {
