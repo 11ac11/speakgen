@@ -27,6 +27,8 @@ const TableRow = styled.tr`
 
 const TableHeader = styled.th`
   text-align: left;
+  font-size: 12px;
+  text-transform: uppercase;
 `;
 
 const TableData = styled.td`
@@ -116,6 +118,22 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
         header: "Public",
         accessorKey: "public",
         size: 50,
+        cell: ({ row }) => {
+          if (row.original.public) {
+            return (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="#67cd55"
+                width="20"
+                height="20"
+              >
+                <path d="M9 16.17l-4.24-4.24-1.41 1.41L9 19 21 7l-1.41-1.41z" />
+              </svg>
+            );
+          }
+          return null;
+        },
       },
     ],
     []
