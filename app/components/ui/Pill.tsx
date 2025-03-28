@@ -34,20 +34,22 @@ const StyledPill = styled.div`
 `;
 
 // Predefined colors for specific parts
-const PREDEFINED_COLORS: { [key: string]: string } = {
-  "part 1": "#b3efb2", // Light Green
-  "part 2": "#7a9e7e", // Muted Green
-  "part 3": "#31493c", // Dark Green
-  "part 4": "#356240", // Dark Green
+const PREDEFINED_COLORS: { [key: string]: { bg: string; text: string } } = {
+  "part 1": { bg: "#b3efb2", text: "#1f3b1e" }, // Light Green bg, Dark Green text
+  "part 2": { bg: "#7a9e7e", text: "#1e2b20" }, // Muted Green bg, Darker Green text
+  "part 3": { bg: "#31493c", text: "#dff3e2" }, // Dark Green bg, Light text
+  "part 4": { bg: "#356240", text: "#d7f5de" }, // Dark Green bg, Light text
 };
 
 // Function to generate color based on text
 function generateColor(text: string, useLightPalette: boolean, forBg: boolean) {
   const normalizedText = text.trim().toLowerCase();
 
-  // if (PREDEFINED_COLORS[normalizedText]) {
-  //   return PREDEFINED_COLORS[normalizedText];
-  // }
+  if (PREDEFINED_COLORS[normalizedText]) {
+    return forBg
+      ? PREDEFINED_COLORS[normalizedText].bg
+      : PREDEFINED_COLORS[normalizedText].text;
+  }
 
   return generateColorFromText(text, useLightPalette, forBg);
 }
@@ -77,7 +79,6 @@ function generateColorFromText(
 }
 
 // Predefined base colors with high contrast text colors
-// Predefined base colors with adjusted high contrast text colors
 const BASE_COLORS = [
   { bg: [255, 235, 178], text: [66, 47, 0] },
   { bg: [208, 230, 242], text: [7, 35, 50] },

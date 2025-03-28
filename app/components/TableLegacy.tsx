@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-import Pill from "./Pill";
+import Pill from "./ui/Pill";
 
 interface Question {
   part: string;

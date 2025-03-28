@@ -5,7 +5,6 @@ import styled from "styled-components";
 import { Input, Button, Dropdown } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion } from "@/services/part1Service";
-import Question from "@/app/components/Question";
 
 const StyledForm = styled.form`
   display: flex;
@@ -83,6 +82,7 @@ const SubmitQuestionForm = () => {
           value={level}
           onChange={setLevel}
           placeholder="-"
+          width="100px"
         />
         <Dropdown
           label="Part"
@@ -90,6 +90,7 @@ const SubmitQuestionForm = () => {
           value={part}
           onChange={setPart}
           placeholder="-"
+          width="100px"
         />
       </FormRow>
       {!!level && !!part && (
@@ -102,7 +103,7 @@ const SubmitQuestionForm = () => {
             onChange={setStatement}
             required
             minLength={1}
-            maxLength={200} // Increased for better usability
+            maxLength={200}
             placeholder={generatePlaceholderByPart()}
           />
           {level === "C1" && part === "2" && (
@@ -114,7 +115,7 @@ const SubmitQuestionForm = () => {
               onChange={setStatementTwo}
               required
               minLength={1}
-              maxLength={200} // Increased for better usability
+              maxLength={200}
               placeholder={generatePlaceholderByPart()}
             />
           )}

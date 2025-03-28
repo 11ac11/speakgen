@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-const Wrap = styled.div<StyledWrapProps>`
+const Wrap = styled.div<{ width: string | undefined }>`
   display: flex;
   flex-direction: column;
-  ${({ width }) => width && `width: ${width};`}
+  width: ${({ width }) => (width ? width : "100%")};
 `;
 
 const Label = styled.label`
@@ -12,15 +12,7 @@ const Label = styled.label`
   font-size: 18px;
 `;
 
-type StyledInputProps = {
-  error?: string;
-};
-
-type StyledWrapProps = {
-  width?: string;
-};
-
-const StyledInput = styled.input<StyledInputProps>`
+const StyledInput = styled.input<{ error: string | undefined }>`
   border-radius: 1rem;
   border-style: solid;
   border-width: 1px;
@@ -61,6 +53,7 @@ type SecureInputProps = {
   error?: string;
   isDropdown?: boolean;
   width?: string;
+  children?: any;
 };
 
 const SecureInput: React.FC<SecureInputProps> = ({
@@ -77,8 +70,8 @@ const SecureInput: React.FC<SecureInputProps> = ({
   minLength,
   maxLength,
   error,
-  isDropdown,
   width,
+  children,
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
 
@@ -110,7 +103,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
 
   return (
     <Wrap className={className} width={width}>
-      <Label>{label}</Label>
+      {label && <Label>{label}</Label>}
       <StyledInput
         type={type}
         value={value}
@@ -125,6 +118,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
         error={inputError}
         className={`${className} shadow`}
       />
+      {children}
       {inputError && (
         <ErrorMessage className="error-message">{inputError}</ErrorMessage>
       )}
