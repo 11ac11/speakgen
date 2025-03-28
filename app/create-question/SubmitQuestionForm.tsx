@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Input, Button, Dropdown } from "@/app/components/ui/index";
+import { Input, Button, Dropdown, Pill } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion } from "@/services/part1Service";
+import { THEMES } from "@/constants";
 
 const StyledForm = styled.form`
   display: flex;
@@ -142,6 +143,18 @@ const SubmitQuestionForm = () => {
           />
         </>
       )}
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+        {THEMES?.map((theme) => {
+          return (
+            <Pill
+              key={theme.value}
+              bgColor={theme.colors.bg}
+              textColor={theme.colors.text}
+              text={theme.label}
+            />
+          );
+        })}
+      </div>
       <Button
         onClick={() =>
           handleSubmit(new Event("submit") as unknown as React.FormEvent)

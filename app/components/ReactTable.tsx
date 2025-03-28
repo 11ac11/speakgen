@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import styled from "styled-components";
-import Pill from "./ui/Pill";
+import { Pill } from "./ui";
+import { THEMES } from "@/constants";
 import {
   ColumnDef,
   flexRender,
@@ -80,11 +81,24 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
         header: "Themes",
         accessorKey: "themes",
         cell: ({ row }) => {
-          return row.original?.themes?.map((theme) => {
-            return <Pill text={theme} useLightPalette key={theme} />;
+          return row.original?.themes?.map((themeFromData) => {
+            // match the value so we can apply the correct colours to the pill
+            const storedTheme = THEMES.find(
+              (theme) => theme.value === themeFromData
+            );
+            if (storedTheme) {
+              return (
+                <Pill
+                  key={storedTheme.value}
+                  text={storedTheme.label}
+                  bgColor={storedTheme.colors.bg}
+                  textColor={storedTheme.colors.text}
+                />
+              );
+            }
           });
         },
-        size: 100,
+        size: 200,
       },
       {
         header: "Public",
@@ -121,8 +135,6 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
-                console.log("header:", header);
-
                 return (
                   <TableHeader
                     key={header.id}

@@ -2,20 +2,23 @@ import { useMemo } from "react";
 import styled from "styled-components";
 
 export default function Pill({
+  bgColor,
+  textColor,
   text,
-  useLightPalette = false,
 }: {
+  bgColor?: string;
+  textColor?: string;
   text: string;
-  useLightPalette?: boolean;
 }) {
-  const backgroundColor = useMemo(
-    () => generateColor(text, false, true),
-    [text]
-  );
-  const textColor = useMemo(() => generateColor(text, false, false), [text]);
+  const backgroundColor = bgColor
+    ? bgColor
+    : useMemo(() => generateColor(text, false, true), [text]);
+  const _textColor = textColor
+    ? textColor
+    : useMemo(() => generateColor(text, false, false), [text]);
 
   return (
-    <StyledPill style={{ backgroundColor, color: textColor }}>
+    <StyledPill style={{ backgroundColor, color: _textColor }}>
       {text}
     </StyledPill>
   );
