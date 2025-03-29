@@ -50,23 +50,48 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
   const [sorting, setSorting] = useState<SortingState>([]);
 
   useEffect(() => {
-    async function fetchQuestions() {
-      try {
-        const res = await fetch(`/api/questions/all?owner_id=${ownerId}`);
-        if (!res.ok) throw new Error("Failed to load questions");
-        const data: Question[] = await res.json();
-        setData(data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Unknown error");
-      } finally {
-        setLoading(false);
-      }
-    }
+    console.log("data:", data);
+  }, [data]);
 
+  async function fetchQuestions() {
+    try {
+      const res = await fetch(`/api/questions/all?owner_id=${ownerId}`);
+      if (!res.ok) throw new Error("Failed to load questions");
+      const data: Question[] = await res.json();
+      setData(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Unknown error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
     if (ownerId) {
       fetchQuestions();
     }
   }, []);
+
+  const handleDelete = async (part: string, id: number) => {
+    try {
+      const response = await fetch(`/api/questions/${part}/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log("data:", data);
+        alert(result.message); // Show a success message (can be customized)
+        fetchQuestions();
+      } else {
+        const error = await response.json();
+        alert(error.error); // Show an error message
+      }
+    } catch (error) {
+      console.error("Error deleting the question:", error);
+      alert("Failed to delete the question. Please try again.");
+    }
+  };
 
   // Define columns here, outside of the conditional rendering
   const columns = useMemo<ColumnDef<Question>[]>(
@@ -145,7 +170,11 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
         accessorKey: "actions",
         size: 100,
         cell: ({ row }) => (
-          <Actions questionId={row.original.id} part={row.original.part} />
+          <Actions
+            questionId={row.original.id}
+            part={row.original.part}
+            handleDelete={handleDelete}
+          />
         ),
       },
     ],

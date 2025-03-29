@@ -32,9 +32,11 @@ const ActionButton = styled.div`
 export default function Actions({
   questionId,
   part,
+  handleDelete,
 }: {
   questionId: number;
   part: string;
+  handleDelete: any; // TODO: change
 }) {
   console.log("questionId, part:", questionId, part);
 
@@ -55,7 +57,7 @@ export default function Actions({
           <path d="M3 21h3.75L19.81 7.94l-3.75-3.75L3 17.25V21zm18.71-16.29a1 1 0 000-1.42l-2-2a1 1 0 00-1.42 0l-2.12 2.12 3.75 3.75 2.12-2.12z" />
         </svg>
       </ActionButton>
-      <ActionButton>
+      <ActionButton onClick={() => handleDelete(part, questionId)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
