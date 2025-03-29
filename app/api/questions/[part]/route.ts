@@ -13,37 +13,35 @@ export async function GET(
 
     // ✅ Await params before using it
     const { part } = await context.params;
-    let result;
 
-    switch (part) {
-      case "1":
-        result = isRandom
-          ? await sql`SELECT * FROM fce.part1 ORDER BY RANDOM() LIMIT 1`
-          : await sql`SELECT * FROM fce.part1`;
-        break;
-      case "2":
-        result = isRandom
-          ? await sql`SELECT * FROM fce.part2 ORDER BY RANDOM() LIMIT 1`
-          : await sql`SELECT * FROM fce.part2`;
-        break;
-      case "3":
-        result = isRandom
-          ? await sql`SELECT * FROM fce.part3 ORDER BY RANDOM() LIMIT 1`
-          : await sql`SELECT * FROM fce.part3`;
-        break;
-      case "4":
-        result = isRandom
-          ? await sql`SELECT * FROM fce.part4 ORDER BY RANDOM() LIMIT 1`
-          : await sql`SELECT * FROM fce.part4`;
-        break;
-      default:
-        return NextResponse.json(
-          { error: "Invalid part number" },
-          { status: 400 }
-        );
+    if (!["1", "2", "3", "4"].includes(part)) {
+      return NextResponse.json(
+        { error: "Invalid part number" },
+        { status: 400 }
+      );
     }
 
-    return NextResponse.json(isRandom ? result[0] || null : result);
+    // ✅ Safe table name mapping
+    const tableMap: Record<string, string> = {
+      "1": "fce.part1",
+      "2": "fce.part2",
+      "3": "fce.part3",
+      "4": "fce.part4",
+    };
+
+    const tableName = tableMap[part];
+    const random = isRandom ? " ORDER BY RANDOM() LIMIT 1" : "";
+    const query = `SELECT * FROM ${tableName}${random}`;
+    const result = await sql(query);
+
+    if (result.length === 0) {
+      return NextResponse.json(
+        { error: "Question not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(result[0]);
   } catch (error) {
     console.error("Database query failed:", error);
     return NextResponse.json(

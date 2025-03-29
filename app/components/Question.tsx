@@ -2,7 +2,7 @@
 
 import React, { CSSProperties } from "react";
 import Image from "next/image";
-import styles from "../styles/speaking3.module.css";
+import styles from "@/styles/speaking3.module.css";
 import styled from "styled-components";
 import {
   QuestionStructures,

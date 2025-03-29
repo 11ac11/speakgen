@@ -6,6 +6,7 @@ export async function GET(
   context: { params: { part: string; id: string } }
 ) {
   try {
+    // ✅ Await params before using it
     const { part, id } = await context.params;
 
     if (!["1", "2", "3", "4"].includes(part)) {
@@ -24,12 +25,6 @@ export async function GET(
     };
 
     const tableName = tableMap[part];
-
-    // // ✅ Safe query: Table name interpolated, id parameterized
-    // const result = await sql`SELECT * FROM ${sql(
-    //   tableName
-    // )} WHERE id = ${id} LIMIT 1`;
-
     const query = `SELECT * FROM ${tableName} WHERE id = $1 LIMIT 1`;
     const result = await sql(query, [id]);
 
