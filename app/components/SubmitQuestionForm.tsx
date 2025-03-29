@@ -25,15 +25,19 @@ const FormRow = styled.div`
 
 const SubmitQuestionForm = ({
   question,
+  partParam,
+  levelParam,
 }: {
   question?: any; // TODO: change any type
+  partParam?: string | undefined;
+  levelParam?: string | undefined;
 }) => {
-  const [level, setLevel] = useState("");
-  const [part, setPart] = useState("");
-  const [statement, setStatement] = useState("");
+  const [level, setLevel] = useState(levelParam || "");
+  const [part, setPart] = useState(partParam || "");
+  const [statement, setStatement] = useState(question?.question || "");
   const [statementTwo, setStatementTwo] = useState("");
   const [prompts, setPrompts] = useState<string[]>([]);
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(question?.themes || []);
   const [loading, setLoading] = useState(false);
 
   const allFieldsCompleted = !!part && !!statement && tags.length > 0;

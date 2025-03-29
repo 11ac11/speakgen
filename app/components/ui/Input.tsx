@@ -39,10 +39,10 @@ const ErrorMessage = styled.span`
 // Types for the component's props
 type SecureInputProps = {
   className?: string;
-  label: string;
+  label?: string;
   type: "text" | "password" | "email" | "number" | "select"; // Support for more input types
   value: string;
-  name: string;
+  name?: string;
   onChange: (value: string) => void;
   onClick?: () => void;
   onBlur?: () => void;

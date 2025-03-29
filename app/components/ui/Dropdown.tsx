@@ -33,13 +33,12 @@ const DropdownOptions = styled.div`
   box-sizing: border-box;
   margin-top: 2px;
   max-height: 200px;
-  overflow: scroll;
+  overflow-y: auto;
 
   ul {
     list-style: none;
     padding: 0;
     margin: 0;
-    justify-content: center;
 
     li {
       padding: 0.5rem;
@@ -145,6 +144,7 @@ export const Dropdown = ({
 
   return (
     <DropdownWrap ref={ref} width={width}>
+      {label && <Label>{label}</Label>}
       <InputWrapper>
         <StyledInput
           onClick={toggleDropdown}

@@ -1,30 +1,38 @@
-import React from "react";
-import SubmitQuestionForm from "../../../components/SubmitQuestionForm";
+import SubmitQuestionForm from "@/app/components/SubmitQuestionForm";
 
 const getQuestion = async (part: string, id: string) => {
-  console.log("get question:");
-  // const res = await fetch(
-  //   `${process.env.NEXT_PUBLIC_API_URL}/api/questions/${part}/${id}`,
-  //   {
-  //     cache: "no-store", // Ensure fresh data
-  //   }
-  // );
+  console.log("Fetching question:", part, id);
 
-  // if (!res.ok) {
-  //   throw new Error("Failed to fetch question");
-  // }
+  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/questions/${part}/${id}`;
 
-  // return res.json();
+  const res = await fetch(apiUrl, { cache: "no-store" });
+  console.log("res:", res);
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch question");
+  }
+
+  return res.json();
 };
 
+// ✅ Fetch data at the top level instead of inside the component
 const EditQuestion = async ({
   params,
 }: {
   params: { id: string; part: string };
 }) => {
-  const question = await getQuestion(params.part, params.id);
+  const { part, id } = await params; // Destructure to ensure params are awaited
 
-  return <SubmitQuestionForm question={question} />;
+  const question = await getQuestion(part, id);
+  console.log("question:", question);
+
+  return (
+    <SubmitQuestionForm
+      question={question}
+      partParam={part}
+      levelParam={"B2"}
+    />
+  );
 };
 
 export default EditQuestion;
