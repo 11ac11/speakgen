@@ -29,7 +29,7 @@ export default function TabContainer({
         <>
           <Button
             text={"Create new question"}
-            onClick={() => router.push("/create-question")}
+            onClick={() => router.push("/question/new")}
           />
           <div>
             {/* <h1>My Questions</h1> */}

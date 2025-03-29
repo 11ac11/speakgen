@@ -23,7 +23,11 @@ const FormRow = styled.div`
   max-width: 250px;
 `;
 
-const SubmitQuestionForm = () => {
+const SubmitQuestionForm = ({
+  question,
+}: {
+  question?: any; // TODO: change any type
+}) => {
   const [level, setLevel] = useState("");
   const [part, setPart] = useState("");
   const [statement, setStatement] = useState("");

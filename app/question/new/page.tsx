@@ -1,5 +1,5 @@
 import React from "react";
-import SubmitQuestionForm from "./SubmitQuestionForm";
+import SubmitQuestionForm from "@/app/components/SubmitQuestionForm";
 
 const CreateQuestion = () => {
   return (

@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
 
 const ActionsWrap = styled.div`
@@ -35,9 +38,13 @@ export default function Actions({
 }) {
   console.log("questionId, part:", questionId, part);
 
+  const router = useRouter();
+
   return (
     <ActionsWrap className="actions">
-      <ActionButton>
+      <ActionButton
+        onClick={() => router.push(`/question/${part}/${questionId}`)}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
