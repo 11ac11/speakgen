@@ -2,10 +2,10 @@
 
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Input, Button, Dropdown, Pill } from "@/app/components/ui/index";
+import { Input, Button, Dropdown } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion } from "@/services/part1Service";
-import { THEME_VALUES_FOR_PILLS } from "@/constants";
+import TagSelector from "@/app/components/TagSelector";
 
 const StyledForm = styled.form`
   display: flex;
@@ -138,31 +138,9 @@ const SubmitQuestionForm = ({
           {part === "3" && (
             <Prompts prompts={prompts} setPrompts={setPrompts} />
           )}
-          <Input
-            name="tags"
-            label="Tags"
-            type="text"
-            value={tags.join(",")}
-            onChange={(string: string) =>
-              setTags(string.split(",").map((s) => s.trim()))
-            }
-            required
-            placeholder={"Environment, Travel, Technology"}
-          />
+          <TagSelector label="Tags" tags={tags} setTags={setTags} />
         </>
       )}
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
-        {THEME_VALUES_FOR_PILLS?.map((theme) => {
-          return (
-            <Pill
-              key={theme.value}
-              bgColor={theme.colors.bg}
-              textColor={theme.colors.text}
-              text={theme.label}
-            />
-          );
-        })}
-      </div>
       <Button
         onClick={() =>
           handleSubmit(new Event("submit") as unknown as React.FormEvent)

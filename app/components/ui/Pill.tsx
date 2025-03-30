@@ -1,14 +1,22 @@
 import { useMemo } from "react";
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 
 export default function Pill({
+  className,
   bgColor,
   textColor,
   text,
+  onClick,
+  showRemove,
+  style,
 }: {
+  className?: string;
   bgColor?: string;
   textColor?: string;
   text: string;
+  onClick?: () => void;
+  showRemove?: boolean;
+  style?: any; // todo change
 }) {
   const backgroundColor = bgColor
     ? bgColor
@@ -18,22 +26,65 @@ export default function Pill({
     : useMemo(() => generateColor(text, false, false), [text]);
 
   return (
-    <StyledPill style={{ backgroundColor, color: _textColor }}>
-      {text}
+    <StyledPill
+      style={{ ...style, backgroundColor, color: _textColor }}
+      onClick={onClick}
+      className={className}
+      $showHoverEffect={!!onClick}
+    >
+      <TextSection>{text}</TextSection>
+      {showRemove && (
+        <RemoveBox style={{ borderLeft: `1px solid ${_textColor}` }}>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            width="20"
+            height="20"
+          >
+            <path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.59 7.1 5.7a1 1 0 1 0-1.4 1.42L10.59 12l-4.9 4.88a1 1 0 1 0 1.42 1.42L12 13.41l4.88 4.89a1 1 0 0 0 1.42-1.42L13.41 12l4.89-4.88a1 1 0 0 0 0-1.42z" />
+          </svg>
+        </RemoveBox>
+      )}
     </StyledPill>
   );
 }
 
-// Styled component for the pill
-const StyledPill = styled.div`
-  display: inline-block;
+const TextSection = styled.div`
   padding: 4px 6px;
+`;
+
+const RemoveBox = styled.div`
+  padding: 0 0.25rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+
+  & svg {
+    width: 12px;
+  }
+`;
+
+// Styled component for the pill
+const StyledPill = styled.div<{ $showHoverEffect: boolean }>`
+  display: inline-block;
   border-radius: 3px;
   font-size: 12px;
   font-weight: bold;
   text-transform: capitalize;
   white-space: nowrap;
   margin-right: 5px;
+  display: inline-flex;
+  transition: filter 0.1s ease-in;
+  ${({ $showHoverEffect }) => css`
+    ${$showHoverEffect &&
+    `
+      &:hover {
+        filter: brightness(1.2);
+      }
+    `}
+  `}
 `;
 
 // Predefined colors for specific parts
