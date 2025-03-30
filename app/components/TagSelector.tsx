@@ -22,11 +22,20 @@ const TagsWrap = styled.div`
   margin-bottom: 30px;
 `;
 
+const SelectedTagsWrap = styled(TagsWrap)`
+  height: 30px;
+`;
+
+const PillsWrap = styled.div``;
+
 const NoTagsSelectedWrap = styled.div`
   background-color: #f1f1f1;
   border-radius: 5px;
-  padding: 0.5rem 1rem;
-  text-align: center;
+  padding: 0 1rem;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 30px;
 
   & > p {
@@ -70,26 +79,28 @@ export default function TagSelector({
     <Wrap>
       {label && <Label>{label}</Label>}
       {tags.length > 0 ? (
-        <TagsWrap style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
-          {tags.map((tag) => {
-            const fullTag = THEME_VALUES_FOR_PILLS.find(
-              (theme) => theme.value === tag
-            );
-            if (fullTag) {
-              return (
-                <Pill
-                  key={fullTag.value}
-                  bgColor={fullTag.colors.bg}
-                  textColor={fullTag.colors.text}
-                  text={fullTag.label}
-                  onClick={() => handleOnClickRemove(fullTag.value)}
-                  showRemove={true}
-                  style={{ cursor: "pointer" }}
-                />
+        <SelectedTagsWrap>
+          <PillsWrap>
+            {tags.map((tag) => {
+              const fullTag = THEME_VALUES_FOR_PILLS.find(
+                (theme) => theme.value === tag
               );
-            }
-          })}
-        </TagsWrap>
+              if (fullTag) {
+                return (
+                  <Pill
+                    key={fullTag.value}
+                    bgColor={fullTag.colors.bg}
+                    textColor={fullTag.colors.text}
+                    text={fullTag.label}
+                    onClick={() => handleOnClickRemove(fullTag.value)}
+                    showRemove={true}
+                    style={{ cursor: "pointer" }}
+                  />
+                );
+              }
+            })}
+          </PillsWrap>
+        </SelectedTagsWrap>
       ) : (
         <NoTagsSelectedWrap>
           <p>No tags selected</p>
