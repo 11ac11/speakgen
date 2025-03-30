@@ -12,7 +12,7 @@ const StyledForm = styled.form`
   flex-direction: column;
   gap: 30px;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
 `;
 
 const FormRow = styled.div`
@@ -20,7 +20,7 @@ const FormRow = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  max-width: 250px;
+  max-width: 300px;
 `;
 
 const SubmitQuestionForm = ({
