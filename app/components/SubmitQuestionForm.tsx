@@ -1,11 +1,13 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import styled from "styled-components";
 import { Input, Button, Dropdown } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion } from "@/services/part1Service";
 import TagSelector from "@/app/components/TagSelector";
+import { createClient } from "pexels";
 
 const StyledForm = styled.form`
   display: flex;
@@ -21,6 +23,16 @@ const FormRow = styled.div`
   align-items: center;
   justify-content: space-between;
   max-width: 300px;
+`;
+
+const ImagesContainer = styled.div`
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+
+  & > * {
+    border-radius: 5px;
+  }
 `;
 
 const SubmitQuestionForm = ({
@@ -39,6 +51,8 @@ const SubmitQuestionForm = ({
   const [prompts, setPrompts] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>(question?.themes || []);
   const [loading, setLoading] = useState(false);
+  const [imageOne, setImageOne] = useState<any>(""); // TODO: fix any types
+  const [imageTwo, setImageTwo] = useState<any>("");
 
   const allFieldsCompleted = !!part && !!statement && tags.length > 0;
 
@@ -56,6 +70,16 @@ const SubmitQuestionForm = ({
         return "";
     }
   };
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      const res = await fetch("/api/pexels?query=beach");
+      const data = await res.json();
+      setImageOne(data.photos[0]);
+      setImageTwo(data.photos[1]);
+    };
+    fetchImages();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent page reload
@@ -129,10 +153,34 @@ const SubmitQuestionForm = ({
             />
           )}
           {part === "2" && (
-            <>
-              <span>upload image 1</span>
-              <span>upload image 2</span>
-            </>
+            <ImagesContainer>
+              {imageOne ? (
+                <>
+                  <Image
+                    src={imageOne?.src?.landscape}
+                    width={200}
+                    height={150}
+                    alt={imageOne?.alt || ""}
+                  />
+                  <button onClick={() => setImageOne(null)}>remove</button>
+                </>
+              ) : (
+                <span>upload image 1</span>
+              )}
+              {imageTwo ? (
+                <>
+                  <Image
+                    src={imageTwo?.src?.landscape}
+                    width={200}
+                    height={150}
+                    alt={imageOne?.alt || ""}
+                  />
+                  <button onClick={() => setImageTwo(null)}>remove</button>
+                </>
+              ) : (
+                <span>upload image 2</span>
+              )}{" "}
+            </ImagesContainer>
           )}
 
           {part === "3" && (
