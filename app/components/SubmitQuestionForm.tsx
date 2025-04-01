@@ -7,7 +7,7 @@ import { Input, Button, Dropdown } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion } from "@/services/part1Service";
 import TagSelector from "@/app/components/TagSelector";
-import ImageSelector from "./ImageSelector";
+import ImageSelectors from "./ImageSelector";
 
 const StyledForm = styled.form`
   display: flex;
@@ -142,8 +142,7 @@ const SubmitQuestionForm = ({
               placeholder={generatePlaceholderByPart()}
             />
           )}
-          {part === "2" && <ImageSelector imageOneUrl="" imageTwoUrl="" />}
-
+          {part === "2" && <ImageSelectors imageOneUrl="" imageTwoUrl="" />}
           {part === "3" && (
             <Prompts prompts={prompts} setPrompts={setPrompts} />
           )}

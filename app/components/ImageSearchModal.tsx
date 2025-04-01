@@ -32,13 +32,13 @@ const Modal = styled.div`
   justify-content: center;
   align-items: center;
   border-radius: 5px;
-  padding: 1rem;
+  padding: 2rem;
 `;
 
 const XIcon = styled.svg`
   position: absolute;
-  right: 5px;
-  top: 5px;
+  right: 15px;
+  top: 15px;
   cursor: pointer;
 `;
 
@@ -56,12 +56,10 @@ const ImageGrid = styled.div`
 `;
 
 const ImageSearchModal = ({
-  setImageOne,
-  setImageTwo,
+  setImage,
   closeModal,
 }: {
-  setImageOne: React.Dispatch<any>;
-  setImageTwo: React.Dispatch<any>;
+  setImage: React.Dispatch<any>;
   closeModal: () => void;
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -117,7 +115,11 @@ const ImageSearchModal = ({
               // TODO: fix any type
               if (image) {
                 return (
-                  <div style={{ height: "100px", width: "100px" }} key={index}>
+                  <div
+                    style={{ height: "100px", width: "100px" }}
+                    key={index}
+                    onClick={() => setImage(image)}
+                  >
                     <Image
                       src={image.src.medium}
                       style={{
