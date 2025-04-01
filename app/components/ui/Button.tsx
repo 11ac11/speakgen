@@ -45,6 +45,7 @@ type ButtonProps = {
   isAsync?: boolean; // Determines whether the button is asynchronous
   disabled?: boolean; // Optional prop to manually disable the button
   secondary?: boolean; // Optional to use secondary styles
+  type?: "button" | "submit" | "reset" | undefined;
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -54,6 +55,7 @@ const Button: React.FC<ButtonProps> = ({
   isAsync = false,
   disabled = false,
   secondary,
+  type,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -84,6 +86,7 @@ const Button: React.FC<ButtonProps> = ({
         disabled={isLoading || disabled}
         className={isLoading ? "loading" : ""}
         $secondary={secondary}
+        type={type}
       >
         {isLoading ? loadingText : text}
       </StyledButton>
