@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import styled from "styled-components";
 import { Input, Button, Dropdown } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion } from "@/services/part1Service";
 import TagSelector from "@/app/components/TagSelector";
-import ImageSelectors from "./ImageSelector";
+import ImageSelectors from "./ImageSelectors";
 
 const StyledForm = styled.form`
   display: flex;
@@ -23,16 +22,6 @@ const FormRow = styled.div`
   align-items: center;
   justify-content: space-between;
   max-width: 300px;
-`;
-
-const ImagesContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
-
-  & > * {
-    border-radius: 5px;
-  }
 `;
 
 const SubmitQuestionForm = ({
@@ -51,8 +40,12 @@ const SubmitQuestionForm = ({
   const [prompts, setPrompts] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>(question?.themes || []);
   const [loading, setLoading] = useState(false);
-  const [imageOneUrl, setImageOneUrl] = useState<string>("");
-  const [imageTwoUrl, setImageTwoUrl] = useState<string>("");
+  const [imageOneId, setImageOneId] = useState<number>(
+    question?.image_one || ""
+  );
+  const [imageTwoId, setImageTwoId] = useState<number>(
+    question?.image_two || ""
+  );
 
   const allFieldsCompleted = !!part && !!statement && tags.length > 0;
 
@@ -77,11 +70,15 @@ const SubmitQuestionForm = ({
 
     setLoading(true);
     const requestData = {
+      owner_id: "2", // TODO: make dynamic
       question: statement,
       themes: tags,
-      owner_id: "2", // TODO: make dynamic
       public: true,
       part,
+      ...(part === "2" && {
+        image_one: imageOneId,
+        image_two: imageTwoId,
+      }),
     };
 
     try {
@@ -142,7 +139,14 @@ const SubmitQuestionForm = ({
               placeholder={generatePlaceholderByPart()}
             />
           )}
-          {part === "2" && <ImageSelectors imageOneUrl="" imageTwoUrl="" />}
+          {part === "2" && (
+            <ImageSelectors
+              imageOneId={imageOneId}
+              setImageOneId={setImageOneId}
+              imageTwoId={imageTwoId}
+              setImageTwoId={setImageTwoId}
+            />
+          )}
           {part === "3" && (
             <Prompts prompts={prompts} setPrompts={setPrompts} />
           )}

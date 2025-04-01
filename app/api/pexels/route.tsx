@@ -5,7 +5,7 @@ const pexels = createClient(process.env.PEXELS_API_KEY as string);
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const query = searchParams.get("query") || "nature"; // Default query
+  const query = searchParams.get("query") || "";
 
   try {
     const response = await pexels.photos.search({ query, per_page: 10 });

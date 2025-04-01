@@ -33,7 +33,7 @@ const LoadingCircle = styled.div`
   max-width: 80px;
   aspect-ratio: 1;
   border: 5px solid grey;
-  border-radius: 50%;
+  border-radius: 100%;
   border-top: 5px solid black;
   animation: ${spinAnimation} 1s linear infinite;
   margin: 1rem 0;

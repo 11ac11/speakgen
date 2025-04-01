@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import styled from "styled-components";
 import ImageSearchModal from "./ImageSearchModal";
 import { Label } from "./ui";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 const Wrap = styled.div`
   display: flex;
@@ -16,7 +17,7 @@ const ImagesContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
 
-  & div,
+  & > div,
   img {
     border-radius: 5px;
   }
@@ -58,12 +59,14 @@ interface ImageSelectorProps {
   image: any; // TODO: Replace `any` with a proper type
   setImage: (image: any) => void;
   openModal: (setImage: (image: any) => void) => void;
+  loading: boolean;
 }
 
 const ImageSelector: React.FC<ImageSelectorProps> = ({
   image,
   setImage,
   openModal,
+  loading,
 }) =>
   image ? (
     <div style={{ position: "relative", width: "45%" }}>
@@ -88,6 +91,8 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
         <path d="M18.3 5.7a1 1 0 0 0-1.4 0L12 10.59 7.1 5.7a1 1 0 1 0-1.4 1.42L10.59 12l-4.9 4.88a1 1 0 1 0 1.42 1.42L12 13.41l4.88 4.89a1 1 0 0 0 1.42-1.42L13.41 12l4.89-4.88a1 1 0 0 0 0-1.42z" />
       </XIcon>
     </div>
+  ) : loading ? (
+    <LoadingSpinner />
   ) : (
     <EmptyImageContainer onClick={() => openModal(setImage)}>
       Select image
@@ -95,23 +100,74 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
   );
 
 const ImageSelectors = ({
-  imageOneUrl,
-  imageTwoUrl,
+  imageOneId,
+  setImageOneId,
+  imageTwoId,
+  setImageTwoId,
 }: {
-  imageOneUrl: string | undefined;
-  imageTwoUrl: string | undefined;
+  imageOneId: number | undefined;
+  imageTwoId: number | undefined;
+  setImageOneId: any; // TODO: fix any
+  setImageTwoId: any;
 }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedImageSetter, setSelectedImageSetter] = useState<
     ((image: any) => void) | null
   >(null);
-  const [imageOne, setImageOne] = useState<any>(""); // TODO: Fix `any`
-  const [imageTwo, setImageTwo] = useState<any>("");
+  const [imageOne, setImageOne] = useState<any>(null); // TODO: Fix `any`
+  const [imageTwo, setImageTwo] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(!!(imageOneId && imageTwoId));
 
   const openModal = (setImage: (image: any) => void) => {
     setSelectedImageSetter(() => setImage);
     setShowModal(true);
   };
+
+  useEffect(() => {
+    const fetchImage = async (id: number) => {
+      const res = await fetch(`/api/pexels/${id}`);
+      const data = await res.json();
+      return data;
+    };
+
+    const fetchData = async () => {
+      try {
+        if (imageOneId) {
+          const imageOneData = await fetchImage(imageOneId);
+          setImageOne(imageOneData);
+          console.log("imageOneData:", imageOneData);
+        }
+
+        if (imageTwoId) {
+          const imageTwoData = await fetchImage(imageTwoId);
+          setImageTwo(imageTwoData);
+          console.log("imageTwoData:", imageTwoData);
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [imageOneId, imageTwoId]);
+
+  useEffect(() => {
+    if (!!imageOne) {
+      if (imageOne?.id !== imageOneId) {
+        setImageOneId(imageOne.id);
+      }
+    }
+  }, [imageOne]);
+
+  useEffect(() => {
+    if (!!imageTwo) {
+      if (imageTwo?.id !== imageTwoId) {
+        setImageTwoId(imageTwo.id);
+      }
+    }
+  }, [imageTwo]);
 
   return (
     <>
@@ -128,11 +184,13 @@ const ImageSelectors = ({
             image={imageOne}
             setImage={setImageOne}
             openModal={openModal}
+            loading={loading}
           />
           <ImageSelector
             image={imageTwo}
             setImage={setImageTwo}
             openModal={openModal}
+            loading={loading}
           />
         </ImagesContainer>
       </Wrap>

@@ -77,10 +77,17 @@ export async function POST(
       }
 
       case "2": {
-        const { question, themes, owner_id, public: isPublic } = body;
+        const {
+          question,
+          themes,
+          owner_id,
+          public: isPublic,
+          image_one,
+          image_two,
+        } = body;
         query = sql`
-          INSERT INTO fce.part2 (question, themes, owner_id, public)
-          VALUES (${question}, ${themes}, ${owner_id}, ${isPublic})
+          INSERT INTO fce.part2 (question, themes, owner_id, public, image_one, image_two)
+          VALUES (${question}, ${themes}, ${owner_id}, ${isPublic}, ${image_one}, ${image_two})
           RETURNING *;
         `;
         break;

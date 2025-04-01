@@ -65,16 +65,6 @@ const ImageSearchModal = ({
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [imageResults, setImageResults] = useState([]);
 
-  // useEffect(() => {
-  //   const fetchImages = async () => {
-  //     const res = await fetch("/api/pexels?query=beach");
-  //     const data = await res.json();
-  //     setImageOne(data.photos[0]);
-  //     setImageTwo(data.photos[1]);
-  //   };
-  //   fetchImages();
-  // }, []);
-
   const debouncedSearchTerm = useDebounce(searchQuery, 300); // 300ms delay
 
   useEffect(() => {
@@ -88,6 +78,12 @@ const ImageSearchModal = ({
       fetchImages();
     }
   }, [debouncedSearchTerm]);
+
+  const handleOnClick = (image) => {
+    setImage(image);
+    closeModal();
+    setSearchQuery("");
+  };
 
   return (
     <>
@@ -118,7 +114,7 @@ const ImageSearchModal = ({
                   <div
                     style={{ height: "100px", width: "100px" }}
                     key={index}
-                    onClick={() => setImage(image)}
+                    onClick={() => handleOnClick(image)}
                   >
                     <Image
                       src={image.src.medium}
