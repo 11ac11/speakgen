@@ -18,9 +18,9 @@ async function getUser(email: string): Promise<User | undefined> {
   }
 }
 
-export const { handlers, auth, signIn, signOut } = NextAuth({
+export const authOptions = {
   ...authConfig,
-  debug: true,
+  debug: process.env.NODE_ENV === "development", // Only enable debug in dev mode
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -39,33 +39,38 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!parsedCredentials.success) {
           console.error("Validation failed:", parsedCredentials.error.errors);
-          return null;
+          throw new Error("Invalid email or password.");
         }
 
         const { email, password } = parsedCredentials.data;
-        console.log("email:", email);
-        const user = await getUser(email);
+        console.log("Attempting login for:", email);
 
+        const user = await getUser(email);
         if (!user) {
           console.error("User not found:", email);
-          return null;
+          throw new Error("Invalid email or password.");
         }
 
         // Verify password
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
           console.error("Invalid password for:", email);
-          return null;
+          throw new Error("Invalid email or password.");
         }
 
-        // Omit password before returning user
-        const { password: _, ...userWithoutPassword } = user;
-        return userWithoutPassword;
+        // Return user (omit password)
+        return {
+          id: String(user.id), // Ensure `id` is a string
+          email: user.email,
+        };
       },
     }),
   ],
   session: {
-    strategy: "jwt", // Uses JSON Web Tokens instead of database sessions
+    strategy: "jwt", // Use JSON Web Tokens for session management
   },
   secret: process.env.AUTH_SECRET, // Required for JWT encryption
-});
+};
+
+// Export handlers for Next.js API routes
+export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
