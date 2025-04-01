@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { Label } from "./Label";
 
 const Wrap = styled.div<{ width: string | undefined }>`
   display: flex;
   flex-direction: column;
   width: ${({ width }) => (width ? width : "100%")};
-`;
-
-const Label = styled.label`
-  margin-bottom: 10px;
-  font-size: 18px;
 `;
 
 const StyledInput = styled.input<{ error: string | undefined }>`
@@ -103,7 +99,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
 
   return (
     <Wrap className={className} width={width}>
-      {label && <Label>{label}</Label>}
+      {label && <Label text={label} />}
       <StyledInput
         type={type}
         value={value}

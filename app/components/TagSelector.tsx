@@ -3,16 +3,11 @@
 import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
 import styled from "styled-components";
 import { THEME_VALUES_FOR_PILLS } from "@/constants";
-import { Pill } from "@/app/components/ui/index";
+import { Pill, Label } from "@/app/components/ui/index";
 
 const Wrap = styled.div`
   display: flex;
   flex-direction: column;
-`;
-
-const Label = styled.label`
-  margin-bottom: 10px;
-  font-size: 18px;
 `;
 
 const TagsWrap = styled.div`
@@ -40,7 +35,7 @@ const NoTagsSelectedWrap = styled.div`
 
   & > p {
     font-size: 14px;
-    color: rgb(161, 161, 161);
+    color: #a1a1a1;
   }
 `;
 
@@ -77,7 +72,7 @@ export default function TagSelector({
 
   return (
     <Wrap>
-      {label && <Label>{label}</Label>}
+      {label && <Label text={label} />}
       {tags.length > 0 ? (
         <SelectedTagsWrap>
           <PillsWrap>
