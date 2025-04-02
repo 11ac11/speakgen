@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+
 import styled from "styled-components";
 import { Input, Button, Dropdown } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
@@ -33,6 +35,8 @@ const SubmitQuestionForm = ({
   partParam?: string | undefined;
   levelParam?: string | undefined;
 }) => {
+  const router = useRouter();
+
   const [level, setLevel] = useState(levelParam || "");
   const [part, setPart] = useState(partParam || "");
   const [statement, setStatement] = useState(question?.question || "");
@@ -71,7 +75,7 @@ const SubmitQuestionForm = ({
     setLoading(true);
     const requestData = {
       owner_id: "2", // TODO: make dynamic
-      question: statement,
+      statement: statement,
       themes: tags,
       public: true,
       part,
@@ -79,17 +83,19 @@ const SubmitQuestionForm = ({
         image_one: imageOneId,
         image_two: imageTwoId,
       }),
+      ...(part === "3" && {
+        prompts: prompts,
+      }),
     };
 
     try {
       const res = await createQuestion(part, requestData);
       console.log("res:", res);
-      setStatement("");
-      setTags([]);
     } catch (error) {
       console.error("Error submitting question:", error);
     } finally {
       setLoading(false);
+      router.push("/dashboard");
     }
   };
 

@@ -67,10 +67,10 @@ export async function POST(
 
     switch (part) {
       case "1": {
-        const { question, themes, owner_id, public: isPublic } = body;
+        const { statement, themes, owner_id, public: isPublic } = body;
         query = sql`
-          INSERT INTO fce.part1 (question, themes, owner_id, public)
-          VALUES (${question}, ${themes}, ${owner_id}, ${isPublic})
+          INSERT INTO fce.part1 (statement, themes, owner_id, public)
+          VALUES (${statement}, ${themes}, ${owner_id}, ${isPublic})
           RETURNING *;
         `;
         break;
@@ -78,7 +78,7 @@ export async function POST(
 
       case "2": {
         const {
-          question,
+          statement,
           themes,
           owner_id,
           public: isPublic,
@@ -86,28 +86,28 @@ export async function POST(
           image_two,
         } = body;
         query = sql`
-          INSERT INTO fce.part2 (question, themes, owner_id, public, image_one, image_two)
-          VALUES (${question}, ${themes}, ${owner_id}, ${isPublic}, ${image_one}, ${image_two})
+          INSERT INTO fce.part2 (statement, themes, owner_id, public, image_one, image_two)
+          VALUES (${statement}, ${themes}, ${owner_id}, ${isPublic}, ${image_one}, ${image_two})
           RETURNING *;
         `;
         break;
       }
 
       case "3": {
-        const { question, prompts, themes, owner_id, public: isPublic } = body;
+        const { statement, prompts, themes, owner_id, public: isPublic } = body;
         query = sql`
-          INSERT INTO fce.part3 (question, prompts, themes, owner_id, public)
-          VALUES (${question}, ${prompts}, ${themes}, ${owner_id}, ${isPublic})
+          INSERT INTO fce.part3 (statement, prompts, themes, owner_id, public)
+          VALUES (${statement}, ${prompts}, ${themes}, ${owner_id}, ${isPublic})
           RETURNING *;
         `;
         break;
       }
 
       case "4": {
-        const { question, themes, owner_id, public: isPublic } = body;
+        const { statement, themes, owner_id, public: isPublic } = body;
         query = sql`
-          INSERT INTO fce.part4 (question, themes, owner_id, public)
-          VALUES (${question}, ${themes}, ${owner_id}, ${isPublic})
+          INSERT INTO fce.part4 (statement, themes, owner_id, public)
+          VALUES (${statement}, ${themes}, ${owner_id}, ${isPublic})
           RETURNING *;
         `;
         break;
