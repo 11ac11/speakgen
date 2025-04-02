@@ -15,7 +15,7 @@ import {
 interface Question {
   part: string;
   id: number;
-  question: string;
+  statement: string;
   themes: string[] | null;
   owner_id: string;
   public: boolean;
@@ -118,7 +118,7 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
       },
       {
         header: "Question",
-        accessorKey: "question",
+        accessorKey: "statement",
         size: 400,
       },
       {

@@ -15,16 +15,16 @@ export async function GET(req: NextRequest) {
     }
 
     const result = await sql`
-      SELECT '1' AS part, id, question, themes, owner_id, public FROM fce.part1 WHERE owner_id = 2
+      SELECT '1' AS part, id, statement, themes, owner_id, public FROM fce.part1 WHERE owner_id = 2
       UNION ALL
-      SELECT '2' AS part, id, question, themes, owner_id, public FROM fce.part2 WHERE owner_id = 2
+      SELECT '2' AS part, id, statement, themes, owner_id, public FROM fce.part2 WHERE owner_id = 2
+      UNION ALL
+      SELECT '3' AS part, id, statement, themes, owner_id, public FROM fce.part3 WHERE owner_id = 2
+      UNION ALL
+      SELECT '4' AS part, id, statement, themes, owner_id, public FROM fce.part4 WHERE owner_id = 2
     `;
 
     /* will need to add below when implemented
-      SELECT '3' AS part, id, question, themes, owner_id, public FROM fce.part3 WHERE owner_id = ${ownerId}
-      UNION ALL
-      SELECT '4' AS part, id, question, themes, owner_id, public FROM fce.part4 WHERE owner_id = ${ownerId}
-      UNION ALL
             ORDER BY part, id; // maybe here is an issue?
     */
 

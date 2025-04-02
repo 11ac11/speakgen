@@ -89,10 +89,10 @@ const StyledPill = styled.div<{ $showHoverEffect: boolean }>`
 
 // Predefined colors for specific parts
 const PREDEFINED_COLORS: { [key: string]: { bg: string; text: string } } = {
-  "part 1": { bg: "#b3efb2", text: "#1f3b1e" }, // Light Green bg, Dark Green text
-  "part 2": { bg: "#7a9e7e", text: "#1e2b20" }, // Muted Green bg, Darker Green text
-  "part 3": { bg: "#31493c", text: "#dff3e2" }, // Dark Green bg, Light text
-  "part 4": { bg: "#356240", text: "#d7f5de" }, // Dark Green bg, Light text
+  "part 1": { bg: "#b3efb2", text: "#1f3b1e" },
+  "part 2": { bg: "#bde69a", text: "#dff3e2" },
+  "part 3": { bg: "#93ce60", text: "#182720" },
+  "part 4": { bg: "#7a9e7e", text: "#1e2b20" },
 };
 
 // Function to generate color based on text

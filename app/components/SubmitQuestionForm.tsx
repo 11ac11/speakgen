@@ -39,7 +39,7 @@ const SubmitQuestionForm = ({
 
   const [level, setLevel] = useState(levelParam || "");
   const [part, setPart] = useState(partParam || "");
-  const [statement, setStatement] = useState(question?.question || "");
+  const [statement, setStatement] = useState(question?.statement || "");
   const [statementTwo, setStatementTwo] = useState("");
   const [prompts, setPrompts] = useState<string[]>([]);
   const [tags, setTags] = useState<string[]>(question?.themes || []);

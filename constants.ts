@@ -93,21 +93,21 @@ export const PART_VALUES_FOR_PILLS: {
   {
     value: "part1",
     label: "Part 1",
-    colors: { bg: "#b3efb2", text: "#1f3b1e" },
+    colors: { bg: "#b3efb2", text: "#1e2b20" },
   },
   {
     value: "part2",
     label: "Part 2",
-    colors: { bg: "#A3B18A", text: "#1e2b20" },
+    colors: { bg: "#7a9e7e", text: "#f5fffa" },
   },
   {
     value: "part3",
     label: "Part 3",
-    colors: { bg: "#31493c", text: "#dff3e2" },
+    colors: { bg: "#cae68d", text: "#1e2b20" },
   },
   {
     value: "part4",
     label: "Part 4",
-    colors: { bg: "#D2D9CC", text: "#344E41" },
+    colors: { bg: "#31493c", text: "#f5fffa" },
   },
 ];
