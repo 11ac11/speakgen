@@ -8,7 +8,7 @@ export async function GET(req: Request) {
   const query = searchParams.get("query") || "";
 
   try {
-    const response = await pexels.photos.search({ query, per_page: 10 });
+    const response = await pexels.photos.search({ query, per_page: 20 });
     return NextResponse.json(response);
   } catch (error) {
     return NextResponse.json(

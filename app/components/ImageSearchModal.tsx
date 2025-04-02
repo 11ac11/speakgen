@@ -3,8 +3,18 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import styled from "styled-components";
-import { Input, Button } from "@/app/components/ui/index";
+import { Input } from "@/app/components/ui/index";
 import useDebounce from "../utils/hooks/useDebounce";
+
+const ModalShading = styled.div`
+  height: 200vh;
+  width: 200vw;
+  position: absolute;
+  left: 0;
+  top: 0;
+  background-color: #00000055;
+  z-index: 5;
+`;
 
 const ModalWrap = styled.div`
   display: flex;
@@ -15,11 +25,11 @@ const ModalWrap = styled.div`
   position: absolute;
   left: 0;
   top: 0;
-  background-color: #00000055;
-  z-index: 5;
+  z-index: 10;
 `;
 
 const Modal = styled.div`
+  position: absolute;
   display: flex;
   flex-direction: column;
   min-width: 500px;
@@ -87,6 +97,7 @@ const ImageSearchModal = ({
 
   return (
     <>
+      <ModalShading />
       <ModalWrap>
         <Modal>
           <XIcon
@@ -132,7 +143,7 @@ const ImageSearchModal = ({
               }
             })}
           </ImageGrid>
-          <Button onClick={closeModal} text="Confirm image" type="button" />
+          {/* <Button onClick={closeModal} text="Confirm image" type="button" /> */}
         </Modal>
       </ModalWrap>
     </>

@@ -6,6 +6,7 @@ import styled from "styled-components";
 import ImageSearchModal from "./ImageSearchModal";
 import { Label } from "./ui";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import useDisableScroll from "../utils/hooks/useDisableScroll";
 
 const Wrap = styled.div`
   display: flex;
@@ -117,6 +118,8 @@ const ImageSelectors = ({
   const [imageOne, setImageOne] = useState<any>(null); // TODO: Fix `any`
   const [imageTwo, setImageTwo] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(!!(imageOneId && imageTwoId));
+
+  useDisableScroll(showModal);
 
   const openModal = (setImage: (image: any) => void) => {
     setSelectedImageSetter(() => setImage);
