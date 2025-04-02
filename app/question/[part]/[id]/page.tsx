@@ -1,4 +1,4 @@
-import SubmitQuestionForm from "@/app/components/SubmitQuestionForm";
+import QuestionForm from "@/app/components/QuestionForm";
 
 const getQuestion = async (part: string, id: string) => {
   console.log("Fetching question:", part, id);
@@ -27,11 +27,7 @@ const EditQuestion = async ({
   console.log("question:", question);
 
   return (
-    <SubmitQuestionForm
-      question={question}
-      partParam={part}
-      levelParam={"B2"}
-    />
+    <QuestionForm question={question} partParam={part} levelParam={"B2"} />
   );
 };
 

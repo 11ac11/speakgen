@@ -10,20 +10,20 @@ const Wrap = styled.div`
   flex-direction: column;
 `;
 
-const TagsWrap = styled.div`
+const ThemesWrap = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   margin-bottom: 30px;
 `;
 
-const SelectedTagsWrap = styled(TagsWrap)`
+const SelectedThemesWrap = styled(ThemesWrap)`
   height: 30px;
 `;
 
 const PillsWrap = styled.div``;
 
-const NoTagsSelectedWrap = styled.div`
+const NoThemesSelectedWrap = styled.div`
   background-color: #f1f1f1;
   border-radius: 5px;
   padding: 0 1rem;
@@ -39,46 +39,46 @@ const NoTagsSelectedWrap = styled.div`
   }
 `;
 
-export default function TagSelector({
+export default function ThemeSelector({
   label,
-  tags,
-  setTags,
+  themes,
+  setThemes,
 }: {
   label?: string;
-  tags: string[];
-  setTags: Dispatch<SetStateAction<string[]>>;
+  themes: string[];
+  setThemes: Dispatch<SetStateAction<string[]>>;
 }) {
   const [availableTags, setAvailableTags] = useState<any[]>([]); // TODO: fix any
 
   useEffect(() => {
     const filteredTags = THEME_VALUES_FOR_PILLS.filter(
-      (theme) => !tags.includes(theme.value)
+      (theme) => !themes.includes(theme.value)
     );
     setAvailableTags(filteredTags);
-  }, [tags]);
+  }, [themes]);
 
-  const handleOnClickAdd = (theme: string) => {
-    if (tags.includes(theme)) {
+  const handleOnClickAdd = (newTheme: string) => {
+    if (themes.includes(newTheme)) {
       return;
     }
-    setTags([...tags, theme]);
+    setThemes([...themes, newTheme]);
   };
 
   const handleOnClickRemove = (theme: string) => {
-    const updatedTags = tags.filter((tag) => tag !== theme);
+    const updatedTags = themes.filter((tag) => tag !== theme);
 
-    setTags(updatedTags);
+    setThemes(updatedTags);
   };
 
   return (
     <Wrap>
       {label && <Label text={label} />}
-      {tags.length > 0 ? (
-        <SelectedTagsWrap>
+      {themes.length > 0 ? (
+        <SelectedThemesWrap>
           <PillsWrap>
-            {tags.map((tag) => {
+            {themes.map((theme) => {
               const fullTag = THEME_VALUES_FOR_PILLS.find(
-                (theme) => theme.value === tag
+                (storedTheme) => storedTheme.value === theme
               );
               if (fullTag) {
                 return (
@@ -95,13 +95,13 @@ export default function TagSelector({
               }
             })}
           </PillsWrap>
-        </SelectedTagsWrap>
+        </SelectedThemesWrap>
       ) : (
-        <NoTagsSelectedWrap>
-          <p>No tags selected</p>
-        </NoTagsSelectedWrap>
+        <NoThemesSelectedWrap>
+          <p>No themes selected</p>
+        </NoThemesSelectedWrap>
       )}
-      <TagsWrap>
+      <ThemesWrap>
         {availableTags?.map((theme) => {
           return (
             <Pill
@@ -114,7 +114,7 @@ export default function TagSelector({
             />
           );
         })}
-      </TagsWrap>
+      </ThemesWrap>
     </Wrap>
   );
 }

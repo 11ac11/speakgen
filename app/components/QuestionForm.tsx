@@ -7,7 +7,7 @@ import styled from "styled-components";
 import { Input, Button, Dropdown } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion } from "@/services/part1Service";
-import TagSelector from "@/app/components/TagSelector";
+import ThemeSelector from "@/app/components/ThemeSelector";
 import ImageSelectors from "./ImageSelectors";
 
 const StyledForm = styled.form`
@@ -26,7 +26,7 @@ const FormRow = styled.div`
   max-width: 300px;
 `;
 
-const SubmitQuestionForm = ({
+const QuestionForm = ({
   question,
   partParam,
   levelParam,
@@ -41,8 +41,8 @@ const SubmitQuestionForm = ({
   const [part, setPart] = useState(partParam || "");
   const [statement, setStatement] = useState(question?.statement || "");
   const [statementTwo, setStatementTwo] = useState("");
-  const [prompts, setPrompts] = useState<string[]>([]);
-  const [tags, setTags] = useState<string[]>(question?.themes || []);
+  const [prompts, setPrompts] = useState<string[]>(question?.prompts || []);
+  const [themes, setThemes] = useState<string[]>(question?.themes || []);
   const [loading, setLoading] = useState(false);
   const [imageOneId, setImageOneId] = useState<number>(
     question?.image_one || ""
@@ -51,7 +51,7 @@ const SubmitQuestionForm = ({
     question?.image_two || ""
   );
 
-  const allFieldsCompleted = !!part && !!statement && tags.length > 0;
+  const allFieldsCompleted = !!part && !!statement && themes.length > 0;
 
   const generatePlaceholderByPart = () => {
     switch (part) {
@@ -76,7 +76,7 @@ const SubmitQuestionForm = ({
     const requestData = {
       owner_id: "2", // TODO: make dynamic
       statement: statement,
-      themes: tags,
+      themes: themes,
       public: true,
       part,
       ...(part === "2" && {
@@ -156,7 +156,7 @@ const SubmitQuestionForm = ({
           {part === "3" && (
             <Prompts prompts={prompts} setPrompts={setPrompts} />
           )}
-          <TagSelector label="Tags" tags={tags} setTags={setTags} />
+          <ThemeSelector label="Themes" themes={themes} setThemes={setThemes} />
         </>
       )}
       <Button
@@ -171,4 +171,4 @@ const SubmitQuestionForm = ({
   );
 };
 
-export default SubmitQuestionForm;
+export default QuestionForm;

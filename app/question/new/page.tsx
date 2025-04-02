@@ -1,10 +1,10 @@
 import React from "react";
-import SubmitQuestionForm from "@/app/components/SubmitQuestionForm";
+import QuestionForm from "@/app/components/QuestionForm";
 
 const CreateQuestion = () => {
   return (
     <>
-      <SubmitQuestionForm />
+      <QuestionForm />
     </>
   );
 };
