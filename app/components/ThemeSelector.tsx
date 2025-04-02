@@ -14,11 +14,11 @@ const ThemesWrap = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  margin-bottom: 30px;
 `;
 
 const SelectedThemesWrap = styled(ThemesWrap)`
   height: 30px;
+  margin-bottom: 30px;
 `;
 
 const PillsWrap = styled.div``;

@@ -16,6 +16,7 @@ const StyledForm = styled.form`
   gap: 30px;
   width: 100%;
   max-width: 600px;
+  margin-bottom: 60px;
 `;
 
 const FormRow = styled.div`
@@ -36,6 +37,7 @@ const QuestionForm = ({
   levelParam?: string | undefined;
 }) => {
   const router = useRouter();
+  const isEdit = !!question;
 
   const [level, setLevel] = useState(levelParam || "");
   const [part, setPart] = useState(partParam || "");
@@ -163,7 +165,7 @@ const QuestionForm = ({
         onClick={() =>
           handleSubmit(new Event("submit") as unknown as React.FormEvent)
         }
-        text={loading ? "Submitting..." : "Create Question"}
+        text={loading ? "Saving..." : isEdit ? "Update" : "Save"}
         isAsync={true}
         disabled={!allFieldsCompleted || loading}
       />
