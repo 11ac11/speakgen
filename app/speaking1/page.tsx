@@ -4,7 +4,7 @@ import React from "react";
 //   getRandomPartOneQuestion,
 // } from "../../services/part1Service";
 // import PartOneQuestion from "@/app/components/PartOneQuestion";
-import QuestionContainer from "@/app/components/QuestionContainer2";
+import QuestionContainer from "@/app/components/QuestionContainer";
 // import { getRandomPartOneQuestion } from "../../services/part1Service";
 
 export default async function SpeakingOne() {
