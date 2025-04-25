@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Handle GET request: Fetch a specific question by id
 export async function GET(
   req: NextRequest,
-  context: { params: { part: string; id: string } }
+  context: { params: Promise<{ part: string; id: string }> }
 ) {
   try {
     const { part, id } = await context.params;
@@ -102,7 +102,7 @@ export async function GET(
 // Handle DELETE request: Delete a specific question by id
 export async function DELETE(
   req: NextRequest,
-  context: { params: { part: string; id: string } }
+  context: { params: Promise<{ part: string; id: string }> }
 ) {
   try {
     const { part, id } = await context.params;
