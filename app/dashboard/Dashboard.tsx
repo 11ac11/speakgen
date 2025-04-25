@@ -7,17 +7,18 @@ import * as React from "react";
 export default async function Dashboard({
   searchParams,
 }: {
-  searchParams?: { tab?: string };
+  searchParams?: Promise<{ tab: string }>;
 }) {
-  const validTabs = ["questions", "exams", "settings"];
-  const activeTab = validTabs.includes(searchParams?.tab || "")
-    ? searchParams?.tab
-    : "questions";
+  const searchParams2 = await searchParams;
+  const tab = searchParams2?.tab;
 
   // Redirect if no valid tab is found
-  if (!searchParams?.tab) {
+  if (!tab) {
     redirect("?tab=questions");
   }
+
+  const validTabs = ["questions", "exams", "settings"];
+  const activeTab = validTabs.includes(tab || "") ? tab : "questions";
 
   return (
     <>
