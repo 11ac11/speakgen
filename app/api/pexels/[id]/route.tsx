@@ -6,7 +6,7 @@ const pexels = createClient(process.env.PEXELS_API_KEY as string);
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params; // The ID comes from the dynamic URL parameter
 
