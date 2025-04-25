@@ -5,7 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Handle GET requests to fetch all questions
 export async function GET(
   req: NextRequest,
-  context: { params: { part: string } }
+  context: { params: Promise<{ part: string }> }
 ) {
   try {
     const { searchParams } = new URL(req.url);
