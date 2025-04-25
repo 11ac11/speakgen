@@ -4,7 +4,7 @@ import TabMenu from "./TabMenu"; // Client Component
 import TabContainer from "./TabContainer"; // Client Component
 import * as React from "react";
 
-export default async function Dashboard({ tab }: { tab: string | undefined }) {
+export default function Dashboard({ tab }: { tab: string | undefined }) {
   // Redirect if no valid tab is found
   if (!tab) {
     redirect("?tab=questions");
