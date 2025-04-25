@@ -89,7 +89,8 @@ const ImageSearchModal = ({
     }
   }, [debouncedSearchTerm]);
 
-  const handleOnClick = (image) => {
+  const handleOnClick = (image: any) => {
+    // TODO: fix any type
     setImage(image);
     closeModal();
     setSearchQuery("");
