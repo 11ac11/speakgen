@@ -4,7 +4,6 @@ import { Suspense } from "react";
 import styled from "styled-components";
 import { Button } from "../components/ui";
 import { useRouter } from "next/navigation";
-import Table from "../components/TableLegacy";
 import ReactTable from "../components/ReactTable";
 
 const Container = styled.div`
