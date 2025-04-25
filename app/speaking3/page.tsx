@@ -1,5 +1,5 @@
 import React from "react";
-import QuestionContainer from "../../components/QuestionContainer";
+import QuestionContainer from "@/app/components/QuestionContainer";
 import { part3data } from "../../dataPart3";
 
 export default function SpeakingThree() {

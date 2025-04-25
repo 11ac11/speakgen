@@ -1,5 +1,5 @@
 import React from "react";
-import QuestionContainer from "../../components/QuestionContainer";
+import QuestionContainer from "@/app/components/QuestionContainer";
 // import ConnectionTest from "./ConnectionTest";
 import { part4data } from "../../dataPart4";
 import { getUsers } from "../../services/userService";
