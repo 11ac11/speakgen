@@ -53,7 +53,7 @@ export async function GET(
 
 export async function POST(
   req: NextRequest,
-  context: { params: { part: string } }
+  context: { params: Promise<{ part: string }> }
 ) {
   const { part } = await context.params;
 
