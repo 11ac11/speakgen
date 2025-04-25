@@ -1,6 +1,4 @@
 import React from "react";
-import QuestionContainer from "@/app/components/QuestionContainer";
-import { part4data } from "../../dataPart4";
 import { getUsers } from "../../services/userService";
 
 export default async function SpeakingFour() {
@@ -8,7 +6,7 @@ export default async function SpeakingFour() {
 
   return (
     <>
-      <QuestionContainer questions={part4data} />
+      <>Question 4</>
       <div>
         <h2>Fetched Data:</h2>
         {users.length > 0 ? (

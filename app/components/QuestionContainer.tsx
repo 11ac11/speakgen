@@ -1,72 +1,53 @@
 "use client";
 
-import React from "react";
-import { useState } from "react";
-import { QuestionTypes, QuestionStructures } from "../types/types";
-import Button from "../components/ui/Button";
+import React, { useState } from "react";
+import { getRandomPartOneQuestion } from "@/services/part1Service";
+import Button from "./ui/Button";
 import Instructions from "./Instructions";
-import Question from "./Question";
+import PartOneQuestion from "./PartOneQuestion";
 import Timer from "./Timer";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
-export default function QuestionContainer({
-  questions,
-}: {
-  questions: QuestionTypes;
-}) {
-  const { part, instructions, time, speakTo, questionsByTheme } =
-    questions || {};
+export default function QuestionContainer() {
+  const [question, setQuestion] = useState<any | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const [question, setQuestion] = useState<QuestionStructures | undefined>();
-  const [theme, setTheme] = useState<string>();
-  const [questionNum, setQuestionNum] = useState<number>();
-
-  const themes = questionsByTheme;
-
-  const handleSelectQuestion = () => {
-    let i = parseFloat((Math.random() * (themes.length - 1)).toFixed(0));
-    let j = parseFloat(
-      (Math.random() * (themes[i].questions.length - 1)).toFixed(0)
-    );
-
-    if (j !== questionNum) {
-      setTheme(themes[i].theme);
-      setQuestion(themes[i].questions[j]);
-      setQuestionNum(j);
-    } else {
-      handleSelectQuestion();
+  async function fetchNextQuestion() {
+    try {
+      setLoading(true);
+      const newQuestion = await getRandomPartOneQuestion();
+      setQuestion(newQuestion);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="container">
       <div className="btn-bar">
         <div className="btns">
-          <Button
-            text="Get Question"
-            onClick={handleSelectQuestion}
-            isAsync={false}
-          />
-          {question ? (
+          <Button text="Get Question" onClick={fetchNextQuestion} />
+          {question && (
             <Button
-              onClick={() => {
-                setQuestion(undefined);
-              }}
+              onClick={() => setQuestion(null)}
               text="Instructions"
               secondary
             />
-          ) : (
-            ""
           )}
         </div>
-        <>{!!question && <Timer question={question} timeLeft={time} />}</>
+        {question && <Timer question={question} timeLeft={60} />}
       </div>
-      <>
-        {question ? (
-          <Question part={part} question={question} theme={theme} />
-        ) : (
-          <Instructions instructions={instructions} speakTo={speakTo} />
-        )}
-      </>
+      {loading && <LoadingSpinner />}
+      {question ? (
+        <PartOneQuestion
+          question={question.question}
+          themes={question.themes}
+        />
+      ) : (
+        <Instructions instructions="test" speakTo="someone" />
+      )}
     </div>
   );
 }
