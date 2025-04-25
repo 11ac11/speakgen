@@ -7,7 +7,7 @@ import * as React from "react";
 export default async function Dashboard({
   searchParams,
 }: {
-  searchParams?: Promise<{ tab: string | undefined }>;
+  searchParams: Promise<{ tab: string | undefined }> | undefined;
 }) {
   const searchParams2 = await searchParams;
   const tab = searchParams2?.tab;
