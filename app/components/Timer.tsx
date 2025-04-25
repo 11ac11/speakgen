@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
-import { QuestionStructures } from "../types/types";
+import { QuestionStructures } from "@/types/types";
 
 const TimerBox = styled.div`
   position: absolute;
