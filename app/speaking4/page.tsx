@@ -1,6 +1,5 @@
 import React from "react";
 import QuestionContainer from "@/app/components/QuestionContainer";
-// import ConnectionTest from "./ConnectionTest";
 import { part4data } from "../../dataPart4";
 import { getUsers } from "../../services/userService";
 
@@ -9,7 +8,6 @@ export default async function SpeakingFour() {
 
   return (
     <>
-      {/* <ConnectionTest /> */}
       <QuestionContainer questions={part4data} />
       <div>
         <h2>Fetched Data:</h2>

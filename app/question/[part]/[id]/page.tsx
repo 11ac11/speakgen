@@ -19,12 +19,11 @@ const getQuestion = async (part: string, id: string) => {
 const EditQuestion = async ({
   params,
 }: {
-  params: { id: string; part: string };
+  params: Promise<{ id: string; part: string }>;
 }) => {
   const { part, id } = await params; // Destructure to ensure params are awaited
 
   const question = await getQuestion(part, id);
-  console.log("question:", question);
 
   return (
     <QuestionForm question={question} partParam={part} levelParam={"B2"} />
