@@ -6,6 +6,7 @@
     "@next/next/no-page-custom-font": "off",
     "@next/next/no-sync-scripts": "off",
     "@next/next/no-title-in-document-head": "off",
-    "@next/next/no-before-interactive-script-outside-document": "off"
+    "@next/next/no-before-interactive-script-outside-document": "off",
+    "@next/next/no-typos": "off"
   }
 }
