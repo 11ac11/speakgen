@@ -7,7 +7,7 @@ import * as React from "react";
 export default async function Dashboard({
   searchParams,
 }: {
-  searchParams: Promise<{ tab: string | undefined }> | undefined;
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
   const searchParams2 = await searchParams;
   const tab = searchParams2?.tab;
@@ -18,7 +18,7 @@ export default async function Dashboard({
   }
 
   const validTabs = ["questions", "exams", "settings"];
-  const activeTab = validTabs.includes(tab || "") ? tab : "questions";
+  const activeTab = validTabs.includes(tab) ? tab : "questions";
 
   return (
     <>
