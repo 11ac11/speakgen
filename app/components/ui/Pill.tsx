@@ -55,12 +55,8 @@ export default function Pill({
   showRemove?: boolean;
   style?: any; // todo change
 }) {
-  const backgroundColor = bgColor
-    ? bgColor
-    : useMemo(() => generateColor(text, true), [text]);
-  const _textColor = textColor
-    ? textColor
-    : useMemo(() => generateColor(text, false), [text]);
+  const backgroundColor = bgColor ? bgColor : generateColor(text, true);
+  const _textColor = textColor ? textColor : generateColor(text, false);
 
   return (
     <StyledPill
