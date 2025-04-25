@@ -1,6 +1,5 @@
-import NextAuth from "next-auth";
+import NextAuth, { SessionStrategy } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { authConfig } from "./auth.config";
 import { z } from "zod";
 import type { User } from "./lib/definitions";
 import bcrypt from "bcrypt";
@@ -19,7 +18,9 @@ async function getUser(email: string): Promise<User | undefined> {
 }
 
 export const authOptions = {
-  ...authConfig,
+  pages: {
+    signIn: "/login",
+  },
   debug: process.env.NODE_ENV === "development", // Only enable debug in dev mode
   providers: [
     CredentialsProvider({
@@ -67,7 +68,7 @@ export const authOptions = {
     }),
   ],
   session: {
-    strategy: "jwt", // Use JSON Web Tokens for session management
+    strategy: "jwt" as SessionStrategy, // Use JSON Web Tokens for session management
   },
   secret: process.env.AUTH_SECRET, // Required for JWT encryption
 };

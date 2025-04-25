@@ -1,8 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-export async function middleware(req: Request) {
+export async function middleware(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
+
+  if (token) {
+    // Signed in
+    console.log("JSON Web Token", JSON.stringify(token, null, 2));
+  } else {
+    console.log("not signed in");
+  }
 
   // Define protected routes
   const protectedPaths = ["/dashboard", "/profile"];
