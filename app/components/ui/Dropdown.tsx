@@ -19,7 +19,7 @@ const Label = styled.label`
 `;
 
 const DropdownOptions = styled.div`
-  border: 1px solid var(--slategrey);
+  border: 1px solid var(--verylightgrey);
   border-radius: 1rem;
   background-color: white;
   color: grey;
@@ -43,7 +43,7 @@ const DropdownOptions = styled.div`
     li {
       padding: 0.5rem;
       cursor: pointer;
-      border-bottom: 1px solid var(--slategrey);
+      border-bottom: 1px solid var(--verylightgrey);
       text-align: center;
       display: flex;
       justify-content: center;
@@ -78,8 +78,7 @@ const StyledInput = styled(Input)`
   & input:hover,
   & input:focus {
     cursor: pointer;
-    border: 1px solid var(--slategrey);
-    outline: 1px solid var(--slategrey);
+    border: 1px solid var(--lightgrey);
   }
 `;
 

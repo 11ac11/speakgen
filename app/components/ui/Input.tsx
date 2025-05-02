@@ -9,7 +9,7 @@ const Wrap = styled.div<{ width: string | undefined }>`
 `;
 
 const StyledInput = styled.input<{ error: string | undefined }>`
-  border-radius: 1rem;
+  border-radius: 8px;
   border-style: solid;
   border-width: 1px;
   outline: none;
