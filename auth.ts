@@ -1,5 +1,6 @@
 import NextAuth, { SessionStrategy } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import GoogleProvider from "next-auth/providers/google";
 import { z } from "zod";
 import type { User } from "./lib/definitions";
 import bcrypt from "bcrypt";
@@ -65,6 +66,10 @@ export const authOptions = {
           email: user.email,
         };
       },
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID || "", // TODO: look into this
+      clientSecret: process.env.GOOGLE_SECRET || "",
     }),
   ],
   session: {

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
+import Image from "next/image";
 
 type StyledButtonProps = {
   $secondary?: boolean; // Optional secondary prop
@@ -19,6 +20,10 @@ const StyledButton = styled.button<StyledButtonProps>`
   padding: 0.5rem 1rem;
   font-size: 1rem;
   overflow: hidden;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  align-items: center;
   ${({ $secondary }) =>
     $secondary &&
     `
@@ -27,7 +32,7 @@ const StyledButton = styled.button<StyledButtonProps>`
     border: 1px solid rgba(0, 0, 0, 0);
   `}
 
-  transition: color 0.3s linear;
+  transition: color 0.3s linear, opacity 0.1s linear;
 
   &:active {
     ${({ disabled }) => !disabled && "background: rgba(255, 255, 255, 0.4)"};
@@ -46,6 +51,8 @@ type ButtonProps = {
   disabled?: boolean; // Optional prop to manually disable the button
   secondary?: boolean; // Optional to use secondary styles
   type?: "button" | "submit" | "reset" | undefined;
+  className?: "text" | undefined;
+  iconUrl?: "text" | undefined;
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -56,6 +63,8 @@ const Button: React.FC<ButtonProps> = ({
   disabled = false,
   secondary,
   type,
+  className,
+  iconUrl,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -80,14 +89,14 @@ const Button: React.FC<ButtonProps> = ({
   };
 
   return (
-    <Wrap>
+    <Wrap className={className}>
       <StyledButton
         onClick={handleClick}
         disabled={isLoading || disabled}
-        className={isLoading ? "loading" : ""}
         $secondary={secondary}
         type={type}
       >
+        {iconUrl && <Image src={iconUrl} alt="" width={16} height={16} />}
         {isLoading ? loadingText : text}
       </StyledButton>
       {error && <p className="error-message">{error}</p>}
