@@ -7,7 +7,8 @@ type StyledTabProps = {
 };
 
 const StyledTab = styled.div<StyledTabProps>`
-  border-bottom: ${({ $isActive }) => ($isActive ? "2px solid #62cc54" : "")};
+  border-bottom: ${({ $isActive }) =>
+    $isActive ? "2px solid var(--leafgreen)" : ""};
   width: 250px;
   padding-bottom: 5px;
   text-align: center;

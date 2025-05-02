@@ -2,7 +2,7 @@
 
 import { Suspense } from "react";
 import styled from "styled-components";
-import { Button } from "../components/ui";
+import { Button, QuickStart } from "../components/ui";
 import { useRouter } from "next/navigation";
 import ReactTable from "../components/ReactTable";
 
@@ -12,6 +12,16 @@ const Container = styled.div`
   flex-direction: column;
   gap: 15px;
   align-items: center;
+`;
+
+const ButtonsRow = styled.div`
+  display: flex;
+  gap: 25px;
+
+  button {
+    width: 200px;
+    height: 50px;
+  }
 `;
 
 export default function TabContainer({
@@ -26,10 +36,14 @@ export default function TabContainer({
     <Container>
       {activeTab === "questions" && (
         <>
-          <Button
-            text={"Create new question"}
-            onClick={() => router.push("/question/new")}
-          />
+          <ButtonsRow>
+            <Button
+              text={"Create new question"}
+              onClick={() => router.push("/question/new")}
+              isBigButton
+            />
+            <QuickStart />
+          </ButtonsRow>
           <div>
             {/* <h1>My Questions</h1> */}
             {/* <Table ownerId={ownerId} /> */}

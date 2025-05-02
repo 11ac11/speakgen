@@ -4,6 +4,7 @@ import Image from "next/image";
 
 type StyledButtonProps = {
   $secondary?: boolean; // Optional secondary prop
+  $isBigButton?: boolean;
 };
 
 const Wrap = styled.div``;
@@ -18,6 +19,7 @@ const StyledButton = styled.button<StyledButtonProps>`
   -webkit-backdrop-filter: blur(8.2px);
   border: 1px solid rgba(255, 255, 255, 0.27);
   padding: 0.5rem 1rem;
+  color: var(--slategrey);
   font-size: 1rem;
   overflow: hidden;
   display: flex;
@@ -30,6 +32,13 @@ const StyledButton = styled.button<StyledButtonProps>`
     background-color: rgba(0, 0, 0, 0.5);
     color: white;
     border: 1px solid rgba(0, 0, 0, 0);
+  `}
+  ${({ $isBigButton }) =>
+    $isBigButton &&
+    `
+    width: 100%;
+    height: 80px;
+    background: var(--limegreen);
   `}
 
   transition: color 0.3s linear, opacity 0.1s linear;
@@ -53,6 +62,7 @@ type ButtonProps = {
   type?: "button" | "submit" | "reset" | undefined;
   className?: "text" | undefined;
   iconUrl?: "text" | undefined;
+  isBigButton?: boolean | undefined;
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -65,6 +75,7 @@ const Button: React.FC<ButtonProps> = ({
   type,
   className,
   iconUrl,
+  isBigButton,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +106,7 @@ const Button: React.FC<ButtonProps> = ({
         disabled={isLoading || disabled}
         $secondary={secondary}
         type={type}
+        $isBigButton={isBigButton}
       >
         {iconUrl && <Image src={iconUrl} alt="" width={16} height={16} />}
         {isLoading ? loadingText : text}

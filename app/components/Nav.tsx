@@ -10,7 +10,7 @@ const Navbar = styled.nav`
   display: flex;
   border-radius: 0;
   border: none;
-  background: linear-gradient(to right, #62cc54, #bfe285);
+  background: linear-gradient(to right, var(--leafgreen), var(--limegreen));
 
   @media only screen and (max-width: 600px) {
     padding: 0.5rem;

@@ -4,5 +4,7 @@ import { Dropdown } from "./Dropdown";
 import Pill from "./Pill";
 import Actions from "./Actions";
 import { Label } from "./Label";
+import QuickStart from "./QuickStart";
+import Modal from "./Modal";
 
-export { Button, Input, Dropdown, Pill, Actions, Label };
+export { Button, Input, Dropdown, Pill, Actions, Label, QuickStart, Modal };

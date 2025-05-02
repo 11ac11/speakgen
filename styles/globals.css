@@ -4,6 +4,8 @@
   --slategrey: #313131;
   --lightgrey: #6f6f6f;
   --verylightgrey: #dedede;
+  --leafgreen: #62cc54;
+  --limegreen: #bfe285;
 }
 
 /*
@@ -179,6 +181,12 @@ a:active {
   }
 }
 
+@media only screen and (max-width: 1200px) {
+  main {
+    width: 90%;
+  }
+}
+
 @media only screen and (max-width: 1000px) {
   .btn-bar {
     position: unset;
@@ -191,6 +199,9 @@ a:active {
 }
 
 @media only screen and (max-width: 768px) {
+  main {
+    width: 100%;
+  }
 }
 
 @media only screen and (max-width: 600px) {
