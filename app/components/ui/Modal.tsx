@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import styled from "styled-components";
 
 const ModalShading = styled.div`
@@ -56,6 +56,16 @@ const ImageSearchModal = ({
   children: any;
   closeModal: () => void;
 }) => {
+  useEffect(() => {
+    // disable scrolling when modal is open
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, []);
+
   return (
     <>
       <ModalShading />
