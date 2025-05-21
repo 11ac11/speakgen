@@ -36,7 +36,6 @@ const ImageSearchModal = ({
       const fetchImages = async () => {
         const res = await fetch(`/api/pexels?query=${debouncedSearchTerm}`);
         const data = await res.json();
-        console.log("data:", data);
         setImageResults(data.photos);
       };
       fetchImages();

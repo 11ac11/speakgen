@@ -39,3 +39,24 @@ export async function createQuestion(part: string, payload: any) {
     throw error;
   }
 }
+
+export async function updateQuestion(part: string, id: string, payload: any) {
+  try {
+    const response = await fetch(`/api/questions/${part}/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to update question: ${response.statusText}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating question:", error);
+    throw error;
+  }
+}

@@ -1,4 +1,4 @@
-import { sql } from "../../../../../lib/db";
+import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 // Handle GET request: Fetch a specific question by id
@@ -46,58 +46,63 @@ export async function GET(
 }
 
 // Handle PATCH request: Update a specific question by id
-// export async function PATCH(
-//   req: NextRequest,
-//   context: { params: { part: string; id: string } }
-// ) {
-//   try {
-//     const { part, id } = await context.params;
-//     const body = await req.json();
+export async function PATCH(
+  req: NextRequest,
+  context: { params: Promise<{ part: string; id: string }> }
+) {
+  try {
+    const { part, id } = await context.params;
+    const body = await req.json();
 
-//     if (!["1", "2", "3", "4"].includes(part)) {
-//       return NextResponse.json(
-//         { error: "Invalid part number" },
-//         { status: 400 }
-//       );
-//     }
+    console.log("body:", body);
 
-//     const tableMap: Record<string, string> = {
-//       "1": "fce.part1",
-//       "2": "fce.part2",
-//       "3": "fce.part3",
-//       "4": "fce.part4",
-//     };
+    if (!["1", "2", "3", "4"].includes(part)) {
+      return NextResponse.json(
+        { error: "Invalid part number" },
+        { status: 400 }
+      );
+    }
 
-//     const tableName = tableMap[part];
+    const tableMap: Record<string, string> = {
+      "1": "fce.part1",
+      "2": "fce.part2",
+      "3": "fce.part3",
+      "4": "fce.part4",
+    };
 
-//     // Build dynamic SQL set clause for updating
-//     const setClauses = Object.keys(body)
-//       .map((key) => `${key} = ${sql.param(key)}`)
-//       .join(", ");
+    const tableName = tableMap[part];
 
-//     if (setClauses.length === 0) {
-//       return NextResponse.json({ error: "No data to update" }, { status: 400 });
-//     }
+    const keys = Object.keys(body);
+    if (keys.length === 0) {
+      return NextResponse.json({ error: "No data to update" }, { status: 400 });
+    }
 
-//     const query = `UPDATE ${tableName} SET ${setClauses} WHERE id = $1 RETURNING *`;
-//     const result = await sql(query, [id, ...Object.values(body)]);
+    // Build SET clause with positional parameters: $2, $3, ...
+    const setClauses = keys
+      .map((key, index) => `${key} = $${index + 2}`)
+      .join(", ");
 
-//     if (result.length === 0) {
-//       return NextResponse.json(
-//         { error: "Question not found" },
-//         { status: 404 }
-//       );
-//     }
+    const values = [id, ...keys.map((key) => body[key])];
 
-//     return NextResponse.json(result[0]);
-//   } catch (error) {
-//     console.error("Database update failed:", error);
-//     return NextResponse.json(
-//       { error: "Internal Server Error" },
-//       { status: 500 }
-//     );
-//   }
-// }
+    const query = `UPDATE ${tableName} SET ${setClauses} WHERE id = $1 RETURNING *`;
+    const result = await sql(query, values);
+
+    if (result.length === 0) {
+      return NextResponse.json(
+        { error: "Question not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(result[0]);
+  } catch (error) {
+    console.error("Database update failed:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
 
 // Handle DELETE request: Delete a specific question by id
 export async function DELETE(

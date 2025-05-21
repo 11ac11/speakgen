@@ -138,13 +138,11 @@ const ImageSelectors = ({
         if (imageOneId) {
           const imageOneData = await fetchImage(imageOneId);
           setImageOne(imageOneData);
-          console.log("imageOneData:", imageOneData);
         }
 
         if (imageTwoId) {
           const imageTwoData = await fetchImage(imageTwoId);
           setImageTwo(imageTwoData);
-          console.log("imageTwoData:", imageTwoData);
         }
       } catch (error) {
         console.error(error);

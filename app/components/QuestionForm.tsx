@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { Input, Button, Dropdown } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
-import { createQuestion } from "@/services/part1Service";
+import { createQuestion, updateQuestion } from "@/services/part1Service";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ImageSelectors from "./ImageSelectors";
 
@@ -80,7 +80,6 @@ const QuestionForm = ({
       statement: statement,
       themes: themes,
       public: true,
-      part,
       ...(part === "2" && {
         image_one: imageOneId,
         image_two: imageTwoId,
@@ -91,7 +90,9 @@ const QuestionForm = ({
     };
 
     try {
-      const res = await createQuestion(part, requestData);
+      const res = isEdit
+        ? await updateQuestion(part, question.id, requestData)
+        : await createQuestion(part, requestData);
       console.log("res:", res);
     } catch (error) {
       console.error("Error submitting question:", error);
