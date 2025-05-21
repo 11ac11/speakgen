@@ -1,7 +1,9 @@
 import { sql } from "../../../../lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
-// Handle GET requests to fetch all questions created by a specific user
+// List schemas you want to include (manually for safety)
+const allowedLevels = ["b2", "c1", "c2"];
+
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
@@ -14,19 +16,27 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const result = await sql`
-      SELECT '1' AS part, id, statement, themes, owner_id, public FROM fce.part1 WHERE owner_id = 2
-      UNION ALL
-      SELECT '2' AS part, id, statement, themes, owner_id, public FROM fce.part2 WHERE owner_id = 2
-      UNION ALL
-      SELECT '3' AS part, id, statement, themes, owner_id, public FROM fce.part3 WHERE owner_id = 2
-      UNION ALL
-      SELECT '4' AS part, id, statement, themes, owner_id, public FROM fce.part4 WHERE owner_id = 2
+    const allQueries: string[] = [];
+
+    for (const level of allowedLevels) {
+      for (let part = 1; part <= 4; part++) {
+        allQueries.push(`
+          SELECT '${level}' AS level, '${part}' AS part, id, statement, themes, owner_id, public
+          FROM ${level}.part${part}
+          WHERE owner_id = ${ownerId}
+        `);
+      }
+    }
+    const unionSubquery = allQueries.join(" UNION ALL ");
+
+    const finalQuery = `
+      SELECT * FROM (
+        ${unionSubquery}
+      ) AS q
+      ORDER BY level, part::int, id
     `;
 
-    /* will need to add below when implemented
-            ORDER BY part, id; // maybe here is an issue?
-    */
+    const result = await sql(finalQuery);
 
     return NextResponse.json(result);
   } catch (error) {

@@ -19,9 +19,13 @@ export async function getRandomPartOneQuestion() {
   }
 }
 
-export async function createQuestion(part: string, payload: any) {
+export async function createQuestion(
+  level: string,
+  part: string,
+  payload: any
+) {
   try {
-    const response = await fetch(`/api/questions/${part}`, {
+    const response = await fetch(`/api/questions/${level}/${part}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -40,9 +44,14 @@ export async function createQuestion(part: string, payload: any) {
   }
 }
 
-export async function updateQuestion(part: string, id: string, payload: any) {
+export async function updateQuestion(
+  level: string,
+  part: string,
+  id: string,
+  payload: any
+) {
   try {
-    const response = await fetch(`/api/questions/${part}/${id}`, {
+    const response = await fetch(`/api/questions/${level}/${part}/${id}`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",

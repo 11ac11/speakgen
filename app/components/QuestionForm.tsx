@@ -91,8 +91,8 @@ const QuestionForm = ({
 
     try {
       const res = isEdit
-        ? await updateQuestion(part, question.id, requestData)
-        : await createQuestion(part, requestData);
+        ? await updateQuestion(level, part, question.id, requestData)
+        : await createQuestion(level, part, requestData);
       console.log("res:", res);
     } catch (error) {
       console.error("Error submitting question:", error);
@@ -107,7 +107,7 @@ const QuestionForm = ({
       <FormRow>
         <Dropdown
           label="Level"
-          options={["B2", "C1"]}
+          options={["B2", "C1", "C2"]}
           value={level}
           onChange={setLevel}
           placeholder="-"

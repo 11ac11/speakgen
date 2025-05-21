@@ -4,10 +4,10 @@ import { NextRequest, NextResponse } from "next/server";
 // Handle GET request: Fetch a specific question by id
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ part: string; id: string }> }
+  context: { params: Promise<{ level: string; part: string; id: string }> }
 ) {
   try {
-    const { part, id } = await context.params;
+    const { level, part, id } = await context.params;
 
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
@@ -18,10 +18,10 @@ export async function GET(
 
     // Safe table name mapping
     const tableMap: Record<string, string> = {
-      "1": "fce.part1",
-      "2": "fce.part2",
-      "3": "fce.part3",
-      "4": "fce.part4",
+      "1": `${level}.part1`,
+      "2": `${level}.part2`,
+      "3": `${level}.part3`,
+      "4": `${level}.part4`,
     };
 
     const tableName = tableMap[part];
@@ -48,13 +48,11 @@ export async function GET(
 // Handle PATCH request: Update a specific question by id
 export async function PATCH(
   req: NextRequest,
-  context: { params: Promise<{ part: string; id: string }> }
+  context: { params: Promise<{ level: string; part: string; id: string }> }
 ) {
   try {
-    const { part, id } = await context.params;
+    const { level, part, id } = await context.params;
     const body = await req.json();
-
-    console.log("body:", body);
 
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
@@ -64,10 +62,10 @@ export async function PATCH(
     }
 
     const tableMap: Record<string, string> = {
-      "1": "fce.part1",
-      "2": "fce.part2",
-      "3": "fce.part3",
-      "4": "fce.part4",
+      "1": `${level}.part1`,
+      "2": `${level}.part2`,
+      "3": `${level}.part3`,
+      "4": `${level}.part4`,
     };
 
     const tableName = tableMap[part];
@@ -107,10 +105,10 @@ export async function PATCH(
 // Handle DELETE request: Delete a specific question by id
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ part: string; id: string }> }
+  context: { params: Promise<{ level: string; part: string; id: string }> }
 ) {
   try {
-    const { part, id } = await context.params;
+    const { level, part, id } = await context.params;
 
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
@@ -120,10 +118,10 @@ export async function DELETE(
     }
 
     const tableMap: Record<string, string> = {
-      "1": "fce.part1",
-      "2": "fce.part2",
-      "3": "fce.part3",
-      "4": "fce.part4",
+      "1": `${level}.part1`,
+      "2": `${level}.part2`,
+      "3": `${level}.part3`,
+      "4": `${level}.part4`,
     };
 
     const tableName = tableMap[part];
