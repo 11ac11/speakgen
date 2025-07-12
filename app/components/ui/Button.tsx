@@ -5,12 +5,14 @@ import Image from "next/image";
 type StyledButtonProps = {
   $secondary?: boolean; // Optional secondary prop
   $isBigButton?: boolean;
+  $width?: string | number;
 };
 
 const Wrap = styled.div``;
 
 const StyledButton = styled.button<StyledButtonProps>`
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
+  ${({ $width }) => $width && `width: ${$width};`}
   background: ${({ $secondary }) =>
     $secondary ? "transparent" : "rgba(255, 255, 255, 0.8)"};
   border-radius: 1rem;
@@ -38,7 +40,7 @@ const StyledButton = styled.button<StyledButtonProps>`
     `
     background: var(--limegreen);
     text-transform: uppercase;
-    font-weight: 600;
+    font-weight: 700;
     font-size: 1.2rem;
     padding: 0.8rem 2rem;
     border-radius: 4rem;
@@ -66,6 +68,7 @@ type ButtonProps = {
   className?: "text" | undefined;
   iconUrl?: "text" | undefined;
   isBigButton?: boolean | undefined;
+  width?: string | number;
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -79,6 +82,7 @@ const Button: React.FC<ButtonProps> = ({
   className,
   iconUrl,
   isBigButton,
+  width,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -110,6 +114,7 @@ const Button: React.FC<ButtonProps> = ({
         $secondary={secondary}
         type={type}
         $isBigButton={isBigButton}
+        $width={width}
       >
         {iconUrl && <Image src={iconUrl} alt="" width={16} height={16} />}
         {isLoading ? loadingText : text}

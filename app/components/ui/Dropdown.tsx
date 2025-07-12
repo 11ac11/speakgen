@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
-import { Input } from "./";
+import { Input, Button } from "./";
 
 const DropdownWrap = styled.div<{ width: string | undefined }>`
   display: flex;
@@ -51,6 +51,7 @@ const DropdownOptions = styled.div`
 
       &:hover {
         color: black;
+        background-color: var(--limegreen);
       }
     }
 
@@ -103,6 +104,7 @@ interface DropdownProps {
   placeholder?: string;
   className?: string;
   width?: string | undefined;
+  inputAsButton?: boolean | undefined;
 }
 
 // Dropdown Component
@@ -114,6 +116,7 @@ export const Dropdown = ({
   placeholder = "",
   className,
   width,
+  inputAsButton,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -143,31 +146,44 @@ export const Dropdown = ({
 
   return (
     <DropdownWrap ref={ref} width={width}>
-      {label && <Label>{label}</Label>}
-      <InputWrapper>
-        <StyledInput
-          onClick={toggleDropdown}
-          value={value}
-          onChange={() => {}}
-          isDropdown={true}
-          placeholder={placeholder}
-          type={"select"}
-          className={className}
-        />
-        <Arrow $isOpen={isOpen}>
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="6 9 12 15 18 9" />
-          </svg>
-        </Arrow>
-      </InputWrapper>
+      {
+        <>
+          {label && <Label>{label}</Label>}
+          <InputWrapper>
+            {inputAsButton ? (
+              <Button
+                text={placeholder}
+                onClick={toggleDropdown}
+                isBigButton
+                width={width}
+              />
+            ) : (
+              <StyledInput
+                onClick={toggleDropdown}
+                value={value}
+                onChange={() => {}}
+                isDropdown={true}
+                placeholder={placeholder}
+                type={"select"}
+                className={className}
+              />
+            )}
+            <Arrow $isOpen={isOpen}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </Arrow>
+          </InputWrapper>
+        </>
+      }
       {isOpen && (
         <DropdownOptions>
           <ul>

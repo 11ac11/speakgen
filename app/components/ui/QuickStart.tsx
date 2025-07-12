@@ -1,15 +1,19 @@
-import React, { useState } from "react";
-import { Button, Modal } from "./";
+import React from "react";
+import { Dropdown } from "./";
 
 export default function QuickStart({}: {}) {
-  const [isOpen, setIsOpen] = useState(false);
-  const handleModal = () => {
-    setIsOpen(true);
+  const handleQuickStart = (value: any) => {
+    console.log(value);
   };
+
   return (
-    <>
-      {isOpen && <Modal closeModal={() => setIsOpen(false)}>modal</Modal>}
-      <Button text="Quick start" onClick={handleModal} isBigButton />
-    </>
+    <Dropdown
+      options={["B2", "C1", "C2"]}
+      value={""}
+      onChange={handleQuickStart}
+      placeholder="Quick Start"
+      width="200px"
+      inputAsButton={true}
+    />
   );
 }
