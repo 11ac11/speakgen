@@ -13,6 +13,8 @@ const StyledTab = styled.div<StyledTabProps>`
   padding-bottom: 5px;
   text-align: center;
   cursor: pointer;
+  text-transform: uppercase;
+  font-weight: 700;
 `;
 
 export default function Tab({

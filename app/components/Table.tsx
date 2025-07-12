@@ -42,16 +42,12 @@ const TableData = styled.td`
   text-overflow: ellipsis;
 `;
 
-export default function ReactTable({ ownerId }: { ownerId: string }) {
+export default function Table({ ownerId }: { ownerId: string }) {
   const [data, setData] = useState<Question[]>([]);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
-
-  useEffect(() => {
-    console.log("data:", data);
-  }, [data]);
 
   async function fetchQuestions() {
     try {
@@ -80,7 +76,6 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
 
       if (response.ok) {
         const result = await response.json();
-        console.log("data:", data);
         alert(result.message); // Show a success message (can be customized)
         fetchQuestions();
       } else {
@@ -196,9 +191,6 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
   if (loading) return <p>Loading questions...</p>;
   if (error) return <p>Error: {error}</p>;
 
-  // access sorting state from the table instance
-  console.log(table.getState().sorting);
-
   return (
     <div className="p-2">
       <div className="h-2" />
@@ -255,11 +247,9 @@ export default function ReactTable({ ownerId }: { ownerId: string }) {
             .getRowModel()
             .rows.slice(0, 10)
             .map((row) => {
-              console.log("row:", row);
               return (
                 <TableRow key={row.id}>
                   {row.getVisibleCells().map((cell) => {
-                    console.log("cell:", cell);
                     return (
                       <TableData
                         key={cell.id}

@@ -98,7 +98,6 @@ const QuestionForm = ({
       const res = isEdit
         ? await updateQuestion(level, part, question.id, requestData)
         : await createQuestion(level, part, requestData);
-      console.log("res:", res);
     } catch (error) {
       console.error("Error submitting question:", error);
     } finally {

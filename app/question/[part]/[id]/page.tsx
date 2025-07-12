@@ -6,7 +6,6 @@ const getQuestion = async (part: string, id: string) => {
   const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/questions/${part}/${id}`;
 
   const res = await fetch(apiUrl, { cache: "no-store" });
-  console.log("res:", res);
 
   if (!res.ok) {
     throw new Error("Failed to fetch question");

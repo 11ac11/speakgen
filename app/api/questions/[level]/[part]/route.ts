@@ -14,6 +14,8 @@ export async function GET(
     // ✅ Await params before using it
     const { level, part } = await context.params;
 
+    console.log("level:", level);
+
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
         { error: "Invalid part number" },

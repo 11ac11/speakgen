@@ -4,7 +4,7 @@ import { Suspense } from "react";
 import styled from "styled-components";
 import { Button, QuickStart } from "../components/ui";
 import { useRouter } from "next/navigation";
-import ReactTable from "../components/ReactTable";
+import Table from "../components/Table";
 
 const Container = styled.div`
   width: 100%;
@@ -17,11 +17,6 @@ const Container = styled.div`
 const ButtonsRow = styled.div`
   display: flex;
   gap: 25px;
-
-  button {
-    width: 200px;
-    height: 50px;
-  }
 `;
 
 export default function TabContainer({
@@ -47,7 +42,7 @@ export default function TabContainer({
           <div>
             {/* <h1>My Questions</h1> */}
             {/* <Table ownerId={ownerId} /> */}
-            <ReactTable ownerId={ownerId} />
+            <Table ownerId={ownerId} />
           </div>
         </>
       )}
