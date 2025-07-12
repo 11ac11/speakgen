@@ -94,7 +94,7 @@ export default function Landing() {
         <RightSide>
           <ImageContainer>
             <Image
-              src="/speech-bubbles-people.jpg"
+              src="/speech-bubbles-sky.jpg"
               alt="Speech bubbles"
               fill
               style={{ objectFit: "cover", borderRadius: "10px" }}
