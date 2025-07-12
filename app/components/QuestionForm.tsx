@@ -38,6 +38,7 @@ const QuestionForm = ({
 }) => {
   const router = useRouter();
   const isEdit = !!question;
+  const { image_one, image_two, image_three, image_four } = question || {};
 
   const [level, setLevel] = useState(levelParam || "");
   const [part, setPart] = useState(partParam || "");
@@ -46,12 +47,12 @@ const QuestionForm = ({
   const [prompts, setPrompts] = useState<string[]>(question?.prompts || []);
   const [themes, setThemes] = useState<string[]>(question?.themes || []);
   const [loading, setLoading] = useState(false);
-  const [imageOneId, setImageOneId] = useState<number>(
-    question?.image_one || ""
-  );
-  const [imageTwoId, setImageTwoId] = useState<number>(
-    question?.image_two || ""
-  );
+  const [imageIds, setImageIds] = useState([
+    image_one,
+    image_two,
+    image_three,
+    image_four,
+  ]);
 
   const allFieldsCompleted = !!part && !!statement && themes.length > 0;
 
@@ -81,8 +82,12 @@ const QuestionForm = ({
       themes: themes,
       public: true,
       ...(part === "2" && {
-        image_one: imageOneId,
-        image_two: imageTwoId,
+        image_one: imageIds[0],
+        image_two: imageIds[1],
+        ...(level === "c2" && {
+          image_three: imageIds[2],
+          image_four: imageIds[3],
+        }),
       }),
       ...(part === "3" && {
         prompts: prompts,
@@ -102,6 +107,16 @@ const QuestionForm = ({
     }
   };
 
+  const questionPartOptions = () => {
+    const defaultOptions = ["1", "2", "3", "4"];
+
+    if (level === "C2") {
+      defaultOptions.splice(-1, 1);
+    }
+
+    return defaultOptions;
+  };
+
   return (
     <StyledForm onSubmit={handleSubmit}>
       <FormRow>
@@ -115,7 +130,7 @@ const QuestionForm = ({
         />
         <Dropdown
           label="Part"
-          options={["1", "2", "3", "4"]}
+          options={questionPartOptions()}
           value={part}
           onChange={setPart}
           placeholder="-"
@@ -149,12 +164,7 @@ const QuestionForm = ({
             />
           )}
           {part === "2" && (
-            <ImageSelectors
-              imageOneId={imageOneId}
-              setImageOneId={setImageOneId}
-              imageTwoId={imageTwoId}
-              setImageTwoId={setImageTwoId}
-            />
+            <ImageSelectors imageIds={imageIds} setImageIds={setImageIds} />
           )}
           {part === "3" && (
             <Prompts prompts={prompts} setPrompts={setPrompts} />

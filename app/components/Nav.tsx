@@ -22,6 +22,7 @@ const NavContainer = styled.div`
   justify-content: space-between;
   align-items: center;
   width: 70%;
+  max-width: 1200px;
   margin: auto;
 
   @media only screen and (max-width: 1200px) {
@@ -40,6 +41,8 @@ const NavContainer = styled.div`
 
 const Title = styled.h1`
   font-size: 2rem;
+  text-transform: uppercase;
+  font-weight: 900;
   margin: 0;
 
   @media only screen and (max-width: 768px) {
@@ -54,7 +57,7 @@ const NavList = styled.ul`
   margin: 0;
   list-style: none;
   display: flex;
-  gap: 1rem;
+  gap: 4rem;
   justify-content: space-evenly;
   align-items: center;
 
@@ -67,6 +70,8 @@ const NavItem = styled.li`
   a {
     font-size: 1rem;
     text-decoration: none;
+    text-transform: uppercase;
+    font-weight: 600;
 
     @media only screen and (max-width: 768px) {
       font-size: 0.8rem;
@@ -114,6 +119,12 @@ export default function Nav() {
               </>
             ) : (
               <>
+                <NavItem>
+                  <Link href="/about">About</Link>
+                </NavItem>
+                <NavItem>
+                  <Link href="/faqs">FAQs</Link>
+                </NavItem>
                 <NavItem>
                   <Link href="/login">Log in</Link>
                 </NavItem>

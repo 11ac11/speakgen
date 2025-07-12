@@ -17,6 +17,7 @@ const ImagesContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  flex-wrap: wrap;
 
   & > div,
   img {
@@ -101,15 +102,19 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
   );
 
 const ImageSelectors = ({
-  imageOneId,
-  setImageOneId,
-  imageTwoId,
-  setImageTwoId,
-}: {
-  imageOneId: number | undefined;
-  imageTwoId: number | undefined;
-  setImageOneId: any; // TODO: fix any
-  setImageTwoId: any;
+  imageIds,
+  setImageIds,
+}: // imageOneId,
+// setImageOneId,
+// imageTwoId,
+// setImageTwoId,
+{
+  imageIds: string[] | null[] | [];
+  setImageIds: any;
+  // imageOneId: number | undefined;
+  // imageTwoId: number | undefined;
+  // setImageOneId: any; // TODO: fix any
+  // setImageTwoId: any;
 }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedImageSetter, setSelectedImageSetter] = useState<
@@ -117,7 +122,7 @@ const ImageSelectors = ({
   >(null);
   const [imageOne, setImageOne] = useState<any>(null); // TODO: Fix `any`
   const [imageTwo, setImageTwo] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(!!(imageOneId && imageTwoId));
+  const [loading, setLoading] = useState<boolean>(!!imageIds?.length);
 
   useDisableScroll(showModal);
 
@@ -126,49 +131,55 @@ const ImageSelectors = ({
     setShowModal(true);
   };
 
-  useEffect(() => {
-    const fetchImage = async (id: number) => {
-      const res = await fetch(`/api/pexels/${id}`);
-      const data = await res.json();
-      return data;
-    };
+  // useEffect(() => {
+  //   const fetchImage = async (id: number) => {
+  //     const res = await fetch(`/api/pexels/${id}`);
+  //     const data = await res.json();
+  //     return data;
+  //   };
 
-    const fetchData = async () => {
-      try {
-        if (imageOneId) {
-          const imageOneData = await fetchImage(imageOneId);
-          setImageOne(imageOneData);
-        }
+  //   const fetchData = async () => {
+  //     try {
+  //       if (imageOneId) {
+  //         const imageOneData = await fetchImage(imageOneId);
+  //         setImageOne(imageOneData);
+  //       }
 
-        if (imageTwoId) {
-          const imageTwoData = await fetchImage(imageTwoId);
-          setImageTwo(imageTwoData);
-        }
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       if (imageTwoId) {
+  //         const imageTwoData = await fetchImage(imageTwoId);
+  //         setImageTwo(imageTwoData);
+  //       }
+  //     } catch (error) {
+  //       console.error(error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchData();
-  }, [imageOneId, imageTwoId]);
+  //   fetchData();
+  // }, [imageOneId, imageTwoId]);
 
-  useEffect(() => {
-    if (!!imageOne) {
-      if (imageOne?.id !== imageOneId) {
-        setImageOneId(imageOne.id);
-      }
-    }
-  }, [imageOne]);
+  // useEffect(() => {
+  //   if (!!imageOne) {
+  //     if (imageOne?.id !== imageOneId) {
+  //       setImageOneId(imageOne.id);
+  //     }
+  //   }
+  // }, [imageOne]);
 
-  useEffect(() => {
-    if (!!imageTwo) {
-      if (imageTwo?.id !== imageTwoId) {
-        setImageTwoId(imageTwo.id);
-      }
-    }
-  }, [imageTwo]);
+  // useEffect(() => {
+  //   if (!!imageTwo) {
+  //     if (imageTwo?.id !== imageTwoId) {
+  //       setImageTwoId(imageTwo.id);
+  //     }
+  //   }
+  // }, [imageTwo]);
+
+  const handleSetImageId = (id: string, index: number) => {
+    const newImageIds = [...imageIds];
+    newImageIds[index] = id;
+    setImageIds(newImageIds);
+  };
 
   return (
     <>
@@ -181,18 +192,17 @@ const ImageSelectors = ({
       <Wrap>
         <Label text={"Images"} />
         <ImagesContainer>
-          <ImageSelector
-            image={imageOne}
-            setImage={setImageOne}
-            openModal={openModal}
-            loading={loading}
-          />
-          <ImageSelector
-            image={imageTwo}
-            setImage={setImageTwo}
-            openModal={openModal}
-            loading={loading}
-          />
+          {imageIds?.map((id, index) => {
+            return (
+              <ImageSelector
+                key={index}
+                image={id}
+                setImage={(id) => handleSetImageId(id, index)}
+                openModal={openModal}
+                loading={loading}
+              />
+            );
+          })}
         </ImagesContainer>
       </Wrap>
     </>

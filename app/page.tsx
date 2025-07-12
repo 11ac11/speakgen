@@ -2,59 +2,106 @@
 
 import React from "react";
 import { QuickStart } from "./components/ui";
+import Image from "next/image";
 import styled from "styled-components";
 
 const Container = styled.div`
+  display: flex;
   flex-direction: row;
+  justify-content: center;
+  padding-top: 10%;
 
   h1 {
     margin-top: 0;
   }
 `;
 
-const LeftSide = styled.div`
-  width: 70%;
+const HeroContainer = styled.div`
+  max-width: 1200px;
+  display: flex;
+  align-items: center;
 
   p {
     font-size: 16px;
     margin-bottom: 40px;
   }
+
+  @media only screen and (max-width: 900px) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+`;
+
+const LeftSide = styled.div`
+  flex: 10;
+  padding-right: 2rem;
 `;
 
 const RightSide = styled.div`
-  width: 30%;
-  align-self: flex-start;
+  flex: 1;
 `;
 
-export default function Home() {
+const Title = styled.h1`
+  font-size: 3rem;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 2.4rem;
+  }
+
+  @media only screen and (max-width: 400px) {
+    font-size: 2rem;
+  }
+`;
+
+const SubTitle = styled.h2`
+  font-size: 1.4rem;
+  font-weight: 200;
+  margin: 0 0 2rem 0;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 1.2rem;
+  }
+
+  @media only screen and (max-width: 400px) {
+    font-size: 1rem;
+  }
+`;
+
+const ImageContainer = styled.div`
+  position: relative;
+  width: 400px;
+  height: 350px;
+  align-self: flex-start;
+  border-radius: 10px;
+
+  @media only screen and (max-width: 900px) {
+    margin-top: 2rem;
+    width: 80vw;
+  }
+`;
+
+export default function Landing() {
   return (
     <Container className={"container"}>
-      <LeftSide>
-        <h1>Welcome to Speakgen</h1>
-        <h3>What is Speakgen?</h3>
-        <p>
-          Speakgen is an application which allows you to simulate the cambridge
-          speaking exams. It can be used by both teachers and students.
-        </p>
-        <h3>Do I need an account?</h3>
-        <p>
-          You can use the basic functionality of speakgen without an account,
-          but in order to create questions and sets, you will need to create an
-          account.
-        </p>
-        <h3>What can I do with an account?</h3>
-        <p>You can create your own questions & your own question sets.</p>
-        <h3>What is a question set?</h3>
-        <p>
-          A question set can be in the traditional exam style (part 1, 2, 3, 4)
-          or you can create a set of only part 2 questions. You can focus on
-          specific topics to fit in with any current themes that are currently
-          being learnt.
-        </p>
-      </LeftSide>
-      <RightSide>
-        <QuickStart />
-      </RightSide>
+      <HeroContainer>
+        <LeftSide>
+          <Title>Level Up Your English Speaking—With Speakgen</Title>
+          <SubTitle>
+            Realistic English Speaking Exam Practice for Students and Teachers.
+          </SubTitle>
+          <QuickStart />
+        </LeftSide>
+        <RightSide>
+          <ImageContainer>
+            <Image
+              src="/speech-bubbles-people.jpg"
+              alt="Speech bubbles"
+              fill
+              style={{ objectFit: "cover", borderRadius: "10px" }}
+            />
+          </ImageContainer>
+        </RightSide>
+      </HeroContainer>
     </Container>
   );
 }

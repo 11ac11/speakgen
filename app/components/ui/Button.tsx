@@ -36,9 +36,12 @@ const StyledButton = styled.button<StyledButtonProps>`
   ${({ $isBigButton }) =>
     $isBigButton &&
     `
-    width: 100%;
-    height: 80px;
     background: var(--limegreen);
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 1.2rem;
+    padding: 0.8rem 2rem;
+    border-radius: 4rem;
   `}
 
   transition: color 0.3s linear, opacity 0.1s linear;
