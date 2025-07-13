@@ -15,6 +15,7 @@ import {
 interface Question {
   part: string;
   id: number;
+  level: string;
   statement: string;
   themes: string[] | null;
   owner_id: string;
@@ -68,9 +69,9 @@ export default function Table({ ownerId }: { ownerId: string }) {
     }
   }, []);
 
-  const handleDelete = async (part: string, id: number) => {
+  const handleDelete = async (level: string, part: string, id: number) => {
     try {
-      const response = await fetch(`/api/questions/${part}/${id}`, {
+      const response = await fetch(`/api/questions/${level}/${part}/${id}`, {
         method: "DELETE",
       });
 
@@ -164,13 +165,16 @@ export default function Table({ ownerId }: { ownerId: string }) {
         header: "",
         accessorKey: "actions",
         size: 100,
-        cell: ({ row }) => (
-          <Actions
-            questionId={row.original.id}
-            part={row.original.part}
-            handleDelete={handleDelete}
-          />
-        ),
+        cell: ({ row }) => {
+          return (
+            <Actions
+              questionId={row.original.id}
+              part={row.original.part}
+              level={row.original.level}
+              handleDelete={handleDelete}
+            />
+          );
+        },
       },
     ],
     []
