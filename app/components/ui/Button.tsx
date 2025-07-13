@@ -5,10 +5,14 @@ import Image from "next/image";
 type StyledButtonProps = {
   $secondary?: boolean; // Optional secondary prop
   $isBigButton?: boolean;
+  $isDashboardButton?: boolean;
   $width?: string | number;
 };
 
-const Wrap = styled.div``;
+const Wrap = styled.div`
+  display: flex;
+  align-items: flex-end;
+`;
 
 const StyledButton = styled.button<StyledButtonProps>`
   cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
@@ -45,6 +49,19 @@ const StyledButton = styled.button<StyledButtonProps>`
     padding: 0.8rem 2rem;
     border-radius: 4rem;
   `}
+  ${({ $isDashboardButton }) =>
+    $isDashboardButton &&
+    `
+      display: flex;
+    border-radius: 8px;
+    border-style: solid;
+    border-width: 1px;
+    outline: none;
+    padding: 0.5rem 1rem;
+    font-size: 16px;
+    font-weight: 700;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  `}
 
   transition: color 0.3s linear, opacity 0.1s linear;
 
@@ -69,6 +86,7 @@ type ButtonProps = {
   iconUrl?: "text" | undefined;
   isBigButton?: boolean | undefined;
   width?: string | number;
+  isDashboardButton?: boolean | undefined;
 };
 
 const Button: React.FC<ButtonProps> = ({
@@ -82,6 +100,7 @@ const Button: React.FC<ButtonProps> = ({
   className,
   iconUrl,
   isBigButton,
+  isDashboardButton,
   width,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -115,6 +134,7 @@ const Button: React.FC<ButtonProps> = ({
         type={type}
         $isBigButton={isBigButton}
         $width={width}
+        $isDashboardButton={isDashboardButton}
       >
         {iconUrl && <Image src={iconUrl} alt="" width={16} height={16} />}
         {isLoading ? loadingText : text}

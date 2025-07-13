@@ -105,6 +105,7 @@ interface DropdownProps {
   className?: string;
   width?: string | undefined;
   inputAsButton?: boolean | undefined;
+  isDashboardButton?: boolean | undefined;
 }
 
 // Dropdown Component
@@ -117,6 +118,7 @@ export const Dropdown = ({
   className,
   width,
   inputAsButton,
+  isDashboardButton,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -156,6 +158,7 @@ export const Dropdown = ({
                 onClick={toggleDropdown}
                 isBigButton
                 width={width}
+                isDashboardButton
               />
             ) : (
               <StyledInput

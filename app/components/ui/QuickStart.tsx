@@ -1,7 +1,13 @@
 import React from "react";
 import { Dropdown } from "./";
 
-export default function QuickStart({}: {}) {
+export default function QuickStart({
+  isDashboardButton,
+  width,
+}: {
+  isDashboardButton?: boolean | undefined;
+  width?: string | undefined;
+}) {
   const handleQuickStart = (value: any) => {
     console.log(value);
   };
@@ -12,8 +18,9 @@ export default function QuickStart({}: {}) {
       value={""}
       onChange={handleQuickStart}
       placeholder="Quick Start"
-      width="200px"
+      width={width || "200px"}
       inputAsButton={true}
+      isDashboardButton={isDashboardButton}
     />
   );
 }

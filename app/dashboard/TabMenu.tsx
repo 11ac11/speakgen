@@ -8,7 +8,7 @@ const TabContainer = styled.div`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 50%;
+  width: 100%;
   margin-bottom: 20px;
   gap: 20px;
 `;

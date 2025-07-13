@@ -10,7 +10,7 @@ const StyledTab = styled.div<StyledTabProps>`
   border-bottom: ${({ $isActive }) =>
     $isActive ? "2px solid var(--leafgreen)" : ""};
   width: 250px;
-  padding-bottom: 5px;
+  padding-bottom: 10px;
   text-align: center;
   cursor: pointer;
   text-transform: uppercase;

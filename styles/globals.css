@@ -49,7 +49,7 @@ main {
   flex-direction: column;
   align-items: center;
   min-height: 90vh;
-  max-width: 85%;
+  max-width: 800px;
   margin: auto;
 }
 
