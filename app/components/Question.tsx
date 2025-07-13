@@ -1,6 +1,6 @@
 "use client";
 
-import React, { CSSProperties } from "react";
+import React, { useEffect, useState, CSSProperties } from "react";
 import Image from "next/image";
 import styles from "@/styles/speaking3.module.css";
 import styled from "styled-components";
@@ -17,6 +17,7 @@ const ImagesContainer = styled.div`
   height: 60%;
   max-height: 60%;
   position: relative;
+  margin-top: 10px;
 
   @media only screen and (max-width: 768px) {
     flex-direction: column;
@@ -29,6 +30,7 @@ const ImagesContainer = styled.div`
 const ImageContainter = styled.div`
   position: relative;
   width: 50%;
+  height: 500px;
 
   @media only screen and (max-width: 768px) {
     width: 100%;
@@ -59,17 +61,50 @@ export default function Question({
   theme: string | undefined;
   part: string | undefined;
 }) {
-  if (part === "part1/4") {
+  if (part === "1" || part === "4") {
     return (
       <div className="themeCont glass">
         <p className="themeText">{theme}</p>
-        <h2>{`${question}`}</h2>
+        <h2>{`${question.statement}`}</h2>
       </div>
     );
   }
 
-  if (part === "part2") {
-    const { image1, image2, statement } = question as Part2QStructure;
+  if (part === "2") {
+    const { image_ids, statement } = question as Part2QStructure;
+
+    const [loading, setLoading] = useState(true);
+    const [images, setImages] = useState([]);
+
+    useEffect(() => {
+      const fetchImage = async (id: string | null) => {
+        if (!id) return null;
+        const numId = Number(id);
+        if (isNaN(numId)) return null;
+
+        const res = await fetch(`/api/pexels/${numId}`);
+        return await res.json();
+      };
+
+      const fetchData = async () => {
+        try {
+          const imageData = await Promise.all(image_ids.map(fetchImage));
+          setImages(imageData);
+          console.log("imageData:", imageData);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      if (image_ids?.length) {
+        setLoading(true);
+        fetchData();
+      }
+    }, [image_ids]);
+
+    console.log("images:", images);
 
     return (
       <>
@@ -77,26 +112,32 @@ export default function Question({
           <Statement>{statement}</Statement>
         </div>
         <ImagesContainer>
-          <ImageContainter>
-            <Image src={image1} alt="" style={imageStyle} fill />
-          </ImageContainter>
-          <ImageContainter>
-            <Image src={image2} alt="" style={imageStyle} fill />
-          </ImageContainter>
+          {images?.map((image: any) => {
+            return (
+              <ImageContainter>
+                <Image
+                  src={image?.src?.landscape}
+                  alt=""
+                  style={imageStyle}
+                  fill
+                />
+              </ImageContainter>
+            );
+          })}
         </ImagesContainer>
       </>
     );
   }
 
-  if (part === "part3") {
-    const { points, statement } = question as Part3QStructure;
+  if (part === "3") {
+    const { prompts, statement } = question as Part3QStructure;
 
     return (
       <>
         <div className={styles.questionCont}>
           <div className={styles.pointsCont}>
             <div className={styles.themePoint}>
-              {points.slice(0, points.length / 2).map((question, index) => (
+              {prompts.slice(0, prompts.length / 2).map((question, index) => (
                 <div className={`${styles.question} glass`} key={index}>
                   <p>{question}</p>
                 </div>
@@ -109,7 +150,7 @@ export default function Question({
           </div>
           <div className={styles.pointsCont}>
             <div className={styles.themePoint}>
-              {points.slice(points.length / 2).map((question, index) => (
+              {prompts.slice(prompts.length / 2).map((question, index) => (
                 <div className={`${styles.question} glass`} key={index}>
                   <p>{question}</p>
                 </div>

@@ -194,18 +194,19 @@ export default function Table({
         accessorKey: "actions",
         size: 100,
         cell: ({ row }) => {
+          console.log("filters:", filters);
           return (
             <Actions
               questionId={row.original.id}
               part={row.original.part}
-              level={row.original.level}
+              level={filters?.level}
               handleDelete={handleDelete}
             />
           );
         },
       },
     ],
-    []
+    [filters?.level]
   );
 
   const table = useReactTable({

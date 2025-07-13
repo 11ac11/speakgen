@@ -50,11 +50,11 @@ export type Part2QStructure = {
 
 export type Part3QStructure = {
   statement: string;
-  points: string[];
+  prompts: string[];
 };
 
 export type NewPart1QStructure = {
   id: number;
-  question: string;
+  statement: string;
   themes: string[];
 };

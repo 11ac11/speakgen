@@ -5,6 +5,7 @@ import React from "react";
 // } from "../../services/part1Service";
 // import PartOneQuestion from "@/app/components/PartOneQuestion";
 import QuestionContainer from "@/app/components/QuestionContainer";
+import Question from "@/app/components/Question";
 // import { getRandomPartOneQuestion } from "../../services/part1Service";
 
 export default async function SpeakingOne() {
@@ -12,5 +13,5 @@ export default async function SpeakingOne() {
   // pass the questions as props to the question container, then render a singular question inside that
   // const newQuestion = await getRandomPartOneQuestion();
 
-  return <QuestionContainer />;
+  return <Question />;
 }
