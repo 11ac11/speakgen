@@ -55,7 +55,7 @@ const ImageSearchModal = ({
         <h2>Search images</h2>
         <Input
           type="text"
-          placeholder="nature"
+          placeholder="(e.g. nature)"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e)}
         />

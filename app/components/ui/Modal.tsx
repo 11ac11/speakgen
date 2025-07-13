@@ -29,8 +29,8 @@ const Modal = styled.div`
   position: absolute;
   display: flex;
   flex-direction: column;
-  min-width: 500px;
-  min-height: 300px;
+  min-width: 600px;
+  min-height: 400px;
   max-width: 75%;
   max-height: 75%;
   position: absolute;

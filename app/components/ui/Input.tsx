@@ -70,6 +70,9 @@ const SecureInput: React.FC<SecureInputProps> = ({
   children,
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
+  const [inputPlaceholder, setInputPlaceholder] = useState<string | undefined>(
+    placeholder
+  );
 
   // Utility function to sanitize the input value to prevent XSS attacks
   const sanitizeInput = (input: string) => {
@@ -106,9 +109,13 @@ const SecureInput: React.FC<SecureInputProps> = ({
         name={name}
         onChange={handleChange}
         onClick={onClick}
-        onBlur={handleBlur}
+        onFocus={() => setInputPlaceholder("")}
+        onBlur={(e) => {
+          handleBlur?.(e); // optional chaining if `handleBlur` exists
+          setInputPlaceholder(placeholder); // restore
+        }}
         required={required}
-        placeholder={placeholder}
+        placeholder={inputPlaceholder}
         minLength={minLength}
         maxLength={maxLength}
         error={inputError}
