@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-
 import styled from "styled-components";
 import { Input, Button, Dropdown } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
@@ -38,7 +37,6 @@ const QuestionForm = ({
 }) => {
   const router = useRouter();
   const isEdit = !!question;
-  const { image_one, image_two, image_three, image_four } = question || {};
 
   const [level, setLevel] = useState(levelParam || "");
   const [part, setPart] = useState(partParam || "");
@@ -47,12 +45,7 @@ const QuestionForm = ({
   const [prompts, setPrompts] = useState<string[]>(question?.prompts || []);
   const [themes, setThemes] = useState<string[]>(question?.themes || []);
   const [loading, setLoading] = useState(false);
-  const [imageIds, setImageIds] = useState([
-    image_one,
-    image_two,
-    image_three,
-    image_four,
-  ]);
+  const [imageIds, setImageIds] = useState(question?.image_ids || []);
 
   const allFieldsCompleted = !!part && !!statement && themes.length > 0;
 
@@ -82,12 +75,7 @@ const QuestionForm = ({
       themes: themes,
       public: true,
       ...(part === "2" && {
-        image_one: imageIds[0],
-        image_two: imageIds[1],
-        ...(level === "c2" && {
-          image_three: imageIds[2],
-          image_four: imageIds[3],
-        }),
+        image_ids: imageIds,
       }),
       ...(part === "3" && {
         prompts: prompts,
@@ -163,7 +151,11 @@ const QuestionForm = ({
             />
           )}
           {part === "2" && (
-            <ImageSelectors imageIds={imageIds} setImageIds={setImageIds} />
+            <ImageSelectors
+              imageIds={imageIds}
+              setImageIds={setImageIds}
+              level={level}
+            />
           )}
           {part === "3" && (
             <Prompts prompts={prompts} setPrompts={setPrompts} />

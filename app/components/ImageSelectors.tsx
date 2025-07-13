@@ -69,8 +69,8 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
   setImage,
   openModal,
   loading,
-}) =>
-  image ? (
+}) => {
+  return image ? (
     <div style={{ position: "relative", width: "45%" }}>
       <Image
         src={image?.src?.landscape}
@@ -100,80 +100,83 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
       Select image
     </EmptyImageContainer>
   );
+};
 
 const ImageSelectors = ({
   imageIds,
   setImageIds,
-}: // imageOneId,
-// setImageOneId,
-// imageTwoId,
-// setImageTwoId,
-{
-  imageIds: string[] | null[] | [];
+  level,
+}: {
+  imageIds: (string | null)[];
   setImageIds: any;
-  // imageOneId: number | undefined;
-  // imageTwoId: number | undefined;
-  // setImageOneId: any; // TODO: fix any
-  // setImageTwoId: any;
+  level: string;
 }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedImageSetter, setSelectedImageSetter] = useState<
     ((image: any) => void) | null
   >(null);
-  const [imageOne, setImageOne] = useState<any>(null); // TODO: Fix `any`
-  const [imageTwo, setImageTwo] = useState<any>(null);
+  const [images, setImages] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(!!imageIds?.length);
+
+  const minimumAmountOfImages = (() => {
+    switch (level) {
+      case "B1":
+        return 1;
+      case "B2":
+        return 2;
+      case "C1":
+        return 3;
+      case "C2":
+        return 4;
+      default:
+        return 2;
+    }
+  })();
 
   useDisableScroll(showModal);
 
-  const openModal = (setImage: (image: any) => void) => {
-    setSelectedImageSetter(() => setImage);
+  const openModal = (index: number) => {
+    setSelectedImageSetter(() => (image: any) => {
+      const updated = [...images];
+      updated[index] = image;
+      setImages(updated);
+    });
     setShowModal(true);
   };
 
-  // useEffect(() => {
-  //   const fetchImage = async (id: number) => {
-  //     const res = await fetch(`/api/pexels/${id}`);
-  //     const data = await res.json();
-  //     return data;
-  //   };
+  useEffect(() => {
+    const fetchImage = async (id: string | null) => {
+      if (!id) return null;
+      const numId = Number(id);
+      if (isNaN(numId)) return null;
 
-  //   const fetchData = async () => {
-  //     try {
-  //       if (imageOneId) {
-  //         const imageOneData = await fetchImage(imageOneId);
-  //         setImageOne(imageOneData);
-  //       }
+      const res = await fetch(`/api/pexels/${numId}`);
+      return await res.json();
+    };
 
-  //       if (imageTwoId) {
-  //         const imageTwoData = await fetchImage(imageTwoId);
-  //         setImageTwo(imageTwoData);
-  //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+    const fetchData = async () => {
+      try {
+        const imageData = await Promise.all(imageIds.map(fetchImage));
+        setImages(imageData);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   fetchData();
-  // }, [imageOneId, imageTwoId]);
+    if (imageIds?.length) {
+      setLoading(true);
+      fetchData();
+    }
+  }, [imageIds]);
 
-  // useEffect(() => {
-  //   if (!!imageOne) {
-  //     if (imageOne?.id !== imageOneId) {
-  //       setImageOneId(imageOne.id);
-  //     }
-  //   }
-  // }, [imageOne]);
-
-  // useEffect(() => {
-  //   if (!!imageTwo) {
-  //     if (imageTwo?.id !== imageTwoId) {
-  //       setImageTwoId(imageTwo.id);
-  //     }
-  //   }
-  // }, [imageTwo]);
+  useEffect(() => {
+    const updatedIds = images.map((img) => img?.id || null);
+    if (JSON.stringify(updatedIds) !== JSON.stringify(imageIds)) {
+      setImageIds(updatedIds);
+    }
+  }, [images]);
 
   const handleSetImageId = (id: string, index: number) => {
     const newImageIds = [...imageIds];
@@ -192,13 +195,15 @@ const ImageSelectors = ({
       <Wrap>
         <Label text={"Images"} />
         <ImagesContainer>
-          {imageIds?.map((id, index) => {
+          {Array.from({ length: minimumAmountOfImages }).map((_, index) => {
+            const image = images?.[index] ?? null;
+
             return (
               <ImageSelector
                 key={index}
-                image={id}
-                setImage={(id) => handleSetImageId(id, index)}
-                openModal={openModal}
+                image={image}
+                setImage={(newImage) => handleSetImageId(newImage, index)}
+                openModal={() => openModal(index)}
                 loading={loading}
               />
             );

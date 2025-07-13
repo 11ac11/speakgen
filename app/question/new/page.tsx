@@ -2,11 +2,7 @@ import React from "react";
 import QuestionForm from "@/app/components/QuestionForm";
 
 const CreateQuestion = () => {
-  return (
-    <>
-      <QuestionForm />
-    </>
-  );
+  return <QuestionForm />;
 };
 
 export default CreateQuestion;

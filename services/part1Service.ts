@@ -25,13 +25,18 @@ export async function createQuestion(
   payload: any
 ) {
   try {
-    const response = await fetch(`/api/questions/${level}/${part}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      `/api/questions/${level.toLowerCase()}/${part}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
+
+    console.log("response:", response);
 
     if (!response.ok) {
       throw new Error(`Failed to create question: ${response.statusText}`);
@@ -51,13 +56,16 @@ export async function updateQuestion(
   payload: any
 ) {
   try {
-    const response = await fetch(`/api/questions/${level}/${part}/${id}`, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
+    const response = await fetch(
+      `/api/questions/${level.toLowerCase()}/${part}/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      }
+    );
 
     if (!response.ok) {
       throw new Error(`Failed to update question: ${response.statusText}`);
