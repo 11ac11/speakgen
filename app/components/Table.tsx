@@ -43,19 +43,46 @@ const TableData = styled.td`
   text-overflow: ellipsis;
 `;
 
-export default function Table({ ownerId }: { ownerId: string }) {
+export default function Table({
+  ownerId,
+  filters,
+}: {
+  ownerId: string;
+  filters: any;
+}) {
   const [data, setData] = useState<Question[]>([]);
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
 
   async function fetchQuestions() {
     try {
-      const res = await fetch(`/api/questions/all?owner_id=${ownerId}`);
-      if (!res.ok) throw new Error("Failed to load questions");
-      const data: Question[] = await res.json();
-      setData(data);
+      setError(null);
+      if (filters.level === "all" && filters.part === "all") {
+        const res = await fetch(`/api/u/${ownerId}/questions/all`);
+        if (!res.ok) throw new Error("Failed to load questions");
+        const data: Question[] = await res.json();
+        setData(data);
+      } else {
+        const partApiString = filters.part !== "all" ? `/${filters.part}` : "";
+        const res = await fetch(
+          `/api/u/${ownerId}/questions/${filters.level}${partApiString}`
+        );
+        if (!res.ok) throw new Error("Failed to load questions");
+        const data: Question[] = await res.json();
+        console.log("data:", data);
+        const dataWithPart = data?.map((data) => {
+          if (!data?.part) {
+            return {
+              ...data,
+              part: filters.part,
+            };
+          }
+          return data;
+        });
+        console.log("dataWithPart:", dataWithPart);
+        setData(dataWithPart);
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unknown error");
     } finally {
@@ -67,7 +94,7 @@ export default function Table({ ownerId }: { ownerId: string }) {
     if (ownerId) {
       fetchQuestions();
     }
-  }, []);
+  }, [filters]);
 
   const handleDelete = async (level: string, part: string, id: number) => {
     try {
@@ -96,6 +123,7 @@ export default function Table({ ownerId }: { ownerId: string }) {
         header: "Part",
         accessorKey: "part",
         cell: ({ row }) => {
+          console.log("row:", row);
           const storedPart = PART_VALUES_FOR_PILLS.find((part) =>
             part.value.includes(row.original?.part)
           );

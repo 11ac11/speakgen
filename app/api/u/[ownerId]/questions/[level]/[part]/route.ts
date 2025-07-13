@@ -5,14 +5,11 @@ import { NextRequest, NextResponse } from "next/server";
 // Handle GET requests to fetch all questions
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string }> }
+  context: { params: Promise<{ ownerId: string; level: string; part: string }> }
 ) {
   try {
-    const { searchParams } = new URL(req.url);
-    const isRandom = searchParams.get("random") === "true";
-
     // ✅ Await params before using it
-    const { level, part } = await context.params;
+    const { ownerId, level, part } = await context.params;
 
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
@@ -30,8 +27,7 @@ export async function GET(
     };
 
     const tableName = tableMap[part];
-    const random = isRandom ? " ORDER BY RANDOM() LIMIT 1" : "";
-    const query = `SELECT * FROM ${tableName}${random}`;
+    const query = `SELECT * FROM ${tableName} WHERE owner_id = ${ownerId}`;
     const result = await sql(query);
 
     if (result.length === 0) {
@@ -41,7 +37,7 @@ export async function GET(
       );
     }
 
-    return NextResponse.json(result[0]);
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Database query failed:", error);
     return NextResponse.json(

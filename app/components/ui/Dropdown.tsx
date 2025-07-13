@@ -4,13 +4,37 @@ import { useState, useRef, useEffect } from "react";
 import styled from "styled-components";
 import { Input, Button } from "./";
 
-const DropdownWrap = styled.div<{ width: string | undefined }>`
+const DropdownWrap = styled.div<{
+  width?: string;
+  $disabled?: boolean;
+}>`
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
   align-items: flex-start;
   position: relative;
   ${({ width }) => width && `width: ${width};`}
+  ${({ $disabled }) =>
+    $disabled &&
+    `
+      cursor: not-allowed;
+      pointer-actions: none;
+
+      input {
+        background-color: var(--verylightgrey);
+        border-color: var(--verylightgrey);
+        color: grey;
+      }
+      input:hover {
+        border: 1px solid var(--verylightgrey);
+      }
+      svg {
+        color: grey;
+      }
+      * {
+        cursor: not-allowed !important;
+      }
+  `}
 `;
 
 const Label = styled.label`
@@ -20,7 +44,7 @@ const Label = styled.label`
 
 const DropdownOptions = styled.div`
   border: 1px solid var(--verylightgrey);
-  border-radius: 1rem;
+  border-radius: 8px;
   background-color: white;
   color: grey;
   display: flex;
@@ -68,7 +92,7 @@ const InputWrapper = styled.div`
   align-items: center;
 `;
 
-const StyledInput = styled(Input)`
+const StyledInput = styled(Input)<{ disabled: boolean | undefined }>`
   & input {
     text-align: center;
     caret-color: transparent;
@@ -76,11 +100,15 @@ const StyledInput = styled(Input)`
     text-overflow: ellipsis;
   }
 
-  & input:hover,
-  & input:focus {
-    cursor: pointer;
-    border: 1px solid var(--lightgrey);
-  }
+  ${({ disabled }) =>
+    !disabled &&
+    `
+      & input:hover,
+      & input:focus {
+        cursor: pointer;
+        border: 1px solid var(--lightgrey);
+      }
+    `}
 `;
 
 const Arrow = styled.span<{ $isOpen: boolean }>`
@@ -106,6 +134,7 @@ interface DropdownProps {
   width?: string | undefined;
   inputAsButton?: boolean | undefined;
   isDashboardButton?: boolean | undefined;
+  disabled?: boolean | undefined;
 }
 
 // Dropdown Component
@@ -119,11 +148,13 @@ export const Dropdown = ({
   width,
   inputAsButton,
   isDashboardButton,
+  disabled,
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
 
   const toggleDropdown = () => {
+    if (disabled) return;
     setIsOpen((prev) => !prev);
   };
 
@@ -147,7 +178,7 @@ export const Dropdown = ({
   }, []);
 
   return (
-    <DropdownWrap ref={ref} width={width}>
+    <DropdownWrap ref={ref} width={width} $disabled={disabled}>
       {
         <>
           {label && <Label>{label}</Label>}
@@ -158,7 +189,7 @@ export const Dropdown = ({
                 onClick={toggleDropdown}
                 isBigButton
                 width={width}
-                isDashboardButton
+                isDashboardButton={isDashboardButton}
               />
             ) : (
               <StyledInput
@@ -169,6 +200,7 @@ export const Dropdown = ({
                 placeholder={placeholder}
                 type={"select"}
                 className={className}
+                disabled={disabled}
               />
             )}
             <Arrow $isOpen={isOpen}>
@@ -187,7 +219,7 @@ export const Dropdown = ({
           </InputWrapper>
         </>
       }
-      {isOpen && (
+      {isOpen && !disabled && (
         <DropdownOptions>
           <ul>
             {options.map((option, index) => (

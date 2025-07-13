@@ -4,7 +4,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { z } from "zod";
 import type { User } from "./lib/definitions";
 import bcrypt from "bcrypt";
-import { sql } from "./lib/db";
+import { sql } from "@/lib/db";
 
 async function getUser(email: string): Promise<User | undefined> {
   try {

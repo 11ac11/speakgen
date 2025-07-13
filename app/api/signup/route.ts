@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { sql } from "../../../lib/db";
+import { sql } from "@/lib/db";
 import { z } from "zod";
 
 const signupSchema = z.object({

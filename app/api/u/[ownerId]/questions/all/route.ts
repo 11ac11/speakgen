@@ -1,13 +1,16 @@
-import { sql } from "../../../../lib/db";
+import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 // List schemas you want to include (manually for safety)
 const allowedLevels = ["b2", "c1", "c2"];
 
-export async function GET(req: NextRequest) {
+export async function GET(
+  req: NextRequest,
+  context: { params: Promise<{ ownerId: string }> }
+) {
   try {
-    const { searchParams } = new URL(req.url);
-    const ownerId = searchParams.get("owner_id");
+    // ✅ Await params before using it
+    const { ownerId } = await context.params;
 
     if (!ownerId) {
       return NextResponse.json(

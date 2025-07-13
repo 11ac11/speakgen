@@ -50,6 +50,7 @@ type SecureInputProps = {
   isDropdown?: boolean;
   width?: string;
   children?: any;
+  disabled?: boolean | undefined;
 };
 
 const SecureInput: React.FC<SecureInputProps> = ({
@@ -68,6 +69,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
   error,
   width,
   children,
+  disabled,
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
   const [inputPlaceholder, setInputPlaceholder] = useState<string | undefined>(
@@ -120,6 +122,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
         maxLength={maxLength}
         error={inputError}
         className={`${className} shadow`}
+        disabled={disabled}
       />
       {children}
       {inputError && (

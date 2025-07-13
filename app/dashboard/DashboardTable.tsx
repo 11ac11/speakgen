@@ -1,9 +1,9 @@
 "use client";
 
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Table from "../components/Table";
-
 import { Button, Dropdown, QuickStart } from "../components/ui";
 
 const FiltersRow = styled.div`
@@ -39,8 +39,12 @@ const Dashboardbutton = styled(Button)`
 `;
 
 export default function DashboardTable({}: {}) {
+  const [filters, setFilters] = useState({ part: "all", level: "b2" });
   const router = useRouter();
-  const ownerId = "2"; // intial
+  const ownerId = "2"; // TODO: make dynamic
+
+  const capitalizeFirstLetter = (str: string) =>
+    str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 
   return (
     <>
@@ -49,20 +53,27 @@ export default function DashboardTable({}: {}) {
           <Dropdown
             label="Level"
             width={"100px"}
-            value={"All"}
-            options={["All", "B2", "C1", "C2"]}
-            onChange={function (option: string): void {
-              throw new Error("Function not implemented.");
-            }}
+            value={capitalizeFirstLetter(filters.level)}
+            options={["B2", "C1", "C2"]}
+            onChange={(value) =>
+              setFilters((prevFilters) => ({
+                ...prevFilters,
+                level: value.toLowerCase(),
+              }))
+            }
           />
           <Dropdown
             label="Part"
+            disabled={filters.level === "all"}
             width={"100px"}
-            value={"1"}
-            options={["1", "2", "3", "4"]}
-            onChange={function (option: string): void {
-              throw new Error("Function not implemented.");
-            }}
+            value={capitalizeFirstLetter(filters.part)}
+            options={["All", "1", "2", "3", "4"]}
+            onChange={(value) =>
+              setFilters((prevFilters) => ({
+                ...prevFilters,
+                part: value.toLowerCase(),
+              }))
+            }
           />
         </LeftSide>
         <RightSide>
@@ -74,9 +85,7 @@ export default function DashboardTable({}: {}) {
           <QuickStart isDashboardButton />
         </RightSide>
       </FiltersRow>
-      <div>
-        <Table ownerId={ownerId} />
-      </div>
+      <Table ownerId={ownerId} filters={filters} />
     </>
   );
 }
