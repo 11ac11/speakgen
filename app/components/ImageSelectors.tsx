@@ -18,6 +18,7 @@ const ImagesContainer = styled.div`
   flex-direction: row;
   justify-content: space-between;
   flex-wrap: wrap;
+  gap: 10px;
 
   & > div,
   img {
@@ -94,7 +95,9 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
       </XIcon>
     </div>
   ) : loading ? (
-    <LoadingSpinner />
+    <div style={{ position: "relative", width: "45%" }}>
+      <LoadingSpinner />
+    </div>
   ) : (
     <EmptyImageContainer onClick={() => openModal(setImage)}>
       Select image
