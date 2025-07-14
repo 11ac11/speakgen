@@ -72,3 +72,5 @@
 //     },
 //   ],
 // };
+
+export {}; // 👈 forces this file to be treated as a module so build doesn't fail
