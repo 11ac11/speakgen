@@ -5,19 +5,13 @@ import styled from "styled-components";
 import { QuestionStructures } from "@/types/types";
 
 const TimerBox = styled.div`
-  position: absolute;
-  align-self: center;
-  right: 0;
-  z-index: 2;
+  width: 80px;
+  text-align: end;
 
   & > span {
     font-size: 3rem;
-    color: white;
+    color: lightgrey;
     font-variant-numeric: tabular-nums;
-  }
-
-  @media only screen and (max-width: 1000px) {
-    right: 1rem;
   }
 
   @media only screen and (max-width: 768px) {

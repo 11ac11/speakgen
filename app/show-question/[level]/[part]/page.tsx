@@ -1,5 +1,6 @@
 import React from "react";
 import Question from "@/app/components/Question";
+import { QuestionControls } from "@/app/show-question/[level]/[part]/QuestionControls";
 
 const getRandomQuestion = async (level: string, part: string) => {
   console.log("Fetching question:", level, part);
@@ -47,7 +48,17 @@ const ShowQuestion = async ({
   const question = await getRandomQuestion(level, part);
   console.log("question:", question);
 
-  return <Question question={question} part={part} />;
+  const getNewQuestion = async () => {
+    const question = await getRandomQuestion(level, part);
+    return question;
+  };
+
+  return (
+    <>
+      <QuestionControls question={question} part={part} />
+      <Question question={question} part={part} />
+    </>
+  );
 };
 
 export default ShowQuestion;

@@ -15,11 +15,8 @@ import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 const ImagesContainer = styled.div`
   width: 100%;
-  max-width: 90%;
   display: flex;
   gap: 1rem;
-  height: 60%;
-  max-height: 60%;
   position: relative;
   margin-top: 20px;
 
@@ -38,7 +35,7 @@ const ImagesContainer = styled.div`
 const ImageContainer = styled.div`
   position: relative;
   width: 50%;
-  height: 50vh;
+  height: 40vh;
 
   @media only screen and (max-width: 768px) {
     width: 100%;
@@ -63,7 +60,7 @@ const QuestionCont = styled.div`
   justify-content: flex-start;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 50px;
 `;
 
 const PromptContainer = styled.div`
@@ -79,7 +76,7 @@ const PromptContainer = styled.div`
 const Prompt = styled.div`
   flex: 1;
   height: auto;
-  min-height: 20%;
+  min-height: 10vh;
   min-width: min-content;
   border-radius: 1rem;
   text-align: center;
