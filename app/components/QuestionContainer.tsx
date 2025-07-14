@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { getRandomPartOneQuestion } from "@/services/part1Service";
 import Button from "./ui/Button";
 import Instructions from "./Instructions";
-import PartOneQuestion from "./PartOneQuestion";
 import Timer from "./Timer";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
@@ -40,14 +39,14 @@ export default function QuestionContainer() {
         {question && <Timer question={question} timeLeft={60} />}
       </div>
       {loading && <LoadingSpinner />}
-      {question ? (
+      {/* {question ? (
         <PartOneQuestion
           question={question.question}
           themes={question.themes}
         />
       ) : (
         <Instructions instructions="test" speakTo="someone" />
-      )}
+      )} */}
     </div>
   );
 }
