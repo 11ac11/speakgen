@@ -121,7 +121,7 @@ export default function Question({
     case "3":
       return <Part3 question={question as Part3QStructure} />;
     default:
-      return null;
+      return <>'Not a valid part'</>;
   }
 }
 
