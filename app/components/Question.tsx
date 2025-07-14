@@ -110,7 +110,7 @@ export default function Question({
   question: QuestionStructures;
   part: string;
 }) {
-  if (!question) return <>'No question'</>;
+  if (!question) return <>No question</>;
 
   switch (part) {
     case "1":
@@ -121,7 +121,7 @@ export default function Question({
     case "3":
       return <Part3 question={question as Part3QStructure} />;
     default:
-      return <>'Not a valid part'</>;
+      return <>Not a valid part</>;
   }
 }
 
