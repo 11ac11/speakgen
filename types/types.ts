@@ -33,24 +33,36 @@
 
 // export type QuestionTypes = Part1and4 | Part2 | Part3 | NewPart1QStructure;
 
+export type User = {
+  id: string;
+  email: string;
+  password: string;
+};
+
 export type QuestionStructures =
   | NewPart1QStructure
   | Part2QStructure
   | Part3QStructure;
 
 export type Part2QStructure = {
+  id: number;
   statement: string;
+  public: boolean;
+  themes: string[];
   image_ids: number[];
-  followUp: string;
 };
 
 export type Part3QStructure = {
+  id: number;
   statement: string;
+  public: boolean;
+  themes: string[];
   prompts: string[];
 };
 
 export type NewPart1QStructure = {
   id: number;
   statement: string;
+  public: boolean;
   themes: string[];
 };

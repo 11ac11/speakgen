@@ -2,7 +2,7 @@ import NextAuth, { SessionStrategy } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { z } from "zod";
-import type { User } from "./lib/definitions";
+import type { User } from "./types/types";
 import bcrypt from "bcrypt";
 import { sql } from "@/lib/db";
 

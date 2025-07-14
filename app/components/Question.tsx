@@ -1,23 +1,27 @@
 "use client";
 
-import React, { useEffect, useState, CSSProperties } from "react";
+import React, { useEffect, useState } from "react";
+
 import Image from "next/image";
-import styles from "@/styles/speaking3.module.css";
 import styled from "styled-components";
+import { StatementAndTheme } from "./ui/StatementAndTheme";
 import {
   QuestionStructures,
   Part2QStructure,
   Part3QStructure,
+  NewPart1QStructure,
 } from "@/types/types";
+import { LoadingSpinner } from "./ui/LoadingSpinner";
 
 const ImagesContainer = styled.div`
   width: 100%;
+  max-width: 90%;
   display: flex;
   gap: 1rem;
   height: 60%;
   max-height: 60%;
   position: relative;
-  margin-top: 10px;
+  margin-top: 20px;
 
   img {
     border-radius: 8px;
@@ -31,24 +35,13 @@ const ImagesContainer = styled.div`
   }
 `;
 
-const ImageContainter = styled.div`
+const ImageContainer = styled.div`
   position: relative;
   width: 50%;
-  height: 500px;
+  height: 50vh;
 
   @media only screen and (max-width: 768px) {
     width: 100%;
-    height: 60%;
-  }
-`;
-
-const Statement = styled.span`
-  font-size: 2rem;
-  margin: 0.5rem 1rem;
-  font-weight: 700;
-
-  @media only screen and (max-width: 768px) {
-    font-size: 1rem;
   }
 `;
 
@@ -71,23 +64,6 @@ const QuestionCont = styled.div`
   flex-direction: column;
   align-items: center;
   gap: 1rem;
-`;
-
-const StatementContainer = styled.div`
-  display: flex;
-  align-items: center;
-  align-self: center;
-  justify-content: center;
-  border-radius: 1rem;
-  padding: 1rem;
-  flex-direction: column;
-  height: 30%;
-  width: 70%;
-  text-align: center;
-
-  @media only screen and (max-width: 768px) {
-    min-height: 30%;
-  }
 `;
 
 const PromptContainer = styled.div`
@@ -129,39 +105,32 @@ const Prompt = styled.div`
 
 export default function Question({
   question,
-  theme,
   part,
 }: {
   question: QuestionStructures;
-  theme: string | undefined;
-  part: string | undefined;
+  part: string;
 }) {
   if (!question) return;
+
   switch (part) {
     case "1":
     case "4":
-      return <Part1or4 theme={theme} statement={question?.statement} />;
+      return <Part1or4 question={question as NewPart1QStructure} />;
     case "2":
       return <Part2 question={question as Part2QStructure} />;
     case "3":
-      return <Part3 theme={theme} question={question as Part3QStructure} />;
+      return <Part3 question={question as Part3QStructure} />;
     default:
       return null;
   }
 }
 
-const Part1or4 = ({
-  theme,
-  statement,
-}: {
-  theme: string | undefined;
-  statement: string | undefined;
-}) => {
+const Part1or4 = ({ question }: { question: NewPart1QStructure }) => {
   return (
-    <div className="themeCont glass">
-      <p className="themeText">{theme}</p>
-      <Statement>{statement}</Statement>
-    </div>
+    <StatementAndTheme
+      statement={question.statement}
+      themes={question?.themes}
+    />
   );
 };
 
@@ -200,38 +169,34 @@ const Part2 = ({ question }: { question: Part2QStructure }) => {
 
   return (
     <>
-      <div className="themeCont themeContPart2 glass">
-        <Statement>{statement}</Statement>
-      </div>
+      <StatementAndTheme statement={statement} themes={question?.themes} />
       <ImagesContainer>
-        {images.map((image, index) => (
-          <ImageContainter key={index}>
-            <Image
-              src={image?.src?.landscape}
-              alt=""
-              style={{ objectFit: "cover" }}
-              fill
-            />
-          </ImageContainter>
-        ))}
+        {!loading && images?.length ? (
+          images.map((image, index) => (
+            <ImageContainer key={index}>
+              <Image
+                src={image?.src?.landscape}
+                alt=""
+                style={{ objectFit: "cover" }}
+                fill
+              />
+            </ImageContainer>
+          ))
+        ) : (
+          <LoadingSpinner />
+        )}
       </ImagesContainer>
     </>
   );
 };
 
-const Part3 = ({
-  theme,
-  question,
-}: {
-  theme: string | undefined;
-  question: Part3QStructure;
-}) => {
+const Part3 = ({ question }: { question: Part3QStructure }) => {
   const { prompts, statement } = question;
   const mid = Math.ceil(prompts.length / 2);
 
   return (
     <Container>
-      <QuestionCont className={styles.questionCont}>
+      <QuestionCont>
         <PromptContainer>
           {prompts.slice(0, mid).map((prompt, i) => (
             <Prompt className={`glass`} key={i}>
@@ -239,10 +204,7 @@ const Part3 = ({
             </Prompt>
           ))}
         </PromptContainer>
-        <StatementContainer className="glass">
-          <p>{theme}</p>
-          <Statement>{statement}</Statement>
-        </StatementContainer>
+        <StatementAndTheme statement={statement} themes={question?.themes} />
         <PromptContainer>
           {prompts.slice(mid).map((prompt, i) => (
             <Prompt className={`glass`} key={i}>
