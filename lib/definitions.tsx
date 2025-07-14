@@ -43,8 +43,7 @@ export type QuestionStructures = Part2QStructure | Part3QStructure | string;
 
 export type Part2QStructure = {
   statement: string;
-  image1: string;
-  image2: string;
+  image_ids: number[];
   followUp: string;
 };
 
