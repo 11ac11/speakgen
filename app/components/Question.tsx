@@ -110,7 +110,7 @@ export default function Question({
   question: QuestionStructures;
   part: string;
 }) {
-  if (!question) return;
+  if (!question) return <>'No question'</>;
 
   switch (part) {
     case "1":
