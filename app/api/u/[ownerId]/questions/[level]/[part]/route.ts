@@ -73,7 +73,13 @@ export async function POST(
       "4": [],
     };
 
-    const allFields = [...commonFields, ...(partSpecificFields[part] || [])];
+    const allFields = [
+      ...commonFields,
+      ...(partSpecificFields[part] || []),
+      ...((level === "c1" || level === "c2") && part === "2"
+        ? ["statement_two"]
+        : []),
+    ];
 
     // Check that all required fields exist
     const missingFields = allFields.filter((field) => !(field in body));

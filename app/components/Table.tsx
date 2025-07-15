@@ -63,6 +63,7 @@ export default function Table({
         if (!res.ok) throw new Error("Failed to load questions");
         const data: Question[] = await res.json();
         setData(data);
+        console.log("res:", res);
       } else {
         const partApiString = filters.part !== "all" ? `/${filters.part}` : "";
         const res = await fetch(
@@ -80,7 +81,7 @@ export default function Table({
           }
           return data;
         });
-        console.log("dataWithPart:", dataWithPart);
+        // console.log("dataWithPart:", dataWithPart);
         setData(dataWithPart);
       }
     } catch (err) {
@@ -123,7 +124,7 @@ export default function Table({
         header: "Part",
         accessorKey: "part",
         cell: ({ row }) => {
-          console.log("row:", row);
+          // console.log("row:", row);
           const storedPart = PART_VALUES_FOR_PILLS.find((part) =>
             part.value.includes(row.original?.part)
           );
@@ -149,6 +150,7 @@ export default function Table({
         header: "Themes",
         accessorKey: "themes",
         cell: ({ row }) => {
+          console.log("row.original.themes:", row.original.themes);
           return row.original?.themes?.map((themeFromData) => {
             // match the value so we can apply the correct colours to the pill
             const storedTheme = THEME_VALUES_FOR_PILLS.find(
@@ -194,7 +196,7 @@ export default function Table({
         accessorKey: "actions",
         size: 100,
         cell: ({ row }) => {
-          console.log("filters:", filters);
+          // console.log("filters:", filters);
           return (
             <Actions
               questionId={row.original.id}
@@ -206,13 +208,13 @@ export default function Table({
         },
       },
     ],
-    [filters?.level]
+    [filters?.level, data]
   );
 
   const table = useReactTable({
     columns,
     data,
-    debugTable: true,
+    // debugTable: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
@@ -278,7 +280,7 @@ export default function Table({
         <tbody>
           {table
             .getRowModel()
-            .rows.slice(0, 10)
+            .rows.slice(0, 20)
             .map((row) => {
               return (
                 <TableRow key={row.id}>

@@ -1,11 +1,13 @@
-import { Pill } from "@/app/components/ui";
+import React, { useEffect, useState } from "react";
+import { Pill, Button } from "@/app/components/ui";
 import { THEME_VALUES_FOR_PILLS } from "@/constants";
 import styled from "styled-components";
 
-const Statement = styled.span`
-  font-size: 2rem;
+const Statement = styled.span<{ $smallFont?: boolean }>`
+  font-size: ${(props) => (props.$smallFont ? "24px" : "32px")};
   margin: 0.5rem 1rem;
   font-weight: 700;
+  white-space: pre-line;
 
   @media only screen and (max-width: 768px) {
     font-size: 1rem;
@@ -19,11 +21,20 @@ const ThemesContainer = styled.div`
 export const StatementAndTheme = ({
   themes,
   statement,
+  statementTwo,
+  smallFont = false,
 }: {
   themes: string[];
   statement: string;
+  statementTwo?: string;
+  smallFont?: boolean;
 }) => {
-  console.log("themes:", themes);
+  const [statementToView, setStatementToView] = useState(statement);
+
+  useEffect(() => {
+    setStatementToView(statement);
+  }, [statement]);
+
   const renderPill = (value: string | undefined) => {
     const storedTheme = THEME_VALUES_FOR_PILLS.find((theme) =>
       theme.value.includes(value || "")
@@ -39,6 +50,7 @@ export const StatementAndTheme = ({
       );
     }
   };
+
   return (
     <div className="themeCont glass">
       <ThemesContainer>
@@ -46,7 +58,13 @@ export const StatementAndTheme = ({
           <div key={index}>{renderPill(theme)}</div>
         ))}
       </ThemesContainer>
-      <Statement>{statement}</Statement>
+      <Statement $smallFont={smallFont}>{statementToView}</Statement>
+      {!!statementTwo && statementToView !== statementTwo && (
+        <Button
+          text={"Continue to second part of question"}
+          onClick={() => setStatementToView(statementTwo)}
+        ></Button>
+      )}
     </div>
   );
 };

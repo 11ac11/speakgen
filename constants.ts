@@ -9,6 +9,16 @@ export const THEME_VALUES_FOR_PILLS: {
     colors: { bg: "#D6D6D6", text: "#2B2B2B" },
   },
   {
+    value: "where_you_live",
+    label: "Where you live",
+    colors: { bg: "#c29dbb", text: "#3a293d" },
+  },
+  {
+    value: "learning_english",
+    label: "Learning English",
+    colors: { bg: "#ff9bc6", text: "#722856" },
+  },
+  {
     value: "your_culture",
     label: "Your culture",
     colors: { bg: "#cbb5a6", text: "#533607" },

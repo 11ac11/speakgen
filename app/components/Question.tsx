@@ -19,6 +19,8 @@ const ImagesContainer = styled.div`
   gap: 1rem;
   position: relative;
   margin-top: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
 
   img {
     border-radius: 8px;
@@ -34,7 +36,7 @@ const ImagesContainer = styled.div`
 
 const ImageContainer = styled.div`
   position: relative;
-  width: 50%;
+  width: 45%;
   height: 40vh;
 
   @media only screen and (max-width: 768px) {
@@ -123,6 +125,7 @@ export default function Question({
 }
 
 const Part1or4 = ({ question }: { question: NewPart1QStructure }) => {
+  console.log("question.statement:", question.statement);
   return (
     <StatementAndTheme
       statement={question.statement}
@@ -132,7 +135,7 @@ const Part1or4 = ({ question }: { question: NewPart1QStructure }) => {
 };
 
 const Part2 = ({ question }: { question: Part2QStructure }) => {
-  const { image_ids, statement } = question;
+  const { image_ids, statement, statement_two } = question;
 
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<any[]>([]);
@@ -166,7 +169,12 @@ const Part2 = ({ question }: { question: Part2QStructure }) => {
 
   return (
     <>
-      <StatementAndTheme statement={statement} themes={question?.themes} />
+      <StatementAndTheme
+        statement={statement}
+        statementTwo={statement_two}
+        themes={question?.themes}
+        smallFont
+      />
       <ImagesContainer>
         {!loading && images?.length ? (
           images.map((image, index) => (

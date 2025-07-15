@@ -6,5 +6,16 @@ import Actions from "./Actions";
 import { Label } from "./Label";
 import QuickStart from "./QuickStart";
 import Modal from "./Modal";
+import Checkbox from "./Checkbox";
 
-export { Button, Input, Dropdown, Pill, Actions, Label, QuickStart, Modal };
+export {
+  Button,
+  Input,
+  Dropdown,
+  Pill,
+  Actions,
+  Label,
+  QuickStart,
+  Modal,
+  Checkbox,
+};

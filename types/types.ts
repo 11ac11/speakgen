@@ -47,6 +47,7 @@ export type QuestionStructures =
 export type Part2QStructure = {
   id: number;
   statement: string;
+  statement_two?: string;
   public: boolean;
   themes: string[];
   image_ids: number[];

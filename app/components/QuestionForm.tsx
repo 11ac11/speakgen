@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
-import { Input, Button, Dropdown } from "@/app/components/ui/index";
+import { Input, Button, Dropdown, Checkbox } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion, updateQuestion } from "@/services/part1Service";
 import ThemeSelector from "@/app/components/ThemeSelector";
@@ -41,11 +41,14 @@ const QuestionForm = ({
   const [level, setLevel] = useState(levelParam || "");
   const [part, setPart] = useState(partParam || "");
   const [statement, setStatement] = useState(question?.statement || "");
-  const [statementTwo, setStatementTwo] = useState("");
+  const [statementTwo, setStatementTwo] = useState(
+    question?.statement_two || ""
+  );
   const [prompts, setPrompts] = useState<string[]>(question?.prompts || []);
   const [themes, setThemes] = useState<string[]>(question?.themes || []);
-  const [loading, setLoading] = useState(false);
   const [imageIds, setImageIds] = useState(question?.image_ids || []);
+  const [loading, setLoading] = useState(false);
+  const [createAnother, setCreateAnother] = useState(false);
 
   const allFieldsCompleted = !!part && !!statement && themes.length > 0;
 
@@ -72,6 +75,7 @@ const QuestionForm = ({
     const requestData = {
       owner_id: "2", // TODO: make dynamic
       statement: statement,
+      statement_two: statementTwo,
       themes: themes,
       public: true,
       ...(part === "2" && {
@@ -90,7 +94,15 @@ const QuestionForm = ({
       console.error("Error submitting question:", error);
     } finally {
       setLoading(false);
-      router.push("/dashboard");
+      if (createAnother) {
+        setStatement("");
+        setStatementTwo("");
+        setPrompts([]);
+        setThemes([]);
+        setImageIds([]);
+      } else {
+        router.push("/dashboard");
+      }
     }
   };
 
@@ -137,7 +149,7 @@ const QuestionForm = ({
             maxLength={200}
             placeholder={generatePlaceholderByPart()}
           />
-          {level === "C1" && part === "2" && (
+          {(level === "C1" || level === "C2") && part === "2" && (
             <Input
               name="statement-2"
               label="Statement 2"
@@ -146,7 +158,7 @@ const QuestionForm = ({
               onChange={setStatementTwo}
               required
               minLength={1}
-              maxLength={200}
+              maxLength={500}
               placeholder={generatePlaceholderByPart()}
             />
           )}
@@ -161,6 +173,15 @@ const QuestionForm = ({
             <Prompts prompts={prompts} setPrompts={setPrompts} />
           )}
           <ThemeSelector label="Themes" themes={themes} setThemes={setThemes} />
+          {!isEdit && (
+            <>
+              <Checkbox
+                checked={createAnother}
+                onChange={() => setCreateAnother(!createAnother)}
+                label={"Create another"}
+              />
+            </>
+          )}
         </>
       )}
       <Button
