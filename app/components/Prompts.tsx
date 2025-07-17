@@ -35,9 +35,11 @@ const StyledInput = styled(Input)`
 const Prompts = ({
   prompts,
   setPrompts,
+  placeholders,
 }: {
   prompts: string[];
   setPrompts: React.Dispatch<React.SetStateAction<string[]>>; // Correct type for setState
+  placeholders: string[];
 }) => {
   const paddedPrompts = [...prompts, ...Array(5 - prompts.length).fill("")];
 
@@ -61,8 +63,8 @@ const Prompts = ({
             }
             required
             minLength={3}
-            maxLength={20}
-            placeholder={prompt}
+            maxLength={30}
+            placeholder={placeholders[index]}
           />
         ))}
       </PromptContainer>

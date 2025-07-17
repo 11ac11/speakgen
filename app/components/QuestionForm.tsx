@@ -52,20 +52,60 @@ const QuestionForm = ({
 
   const allFieldsCompleted = !!part && !!statement && themes.length > 0;
 
-  const generatePlaceholderByPart = () => {
+  const generatePlaceholderByPart = (isSecondStatement?: boolean) => {
     switch (part) {
       case "1":
         return "Tell me about where you live.";
       case "2":
-        return "Compare the two ways how people are enjoying listening to music";
+        if (!isSecondStatement) {
+          return "Compare the two ways how people are enjoying listening to music";
+        } else {
+          return `Now look at all the pictures. \n \n
+I'd like you to imagine that a television documentary is being produced on
+working in the food industry. These pictures show some of the issues that are
+being considered. \n \n
+Talk together about the different issues related to working in the food industry
+that these pictures show. Then decide which issue might stimulate most
+interest.`;
+        }
       case "3":
-        return "What impact is pollution having on the environment?";
+        if (!isSecondStatement) {
+          return "What might people have to consider when making decisions?";
+        } else {
+          return "Decide in which situation it is important to make the right decision.";
+        }
       case "4":
         return "Would you prefer to live in a modern city or a city with lots of history?";
       default:
         return "";
     }
   };
+
+  const generatePromptPlaceholdersByLevel = () => {
+    switch (level.toLowerCase()) {
+      case "b2":
+        return [];
+      case "c1":
+        return [
+          "choosing a university",
+          "starting a family",
+          "moving to another country",
+          "finding a job",
+          "getting married",
+        ];
+      case "c2":
+        return [];
+      default:
+        return [];
+    }
+  };
+
+  console.log(
+    "generatePromptPlaceholdersByLevel:",
+    generatePromptPlaceholdersByLevel()
+  );
+
+  console.log("level:", level);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent page reload
@@ -149,19 +189,21 @@ const QuestionForm = ({
             maxLength={200}
             placeholder={generatePlaceholderByPart()}
           />
-          {(level === "C1" || level === "C2") && part === "2" && (
-            <Input
-              name="statement-2"
-              label="Statement 2"
-              type="text"
-              value={statementTwo}
-              onChange={setStatementTwo}
-              required
-              minLength={1}
-              maxLength={500}
-              placeholder={generatePlaceholderByPart()}
-            />
-          )}
+          {(level === "C1" || level === "C2") &&
+            (part === "2" || part === "3") && (
+              <Input
+                name="statement-2"
+                label="Statement 2"
+                type="text"
+                value={statementTwo}
+                onChange={setStatementTwo}
+                required
+                minLength={1}
+                maxLength={500}
+                placeholder={generatePlaceholderByPart(true)}
+                isTextArea={true}
+              />
+            )}
           {part === "2" && (
             <ImageSelectors
               imageIds={imageIds}
@@ -170,7 +212,11 @@ const QuestionForm = ({
             />
           )}
           {part === "3" && (
-            <Prompts prompts={prompts} setPrompts={setPrompts} />
+            <Prompts
+              prompts={prompts}
+              setPrompts={setPrompts}
+              placeholders={generatePromptPlaceholdersByLevel()}
+            />
           )}
           <ThemeSelector label="Themes" themes={themes} setThemes={setThemes} />
           {!isEdit && (

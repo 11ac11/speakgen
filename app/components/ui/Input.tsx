@@ -26,6 +26,24 @@ const StyledInput = styled.input<{ error: string | undefined }>`
   transition: border-color 0.3s, box-shadow 0.3s;
 `;
 
+const StyledTextArea = styled.textarea<{ error: string | undefined }>`
+  border-radius: 8px;
+  border-style: solid;
+  border-width: 1px;
+  outline: none;
+  padding: 0.5rem 1rem;
+  font-size: 16px;
+  font-family: "Sofia Sans", sans-serif;
+
+  ${({ error }) =>
+    !!error &&
+    `
+    border-color: rgb(255, 65, 80);
+    box-shadow: 0 0 5px 2px rgba(255, 65, 80, 0.5);
+  `}
+  transition: border-color 0.3s, box-shadow 0.3s;
+`;
+
 const ErrorMessage = styled.span`
   margin-top: 10px;
   color: rgb(255, 65, 80);
@@ -51,6 +69,7 @@ type SecureInputProps = {
   width?: string;
   children?: any;
   disabled?: boolean | undefined;
+  isTextArea?: boolean;
 };
 
 const SecureInput: React.FC<SecureInputProps> = ({
@@ -70,6 +89,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
   width,
   children,
   disabled,
+  isTextArea,
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
   const [inputPlaceholder, setInputPlaceholder] = useState<string | undefined>(
@@ -85,7 +105,11 @@ const SecureInput: React.FC<SecureInputProps> = ({
     setInputError(error);
   }, [error]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const sanitizedValue = sanitizeInput(e.target.value); // Sanitize input on change
     onChange(sanitizedValue);
 
@@ -99,31 +123,55 @@ const SecureInput: React.FC<SecureInputProps> = ({
     // }
   };
 
-  const handleBlur = (e: React.ChangeEvent<HTMLInputElement>) =>
-    !!onBlur ? onBlur() : null;
+  const handleBlur = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => (!!onBlur ? onBlur() : null);
 
   return (
     <Wrap className={className} width={width}>
       {label && <Label text={label} />}
-      <StyledInput
-        type={type}
-        value={value}
-        name={name}
-        onChange={handleChange}
-        onClick={onClick}
-        onFocus={() => setInputPlaceholder("")}
-        onBlur={(e) => {
-          handleBlur?.(e); // optional chaining if `handleBlur` exists
-          setInputPlaceholder(placeholder); // restore
-        }}
-        required={required}
-        placeholder={inputPlaceholder}
-        minLength={minLength}
-        maxLength={maxLength}
-        error={inputError}
-        className={`${className} shadow`}
-        disabled={disabled}
-      />
+      {isTextArea ? (
+        <StyledTextArea
+          value={value}
+          name={name}
+          onChange={handleChange}
+          onClick={onClick}
+          onFocus={() => setInputPlaceholder("")}
+          onBlur={(e) => {
+            handleBlur?.(e); // optional chaining if `handleBlur` exists
+            setInputPlaceholder(placeholder); // restore
+          }}
+          required={required}
+          placeholder={inputPlaceholder}
+          minLength={minLength}
+          maxLength={maxLength}
+          error={inputError}
+          className={`${className} shadow`}
+          disabled={disabled}
+        />
+      ) : (
+        <StyledInput
+          type={type}
+          value={value}
+          name={name}
+          onChange={handleChange}
+          onClick={onClick}
+          onFocus={() => setInputPlaceholder("")}
+          onBlur={(e) => {
+            handleBlur?.(e); // optional chaining if `handleBlur` exists
+            setInputPlaceholder(placeholder); // restore
+          }}
+          required={required}
+          placeholder={inputPlaceholder}
+          minLength={minLength}
+          maxLength={maxLength}
+          error={inputError}
+          className={`${className} shadow`}
+          disabled={disabled}
+        />
+      )}
       {children}
       {inputError && (
         <ErrorMessage className="error-message">{inputError}</ErrorMessage>
