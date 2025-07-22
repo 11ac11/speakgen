@@ -8,6 +8,7 @@ import Prompts from "./Prompts";
 import { createQuestion, updateQuestion } from "@/services/part1Service";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ImageSelectors from "./ImageSelectors";
+import { getQuestionPartOptions } from "@/constants";
 
 const StyledForm = styled.form`
   display: flex;
@@ -38,7 +39,7 @@ const QuestionForm = ({
   const router = useRouter();
   const isEdit = !!question;
 
-  const [level, setLevel] = useState(levelParam || "");
+  const [level, setLevel] = useState(levelParam?.toLowerCase() || "");
   const [part, setPart] = useState(partParam || "");
   const [statement, setStatement] = useState(question?.statement || "");
   const [statementTwo, setStatementTwo] = useState(
@@ -147,16 +148,6 @@ interest.`;
     }
   };
 
-  const questionPartOptions = () => {
-    const defaultOptions = ["1", "2", "3", "4"];
-
-    if (level === "c2") {
-      defaultOptions.splice(-1, 1);
-    }
-
-    return defaultOptions;
-  };
-
   return (
     <StyledForm onSubmit={handleSubmit}>
       <FormRow>
@@ -170,7 +161,7 @@ interest.`;
         />
         <Dropdown
           label="Part"
-          options={questionPartOptions()}
+          options={getQuestionPartOptions(level)}
           value={part}
           onChange={setPart}
           placeholder="-"

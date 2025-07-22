@@ -121,3 +121,13 @@ export const PART_VALUES_FOR_PILLS: {
     colors: { bg: "#31493c", text: "#f5fffa" },
   },
 ];
+
+export const getQuestionPartOptions = (level: string) => {
+  const defaultOptions = ["1", "2", "3", "4"];
+
+  if (level === "c2") {
+    defaultOptions.splice(-1, 1);
+  }
+
+  return defaultOptions;
+};
