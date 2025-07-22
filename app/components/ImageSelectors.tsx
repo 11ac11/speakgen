@@ -123,13 +123,13 @@ const ImageSelectors = ({
 
   const minimumAmountOfImages = (() => {
     switch (level) {
-      case "B1":
+      case "b1":
         return 1;
-      case "B2":
+      case "b2":
         return 2;
-      case "C1":
+      case "c1":
         return 3;
-      case "C2":
+      case "c2":
         return 4;
       default:
         return 2;
@@ -196,7 +196,7 @@ const ImageSelectors = ({
         />
       )}
       <Wrap>
-        <Label text={"Images"} />
+        <Label text={"Images"} htmlFor="images" />
         <ImagesContainer>
           {Array.from({ length: minimumAmountOfImages }).map((_, index) => {
             const image = images?.[index] ?? null;

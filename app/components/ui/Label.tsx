@@ -5,6 +5,12 @@ const StyledLabel = styled.label`
   font-size: 18px;
 `;
 
-export const Label = ({ text }: { text: string }) => {
-  return <StyledLabel>{text}</StyledLabel>;
+export const Label = ({
+  text,
+  htmlFor,
+}: {
+  text: string;
+  htmlFor?: string | undefined;
+}) => {
+  return <StyledLabel htmlFor={htmlFor}>{text}</StyledLabel>;
 };

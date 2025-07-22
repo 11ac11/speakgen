@@ -44,6 +44,12 @@ const QuestionForm = ({
   const [statementTwo, setStatementTwo] = useState(
     question?.statement_two || ""
   );
+  const [instructionOne, setInstructionOne] = useState(
+    question?.instructions[0]
+  );
+  const [instructionTwo, setInstructionTwo] = useState(
+    question?.instructions[1] || "Now look at all the photos."
+  );
   const [prompts, setPrompts] = useState<string[]>(question?.prompts || []);
   const [themes, setThemes] = useState<string[]>(question?.themes || []);
   const [imageIds, setImageIds] = useState(question?.image_ids || []);
@@ -60,8 +66,7 @@ const QuestionForm = ({
         if (!isSecondStatement) {
           return "Compare the two ways how people are enjoying listening to music";
         } else {
-          return `Now look at all the pictures. \n \n
-I'd like you to imagine that a television documentary is being produced on
+          return `I'd like you to imagine that a television documentary is being produced on
 working in the food industry. These pictures show some of the issues that are
 being considered. \n \n
 Talk together about the different issues related to working in the food industry
@@ -100,13 +105,6 @@ interest.`;
     }
   };
 
-  console.log(
-    "generatePromptPlaceholdersByLevel:",
-    generatePromptPlaceholdersByLevel()
-  );
-
-  console.log("level:", level);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent page reload
     if (!allFieldsCompleted) return;
@@ -120,6 +118,7 @@ interest.`;
       public: true,
       ...(part === "2" && {
         image_ids: imageIds,
+        instructions: [instructionOne, instructionTwo],
       }),
       ...(part === "3" && {
         prompts: prompts,
@@ -137,6 +136,8 @@ interest.`;
       if (createAnother) {
         setStatement("");
         setStatementTwo("");
+        setInstructionOne("");
+        setInstructionTwo("");
         setPrompts([]);
         setThemes([]);
         setImageIds([]);
@@ -149,7 +150,7 @@ interest.`;
   const questionPartOptions = () => {
     const defaultOptions = ["1", "2", "3", "4"];
 
-    if (level === "C2") {
+    if (level === "c2") {
       defaultOptions.splice(-1, 1);
     }
 
@@ -162,8 +163,8 @@ interest.`;
         <Dropdown
           label="Level"
           options={["B2", "C1", "C2"]}
-          value={level}
-          onChange={setLevel}
+          value={level.toUpperCase()}
+          onChange={(val) => setLevel(val.toLowerCase())}
           placeholder="-"
           width="100px"
         />
@@ -178,6 +179,19 @@ interest.`;
       </FormRow>
       {!!level && !!part && (
         <>
+          {level === "c2" && part === "2" && (
+            <Input
+              name="instructionOne"
+              label="First Instruction"
+              type="text"
+              value={instructionOne}
+              onChange={setInstructionOne}
+              required
+              minLength={1}
+              maxLength={200}
+              placeholder={"Look at photo one"}
+            />
+          )}
           <Input
             name="statement"
             label="Statement"
@@ -189,7 +203,21 @@ interest.`;
             maxLength={200}
             placeholder={generatePlaceholderByPart()}
           />
-          {(level === "C1" || level === "C2") &&
+          {level === "c2" && part === "2" && (
+            <Input
+              name="instructionTwo"
+              label="Second Instruction"
+              type="text"
+              value={instructionTwo}
+              onChange={setInstructionTwo}
+              required
+              minLength={1}
+              maxLength={200}
+              placeholder={"Now look at all the photos."}
+              disabled={true}
+            />
+          )}
+          {(level === "c1" || level === "c2") &&
             (part === "2" || part === "3") && (
               <Input
                 name="statement-2"

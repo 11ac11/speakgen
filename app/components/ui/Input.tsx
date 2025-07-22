@@ -17,6 +17,12 @@ const StyledInput = styled.input<{ error: string | undefined }>`
   font-size: 16px;
   font-weight: 300;
 
+  &:disabled {
+    background-color: var(--verylightgrey);
+    cursor: not-allowed;
+    user-select: none;
+  }
+
   ${({ error }) =>
     !!error &&
     `
@@ -131,11 +137,12 @@ const SecureInput: React.FC<SecureInputProps> = ({
 
   return (
     <Wrap className={className} width={width}>
-      {label && <Label text={label} />}
+      {label && <Label text={label} htmlFor={name} />}
       {isTextArea ? (
         <StyledTextArea
           value={value}
           name={name}
+          id={name}
           onChange={handleChange}
           onClick={onClick}
           onFocus={() => setInputPlaceholder("")}
@@ -156,6 +163,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
           type={type}
           value={value}
           name={name}
+          id={name}
           onChange={handleChange}
           onClick={onClick}
           onFocus={() => setInputPlaceholder("")}
