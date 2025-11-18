@@ -1,6 +1,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { Dropdown } from "./";
+import { SUPPORTED_LEVELS } from "@/constants";
 
 export default function QuickStart({
   isDashboardButton,
@@ -17,7 +18,7 @@ export default function QuickStart({
 
   return (
     <Dropdown
-      options={["B2", "C1", "C2"]}
+      options={SUPPORTED_LEVELS}
       value={""}
       onChange={handleQuickStart}
       placeholder="Quick Start"

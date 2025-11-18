@@ -2,7 +2,7 @@ import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 // List schemas you want to include (manually for safety)
-const allowedLevels = ["b2", "c1", "c2"];
+const allowedLevels = ["b2", "c1"];
 
 export async function GET(
   req: NextRequest,

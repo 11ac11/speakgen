@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Table from "../components/Table";
 import { Button, Dropdown, QuickStart } from "../components/ui";
-import { getQuestionPartOptions } from "@/constants";
+import { getQuestionPartOptions, SUPPORTED_LEVELS } from "@/constants";
 
 const FiltersRow = styled.div`
   display: flex;
@@ -55,7 +55,7 @@ export default function DashboardTable({}: {}) {
             label="Level"
             width={"100px"}
             value={filters.level.toUpperCase()}
-            options={["B2", "C1", "C2"]}
+            options={SUPPORTED_LEVELS}
             onChange={(value) =>
               setFilters((prevFilters) => ({
                 ...prevFilters,

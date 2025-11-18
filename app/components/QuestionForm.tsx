@@ -8,7 +8,7 @@ import Prompts from "./Prompts";
 import { createQuestion, updateQuestion } from "@/services/part1Service";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ImageSelectors from "./ImageSelectors";
-import { getQuestionPartOptions } from "@/constants";
+import { getQuestionPartOptions, SUPPORTED_LEVELS } from "@/constants";
 
 const StyledForm = styled.form`
   display: flex;
@@ -153,7 +153,7 @@ interest.`;
       <FormRow>
         <Dropdown
           label="Level"
-          options={["B2", "C1", "C2"]}
+          options={SUPPORTED_LEVELS}
           value={level.toUpperCase()}
           onChange={(val) => setLevel(val.toLowerCase())}
           placeholder="-"

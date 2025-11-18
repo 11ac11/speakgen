@@ -131,3 +131,6 @@ export const getQuestionPartOptions = (level: string) => {
 
   return defaultOptions;
 };
+
+// TODO: reintegrate C2 level at somepoint
+export const SUPPORTED_LEVELS = ["B2", "C1"];
