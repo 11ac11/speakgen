@@ -1,15 +1,17 @@
 // /app/api/questions/route.ts
 import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { stackServerApp } from "@/stack/server";
 
 // Handle GET requests to fetch all questions
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ ownerId: string; level: string; part: string }> }
+  context: { params: Promise<{ level: string; part: string }> }
 ) {
   try {
     // ✅ Await params before using it
-    const { ownerId, level, part } = await context.params;
+    const { level, part } = await context.params;
+    const user = await stackServerApp.getUser();
 
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
@@ -27,14 +29,11 @@ export async function GET(
     };
 
     const tableName = tableMap[part];
-    const query = `SELECT * FROM ${tableName} WHERE owner_id = ${ownerId}`;
+    const query = `SELECT * FROM ${tableName} WHERE owner_id = '${user?.id}'`;
     const result = await sql(query);
 
     if (result.length === 0) {
-      return NextResponse.json(
-        { error: "Question not found" },
-        { status: 404 }
-      );
+      return NextResponse.json([]);
     }
 
     return NextResponse.json(result);

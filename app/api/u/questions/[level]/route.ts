@@ -27,10 +27,7 @@ export async function GET(
     const allResults = results.flat(); // flatten into one array
 
     if (allResults.length === 0) {
-      return NextResponse.json(
-        { error: "Question not found" },
-        { status: 404 }
-      );
+      return NextResponse.json([]);
     }
 
     return NextResponse.json(allResults);

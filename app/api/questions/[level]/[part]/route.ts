@@ -36,10 +36,7 @@ export async function GET(
     const result = await sql(query);
 
     if (result.length === 0) {
-      return NextResponse.json(
-        { error: "Question not found" },
-        { status: 404 }
-      );
+      return NextResponse.json([]);
     }
 
     return NextResponse.json(result[0]);
