@@ -59,15 +59,24 @@ export default function Table({
     try {
       setError(null);
       if (filters.level === "all" && filters.part === "all") {
-        const res = await fetch(`/api/u/${ownerId}/questions/all`);
+        const res = await fetch(`/api/u/questions/all`, {
+          method: "GET",
+          credentials: "include",
+        });
         if (!res.ok) throw new Error("Failed to load questions");
         const data: Question[] = await res.json();
         setData(data);
         console.log("res:", res);
       } else {
         const partApiString = filters.part !== "all" ? `/${filters.part}` : "";
+        console.log("partApiString:", partApiString);
+        console.log("filters.level:", filters.level);
         const res = await fetch(
-          `/api/u/${ownerId}/questions/${filters.level}${partApiString}`
+          `/api/u/questions/${filters.level}${partApiString}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
         );
         if (!res.ok) throw new Error("Failed to load questions");
         const data: Question[] = await res.json();

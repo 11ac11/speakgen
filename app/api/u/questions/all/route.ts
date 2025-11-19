@@ -1,22 +1,16 @@
 import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { stackServerApp } from "@/stack/server";
 
 // List schemas you want to include (manually for safety)
 const allowedLevels = ["b2", "c1"];
 
-export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ ownerId: string }> }
-) {
+export async function GET(req: NextRequest) {
   try {
-    // ✅ Await params before using it
-    const { ownerId } = await context.params;
+    const user = await stackServerApp.getUser();
 
-    if (!ownerId) {
-      return NextResponse.json(
-        { error: "Missing owner_id parameter" },
-        { status: 400 }
-      );
+    if (!user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const allQueries: string[] = [];
@@ -26,7 +20,7 @@ export async function GET(
         allQueries.push(`
           SELECT '${level}' AS level, '${part}' AS part, id, statement, themes, owner_id, public
           FROM ${level}.part${part}
-          WHERE owner_id = ${ownerId}
+          WHERE owner_id = ${user.id}
         `);
       }
     }

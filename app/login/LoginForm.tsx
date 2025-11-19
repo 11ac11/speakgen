@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Input, Button } from "@/app/components/ui/index";
 import { useSearchParams, useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import GoogleIcon from "@/public/google-icon.svg";
 
 const Container = styled.div`
@@ -55,20 +54,21 @@ const LoginForm = () => {
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    console.log("code commented");
+    // e.preventDefault();
 
-    const res = await signIn("credentials", {
-      redirect: false, // don't redirect automatically
-      email,
-      password,
-      callbackUrl: "http://localhost:3000/dashboard",
-    });
+    // const res = await signIn("credentials", {
+    //   redirect: false, // don't redirect automatically
+    //   email,
+    //   password,
+    //   callbackUrl: "http://localhost:3000/dashboard",
+    // });
 
-    if (res?.error) {
-      setError(res.error);
-    } else if (res?.ok) {
-      router.push(callbackUrl); // manual redirect
-    }
+    // if (res?.error) {
+    //   setError(res.error);
+    // } else if (res?.ok) {
+    //   router.push(callbackUrl); // manual redirect
+    // }
   };
 
   const handleEmailChange = (newValue: string) => {
@@ -82,9 +82,7 @@ const LoginForm = () => {
   return (
     <Container>
       <GoogleButton
-        onClick={async () => {
-          await signIn("google", { callbackUrl: "/dashboard" });
-        }}
+        onClick={() => console.log("this")}
         isAsync={true}
         text="Login with Google"
         iconUrl={GoogleIcon}

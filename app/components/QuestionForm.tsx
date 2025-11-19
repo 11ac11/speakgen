@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { stackClientApp } from "@/stack/client";
+
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { Input, Button, Dropdown, Checkbox } from "@/app/components/ui/index";
@@ -59,6 +61,12 @@ const QuestionForm = ({
 
   const allFieldsCompleted = !!part && !!statement && themes.length > 0;
 
+  const user = stackClientApp.getUser();
+
+  if (!user) {
+    return <></>;
+  }
+
   const generatePlaceholderByPart = (isSecondStatement?: boolean) => {
     switch (part) {
       case "1":
@@ -112,7 +120,6 @@ interest.`;
 
     setLoading(true);
     const requestData = {
-      owner_id: "2", // TODO: make dynamic
       statement: statement,
       statement_two: statementTwo,
       themes: themes,

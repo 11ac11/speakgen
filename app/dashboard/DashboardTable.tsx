@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { stackClientApp } from "@/stack/client";
+
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Table from "../components/Table";
@@ -42,7 +44,14 @@ const Dashboardbutton = styled(Button)`
 export default function DashboardTable({}: {}) {
   const [filters, setFilters] = useState({ part: "all", level: "b2" });
   const router = useRouter();
-  const ownerId = "2"; // TODO: make dynamic
+  const user = stackClientApp.useUser();
+
+  if (!user) {
+    return <></>;
+  }
+
+  console.log("user:", user);
+  const ownerId = user?.id; // TODO: make dynamic
 
   const capitalizeFirstLetter = (str: string) =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

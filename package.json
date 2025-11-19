@@ -26,7 +26,6 @@
     "eslint": "^9.25.1",
     "eslint-config-next": "^15.2.1",
     "next": "^15.2.1",
-    "next-auth": "^4.24.11",
     "pexels": "^1.4.0",
     "pg": "^8.13.1",
     "postgres": "^3.4.5",

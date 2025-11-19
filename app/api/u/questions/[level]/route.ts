@@ -1,6 +1,7 @@
 // /app/api/questions/route.ts
 import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { stackServerApp } from "@/stack/server";
 
 // Handle GET requests to fetch all questions
 export async function GET(
@@ -9,7 +10,8 @@ export async function GET(
 ) {
   try {
     // ✅ Await params before using it
-    const { level, ownerId } = await context.params;
+    const user = await stackServerApp.getUser();
+    const { level } = await context.params;
 
     const parts = ["part1", "part2", "part3", "part4"];
 
@@ -17,7 +19,7 @@ export async function GET(
       const table = `${level}.${part}`;
       const query = `SELECT *, '${
         index + 1
-      }' AS part FROM ${table} WHERE owner_id = ${ownerId}`;
+      }' AS part FROM ${table} WHERE owner_id = '${user?.id}'`;
       return sql(query);
     });
 

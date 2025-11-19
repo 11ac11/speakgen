@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
 import { stackClientApp } from "@/stack/client";
 import Link from "next/link";
 import styled from "styled-components";
@@ -81,7 +80,6 @@ const NavItem = styled.li`
 `;
 
 export default function Nav() {
-  const { data: session, status } = useSession();
   const [user, setUser] = useState<any | null>(null); // state to hold the user
 
   useEffect(() => {
@@ -94,7 +92,6 @@ export default function Nav() {
   // const isAuthenticated = status === "authenticated"
   const isAuthenticated = !!user;
 
-  console.log("status:", status);
   console.log("user:", user); // user might be null initially
 
   return (

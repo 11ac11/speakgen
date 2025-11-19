@@ -1,6 +1,7 @@
 // /app/api/questions/route.ts
 import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { stackServerApp } from "@/stack/server";
 
 // Handle GET requests to fetch all questions
 export async function GET(
@@ -56,6 +57,13 @@ export async function POST(
   context: { params: Promise<{ level: string; part: string }> }
 ) {
   try {
+    const user = await stackServerApp.getUser();
+
+    // ⛔ If user is not logged in, block insertion
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const { level, part } = await context.params;
 
     if (!["1", "2", "3", "4"].includes(part)) {
@@ -68,8 +76,8 @@ export async function POST(
     const body = await req.json();
     const tableName = `${level}.part${part}`;
 
-    // Define required fields
-    const commonFields = ["statement", "themes", "owner_id", "public"];
+    // Required fields NO LONGER include owner_id
+    const commonFields = ["statement", "themes", "public"];
     const partSpecificFields: Record<string, string[]> = {
       "1": [],
       "2": ["image_ids"],
@@ -77,10 +85,15 @@ export async function POST(
       "4": [],
     };
 
-    const allFields = [...commonFields, ...(partSpecificFields[part] || [])];
+    const userProvidedFields = [
+      ...commonFields,
+      ...(partSpecificFields[part] || []),
+    ];
 
-    // Check that all required fields exist
-    const missingFields = allFields.filter((field) => !(field in body));
+    // Check missing required fields
+    const missingFields = userProvidedFields.filter(
+      (field) => !(field in body)
+    );
     if (missingFields.length > 0) {
       return NextResponse.json(
         { error: `Missing required fields: ${missingFields.join(", ")}` },
@@ -88,11 +101,22 @@ export async function POST(
       );
     }
 
-    const columns = allFields.join(", ");
-    const placeholders = allFields.map((_, i) => `$${i + 1}`).join(", ");
-    const values = allFields.map((field) => body[field]);
+    // Automatically add owner_id column + value
+    const columns = [...userProvidedFields, "owner_id"].join(", ");
+
+    // Create placeholder list ($1, $2, ...)
+    const placeholders = [...userProvidedFields, "owner_id"]
+      .map((_, i) => `$${i + 1}`)
+      .join(", ");
+
+    // Add values from body and finally user.id
+    const values = [...userProvidedFields.map((f) => body[f]), user.id];
+    console.log("values:", values);
+    console.log("columns:", columns);
+    console.log("placeholders:", placeholders);
 
     const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *;`;
+
     const result = await sql(query, values);
 
     return NextResponse.json(result[0], { status: 201 });
