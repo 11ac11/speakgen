@@ -1,5 +1,7 @@
 "use client";
 
+import { StackProvider, StackTheme } from "@stackframe/stack";
+import { stackClientApp } from "../stack/client";
 import React from "react";
 import "../styles/globals.css";
 import StyledComponentsRegistry from "../lib/registry";
@@ -18,11 +20,15 @@ export default function RootLayout({
     <SessionProvider>
       <html lang="en">
         <body>
-          <StyledComponentsRegistry>
-            <Navbar />
-            <main>{children}</main>
-            {/* <BackgroundToggle /> */}
-          </StyledComponentsRegistry>
+          <StackProvider app={stackClientApp}>
+            <StackTheme>
+              <StyledComponentsRegistry>
+                <Navbar />
+                <main>{children}</main>
+                {/* <BackgroundToggle /> */}
+              </StyledComponentsRegistry>
+            </StackTheme>
+          </StackProvider>
         </body>
       </html>
     </SessionProvider>
