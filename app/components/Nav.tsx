@@ -86,11 +86,11 @@ export default function Nav() {
     // fetch user asynchronously
     stackClientApp.getUser().then((fetchedUser) => {
       setUser(fetchedUser);
+      const account = fetchedUser?.useConnectedAccount("google");
+      console.log("account:", account);
     });
   }, []);
 
-  const account = user.useConnectedAccount("google");
-  console.log("account:", account);
   // const isAuthenticated = status === "authenticated"
   const isAuthenticated = !!user;
 
