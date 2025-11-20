@@ -43,7 +43,7 @@ export default [
       ...react.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
       ...nextPlugin.configs.recommended.rules,
-      "prettier/prettier": "error",
+      "prettier/prettier": ["error", { trailingComma: "es5" }],
       "no-console": "warn",
       "react/prop-types": "off",
       "@next/next/no-html-link-for-pages": "off",
