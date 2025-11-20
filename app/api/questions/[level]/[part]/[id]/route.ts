@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Handle GET request: Fetch a specific question by id
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string; id: string }> }
+  context: { params: Promise<{ level: string; part: string; id: string }> },
 ) {
   try {
     const { level, part, id } = await context.params;
@@ -12,7 +12,7 @@ export async function GET(
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
         { error: "Invalid part number" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -31,7 +31,7 @@ export async function GET(
     if (result.length === 0) {
       return NextResponse.json(
         { error: "Question not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -40,7 +40,7 @@ export async function GET(
     console.error("Database query failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -48,7 +48,7 @@ export async function GET(
 // Handle PATCH request: Update a specific question by id
 export async function PATCH(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string; id: string }> }
+  context: { params: Promise<{ level: string; part: string; id: string }> },
 ) {
   try {
     const { level, part, id } = await context.params;
@@ -57,7 +57,7 @@ export async function PATCH(
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
         { error: "Invalid part number" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -88,7 +88,7 @@ export async function PATCH(
     if (result.length === 0) {
       return NextResponse.json(
         { error: "Question not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -97,7 +97,7 @@ export async function PATCH(
     console.error("Database update failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -105,7 +105,7 @@ export async function PATCH(
 // Handle DELETE request: Delete a specific question by id
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string; id: string }> }
+  context: { params: Promise<{ level: string; part: string; id: string }> },
 ) {
   try {
     const { level, part, id } = await context.params;
@@ -113,7 +113,7 @@ export async function DELETE(
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
         { error: "Invalid part number" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -131,7 +131,7 @@ export async function DELETE(
     if (result.length === 0) {
       return NextResponse.json(
         { error: "Question not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -140,7 +140,7 @@ export async function DELETE(
     console.error("Database delete failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

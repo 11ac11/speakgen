@@ -6,7 +6,7 @@ const pexels = createClient(process.env.PEXELS_API_KEY as string);
 
 export async function GET(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params; // The ID comes from the dynamic URL parameter
 
@@ -17,7 +17,7 @@ export async function GET(
   } catch (error) {
     return NextResponse.json(
       { error: "Failed to fetch image by ID" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

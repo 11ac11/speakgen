@@ -89,6 +89,8 @@ export default function Nav() {
     });
   }, []);
 
+  const account = user.useConnectedAccount("google");
+  console.log("account:", account);
   // const isAuthenticated = status === "authenticated"
   const isAuthenticated = !!user;
 

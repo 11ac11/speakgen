@@ -45,13 +45,13 @@ const QuestionForm = ({
   const [part, setPart] = useState(partParam || "");
   const [statement, setStatement] = useState(question?.statement || "");
   const [statementTwo, setStatementTwo] = useState(
-    question?.statement_two || ""
+    question?.statement_two || "",
   );
   const [instructionOne, setInstructionOne] = useState(
-    question?.instructions[0]
+    question?.instructions[0],
   );
   const [instructionTwo, setInstructionTwo] = useState(
-    question?.instructions[1] || "Now look at all the photos."
+    question?.instructions[1] || "Now look at all the photos.",
   );
   const [prompts, setPrompts] = useState<string[]>(question?.prompts || []);
   const [themes, setThemes] = useState<string[]>(question?.themes || []);

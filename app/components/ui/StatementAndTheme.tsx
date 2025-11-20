@@ -37,7 +37,7 @@ export const StatementAndTheme = ({
 
   const renderPill = (value: string | undefined) => {
     const storedTheme = THEME_VALUES_FOR_PILLS.find((theme) =>
-      theme.value.includes(value || "")
+      theme.value.includes(value || ""),
     );
     if (storedTheme) {
       return (

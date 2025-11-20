@@ -37,11 +37,13 @@ const Dashboardbutton = styled(Button)`
     padding: 0.5rem 1rem;
     font-size: 16px;
     font-weight: 700;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    transition:
+      border-color 0.3s,
+      box-shadow 0.3s;
   }
 `;
 
-export default function DashboardTable({}: {}) {
+export default function DashboardTable() {
   const [filters, setFilters] = useState({ part: "all", level: "b2" });
   const router = useRouter();
   const user = stackClientApp.useUser();

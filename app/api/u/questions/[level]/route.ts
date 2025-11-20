@@ -6,7 +6,7 @@ import { stackServerApp } from "@/stack/server";
 // Handle GET requests to fetch all questions
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ level: string }> }
+  context: { params: Promise<{ level: string }> },
 ) {
   try {
     // ✅ Await params before using it
@@ -35,7 +35,7 @@ export async function GET(
     console.error("Database query failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -6,7 +6,7 @@ import { stackServerApp } from "@/stack/server";
 // Handle GET requests to fetch all questions
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string }> }
+  context: { params: Promise<{ level: string; part: string }> },
 ) {
   try {
     const { searchParams } = new URL(req.url);
@@ -18,7 +18,7 @@ export async function GET(
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
         { error: "Invalid part number" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -44,14 +44,14 @@ export async function GET(
     console.error("Database query failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string }> }
+  context: { params: Promise<{ level: string; part: string }> },
 ) {
   try {
     const user = await stackServerApp.getUser();
@@ -66,7 +66,7 @@ export async function POST(
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
         { error: "Invalid part number" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -89,12 +89,12 @@ export async function POST(
 
     // Check missing required fields
     const missingFields = userProvidedFields.filter(
-      (field) => !(field in body)
+      (field) => !(field in body),
     );
     if (missingFields.length > 0) {
       return NextResponse.json(
         { error: `Missing required fields: ${missingFields.join(", ")}` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -121,7 +121,7 @@ export async function POST(
     console.error("Database insertion failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

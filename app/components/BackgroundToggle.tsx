@@ -17,7 +17,7 @@ const FloatingToggle = styled.div`
 
 const BackgroundToggle = () => {
   const [backgroundType, setBackgroundType] = useState<"white" | "gradient">(
-    "gradient"
+    "gradient",
   );
 
   // Effect hook to change the background color of the HTML body
