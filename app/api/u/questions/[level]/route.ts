@@ -6,7 +6,7 @@ import { stackServerApp } from "@/stack/server";
 // Handle GET requests to fetch all questions
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ ownerId: string; level: string }> }
+  context: { params: Promise<{ level: string }> }
 ) {
   try {
     // ✅ Await params before using it

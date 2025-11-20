@@ -50,7 +50,6 @@ export default function DashboardTable({}: {}) {
     return <></>;
   }
 
-  console.log("user:", user);
   const ownerId = user?.id; // TODO: make dynamic
 
   const capitalizeFirstLetter = (str: string) =>

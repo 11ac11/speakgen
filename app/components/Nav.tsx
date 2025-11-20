@@ -92,8 +92,6 @@ export default function Nav() {
   // const isAuthenticated = status === "authenticated"
   const isAuthenticated = !!user;
 
-  console.log("user:", user); // user might be null initially
-
   return (
     <Navbar>
       <NavContainer>
