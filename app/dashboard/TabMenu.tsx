@@ -37,8 +37,8 @@ export default function TabMenu({
             tab === "questions"
               ? "My Questions"
               : tab === "exams"
-              ? "My Exams"
-              : "Settings"
+                ? "My Exams"
+                : "Settings"
           }
           isActive={tab === activeTab}
         />

@@ -3,7 +3,7 @@
 import styled from "styled-components";
 
 type StyledTabProps = {
-  $isActive?: Boolean; // Optional secondary prop
+  $isActive?: boolean; // Optional secondary prop
 };
 
 const StyledTab = styled.div<StyledTabProps>`
@@ -22,8 +22,8 @@ export default function Tab({
   text,
   onClick,
 }: {
-  isActive: Boolean;
-  text: String;
+  isActive: boolean;
+  text: string;
   onClick: any;
 }) {
   return (

@@ -52,7 +52,7 @@ export default function ThemeSelector({
 
   useEffect(() => {
     const filteredTags = THEME_VALUES_FOR_PILLS.filter(
-      (theme) => !themes.includes(theme.value)
+      (theme) => !themes.includes(theme.value),
     );
     setAvailableTags(filteredTags);
   }, [themes]);
@@ -78,7 +78,7 @@ export default function ThemeSelector({
           <PillsWrap>
             {themes.map((theme) => {
               const fullTag = THEME_VALUES_FOR_PILLS.find(
-                (storedTheme) => storedTheme.value === theme
+                (storedTheme) => storedTheme.value === theme,
               );
               if (fullTag) {
                 return (

@@ -1,7 +1,7 @@
 "use client";
 
-import React from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import React, { useEffect, useState } from "react";
+import { stackClientApp } from "@/stack/client";
 import Link from "next/link";
 import styled from "styled-components";
 
@@ -80,8 +80,19 @@ const NavItem = styled.li`
 `;
 
 export default function Nav() {
-  const { data: session, status } = useSession();
-  const isAuthenticated = status === "authenticated";
+  const [user, setUser] = useState<any | null>(null); // state to hold the user
+
+  useEffect(() => {
+    // fetch user asynchronously
+    stackClientApp.getUser().then((fetchedUser) => {
+      setUser(fetchedUser);
+      const account = fetchedUser?.useConnectedAccount("google");
+      console.log("account:", account);
+    });
+  }, []);
+
+  // const isAuthenticated = status === "authenticated"
+  const isAuthenticated = !!user;
 
   return (
     <Navbar>
@@ -113,8 +124,12 @@ export default function Nav() {
                 <NavItem>
                   <Link href="/dashboard">Dashboard</Link>
                 </NavItem>
-                <NavItem onClick={() => signOut()}>
-                  <Link href="/">Sign Out</Link>
+                <NavItem
+                  onClick={async () => {
+                    await stackClientApp.signOut();
+                  }}
+                >
+                  <Link href="">Sign Out</Link>
                 </NavItem>
               </>
             ) : (
@@ -126,10 +141,10 @@ export default function Nav() {
                   <Link href="/faqs">FAQs</Link>
                 </NavItem>
                 <NavItem>
-                  <Link href="/login">Log in</Link>
+                  <Link href="/handler/sign-in">Log in</Link>
                 </NavItem>
                 <NavItem>
-                  <Link href="/signup">Sign up</Link>
+                  <Link href="/handler/sign-up">Sign up</Link>
                 </NavItem>
               </>
             )}

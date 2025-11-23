@@ -22,7 +22,7 @@ export async function getRandomPartOneQuestion() {
 export async function createQuestion(
   level: string,
   part: string,
-  payload: any
+  payload: any,
 ) {
   try {
     const response = await fetch(
@@ -33,7 +33,7 @@ export async function createQuestion(
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-      }
+      },
     );
 
     console.log("response:", response);
@@ -53,7 +53,7 @@ export async function updateQuestion(
   level: string,
   part: string,
   id: string,
-  payload: any
+  payload: any,
 ) {
   try {
     const response = await fetch(
@@ -64,7 +64,7 @@ export async function updateQuestion(
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-      }
+      },
     );
 
     if (!response.ok) {

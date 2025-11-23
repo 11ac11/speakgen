@@ -1,20 +1,22 @@
 // /app/api/questions/route.ts
 import { sql } from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import { stackServerApp } from "@/stack/server";
 
 // Handle GET requests to fetch all questions
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ ownerId: string; level: string; part: string }> }
+  context: { params: Promise<{ level: string; part: string }> },
 ) {
   try {
     // ✅ Await params before using it
-    const { ownerId, level, part } = await context.params;
+    const { level, part } = await context.params;
+    const user = await stackServerApp.getUser();
 
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
         { error: "Invalid part number" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -27,14 +29,11 @@ export async function GET(
     };
 
     const tableName = tableMap[part];
-    const query = `SELECT * FROM ${tableName} WHERE owner_id = ${ownerId}`;
+    const query = `SELECT * FROM ${tableName} WHERE owner_id = '${user?.id}'`;
     const result = await sql(query);
 
     if (result.length === 0) {
-      return NextResponse.json(
-        { error: "Question not found" },
-        { status: 404 }
-      );
+      return NextResponse.json([]);
     }
 
     return NextResponse.json(result);
@@ -42,14 +41,14 @@ export async function GET(
     console.error("Database query failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function POST(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string }> }
+  context: { params: Promise<{ level: string; part: string }> },
 ) {
   try {
     const { level, part } = await context.params;
@@ -57,7 +56,7 @@ export async function POST(
     if (!["1", "2", "3", "4"].includes(part)) {
       return NextResponse.json(
         { error: "Invalid part number" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -86,7 +85,7 @@ export async function POST(
     if (missingFields.length > 0) {
       return NextResponse.json(
         { error: `Missing required fields: ${missingFields.join(", ")}` },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -102,7 +101,7 @@ export async function POST(
     console.error("Database insertion failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

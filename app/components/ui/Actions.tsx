@@ -22,7 +22,9 @@ const ActionButton = styled.div`
   height: 25px;
   width: 25px;
   cursor: pointer;
-  transition: background-color 0.1s ease-in-out, color 0.12s ease-in-out;
+  transition:
+    background-color 0.1s ease-in-out,
+    color 0.12s ease-in-out;
 
   &:hover {
     background-color: rgb(110, 110, 110);

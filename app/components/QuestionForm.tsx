@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { stackClientApp } from "@/stack/client";
+
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { Input, Button, Dropdown, Checkbox } from "@/app/components/ui/index";
@@ -43,13 +45,13 @@ const QuestionForm = ({
   const [part, setPart] = useState(partParam || "");
   const [statement, setStatement] = useState(question?.statement || "");
   const [statementTwo, setStatementTwo] = useState(
-    question?.statement_two || ""
+    question?.statement_two || "",
   );
   const [instructionOne, setInstructionOne] = useState(
-    question?.instructions[0]
+    question?.instructions[0],
   );
   const [instructionTwo, setInstructionTwo] = useState(
-    question?.instructions[1] || "Now look at all the photos."
+    question?.instructions[1] || "Now look at all the photos.",
   );
   const [prompts, setPrompts] = useState<string[]>(question?.prompts || []);
   const [themes, setThemes] = useState<string[]>(question?.themes || []);
@@ -58,6 +60,12 @@ const QuestionForm = ({
   const [createAnother, setCreateAnother] = useState(false);
 
   const allFieldsCompleted = !!part && !!statement && themes.length > 0;
+
+  const user = stackClientApp.getUser();
+
+  if (!user) {
+    return <></>;
+  }
 
   const generatePlaceholderByPart = (isSecondStatement?: boolean) => {
     switch (part) {
@@ -112,7 +120,6 @@ interest.`;
 
     setLoading(true);
     const requestData = {
-      owner_id: "2", // TODO: make dynamic
       statement: statement,
       statement_two: statementTwo,
       themes: themes,

@@ -59,15 +59,24 @@ export default function Table({
     try {
       setError(null);
       if (filters.level === "all" && filters.part === "all") {
-        const res = await fetch(`/api/u/${ownerId}/questions/all`);
+        const res = await fetch(`/api/u/questions/all`, {
+          method: "GET",
+          credentials: "include",
+        });
         if (!res.ok) throw new Error("Failed to load questions");
         const data: Question[] = await res.json();
         setData(data);
         console.log("res:", res);
       } else {
         const partApiString = filters.part !== "all" ? `/${filters.part}` : "";
+        console.log("partApiString:", partApiString);
+        console.log("filters.level:", filters.level);
         const res = await fetch(
-          `/api/u/${ownerId}/questions/${filters.level}${partApiString}`
+          `/api/u/questions/${filters.level}${partApiString}`,
+          {
+            method: "GET",
+            credentials: "include",
+          },
         );
         if (!res.ok) throw new Error("Failed to load questions");
         const data: Question[] = await res.json();
@@ -126,7 +135,7 @@ export default function Table({
         cell: ({ row }) => {
           // console.log("row:", row);
           const storedPart = PART_VALUES_FOR_PILLS.find((part) =>
-            part.value.includes(row.original?.part)
+            part.value.includes(row.original?.part),
           );
           if (storedPart) {
             return (
@@ -154,7 +163,7 @@ export default function Table({
           return row.original?.themes?.map((themeFromData) => {
             // match the value so we can apply the correct colours to the pill
             const storedTheme = THEME_VALUES_FOR_PILLS.find(
-              (theme) => theme.value === themeFromData
+              (theme) => theme.value === themeFromData,
             );
             if (storedTheme) {
               return (
@@ -208,7 +217,7 @@ export default function Table({
         },
       },
     ],
-    [filters?.level, data]
+    [filters?.level, data],
   );
 
   const table = useReactTable({
@@ -256,14 +265,14 @@ export default function Table({
                             ? header.column.getNextSortingOrder() === "asc"
                               ? "Sort ascending"
                               : header.column.getNextSortingOrder() === "desc"
-                              ? "Sort descending"
-                              : "Clear sort"
+                                ? "Sort descending"
+                                : "Clear sort"
                             : undefined
                         }
                       >
                         {flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                         {{
                           asc: " 🔼",
@@ -297,7 +306,7 @@ export default function Table({
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableData>
                     );

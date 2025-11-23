@@ -26,7 +26,7 @@ const CountdownTimer = ({
   question,
 }: {
   timeLeft: number;
-  question: QuestionStructures | String | undefined;
+  question: QuestionStructures | string | undefined;
 }) => {
   const [seconds, setSeconds] = useState(timeLeft);
   const timerRef = useRef<NodeJS.Timeout | null>(null);

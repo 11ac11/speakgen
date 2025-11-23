@@ -99,7 +99,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
   const [inputPlaceholder, setInputPlaceholder] = useState<string | undefined>(
-    placeholder
+    placeholder,
   );
 
   // Utility function to sanitize the input value to prevent XSS attacks
@@ -114,7 +114,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
   const handleChange = (
     e:
       | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
   ) => {
     const sanitizedValue = sanitizeInput(e.target.value); // Sanitize input on change
     onChange(sanitizedValue);
@@ -132,7 +132,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
   const handleBlur = (
     e:
       | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLTextAreaElement>,
   ) => (!!onBlur ? onBlur() : null);
 
   return (
