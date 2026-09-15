@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=TikTok+Sans:opsz,wght@12..36,300..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap&family=Sofia+Sans+Semi+Condensed:wght@100;200;300;400;500;600;700;800;900&display=swap&family=Outfit:wght@100..900");
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Outfit:wght@100..900&family=Rubik:wght@300..900&family=Sofia+Sans+Semi+Condensed:wght@100;200;300;400;500;600;700;800;900&family=TikTok+Sans:opsz,wght@12..36,300..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
 
 :root {
   --slategrey: #313131;
@@ -31,7 +31,7 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: "Sofia Sans", sans-serif;
+  font-family: "Rubik", sans-serif;
   -webkit-font-smoothing: antialiased; /* Chrome, Safari */
   -moz-osx-font-smoothing: grayscale; /* Firefox on macOS */
   text-rendering: optimizeLegibility; /* Better kerning and ligatures */
