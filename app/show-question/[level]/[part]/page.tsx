@@ -38,7 +38,7 @@ const getRandomQuestion = async (level: string, part: string) => {
 // export default EditQuestion;
 
 const ShowQuestion = async ({
-  params,
+  params
 }: {
   params: Promise<{ id: string; part: string; level: string }>;
 }) => {
@@ -47,11 +47,6 @@ const ShowQuestion = async ({
 
   const question = await getRandomQuestion(level, part);
   console.log("question:", question);
-
-  const getNewQuestion = async () => {
-    const question = await getRandomQuestion(level, part);
-    return question;
-  };
 
   return (
     <>

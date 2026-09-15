@@ -9,7 +9,7 @@ import {
   QuestionStructures,
   Part2QStructure,
   Part3QStructure,
-  NewPart1QStructure,
+  NewPart1QStructure
 } from "@/types/types";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
@@ -104,7 +104,7 @@ const Prompt = styled.div`
 
 export default function Question({
   question,
-  part,
+  part
 }: {
   question: QuestionStructures;
   part: string;

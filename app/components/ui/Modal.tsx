@@ -51,7 +51,7 @@ const XIcon = styled.svg`
 
 const ImageSearchModal = ({
   children,
-  closeModal,
+  closeModal
 }: {
   children: any;
   closeModal: () => void;

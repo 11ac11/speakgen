@@ -14,7 +14,7 @@ export async function GET(
     // Fetch image by ID
     const response = await pexels.photos.show({ id });
     return NextResponse.json(response);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch image by ID" },
       { status: 500 }

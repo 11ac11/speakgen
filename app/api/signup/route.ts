@@ -6,7 +6,7 @@ import { z } from "zod";
 const signupSchema = z.object({
   username: z.string().min(3).max(20),
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().min(6)
 });
 
 export async function POST(req: Request) {

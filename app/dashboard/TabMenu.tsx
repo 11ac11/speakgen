@@ -14,7 +14,7 @@ const TabContainer = styled.div`
 `;
 
 export default function TabMenu({
-  activeTab,
+  activeTab
 }: {
   activeTab: "questions" | "exams" | "settings";
 }) {
@@ -37,8 +37,8 @@ export default function TabMenu({
             tab === "questions"
               ? "My Questions"
               : tab === "exams"
-              ? "My Exams"
-              : "Settings"
+                ? "My Exams"
+                : "Settings"
           }
           isActive={tab === activeTab}
         />

@@ -69,7 +69,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
   image,
   setImage,
   openModal,
-  loading,
+  loading
 }) => {
   return image ? (
     <div style={{ position: "relative", width: "45%" }}>
@@ -79,7 +79,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
         height={150}
         style={{
           width: "100%",
-          objectFit: "cover",
+          objectFit: "cover"
         }}
         alt={image?.alt || "Selected image"}
       />
@@ -108,7 +108,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
 const ImageSelectors = ({
   imageIds,
   setImageIds,
-  level,
+  level
 }: {
   imageIds: (string | null)[];
   setImageIds: any;

@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   try {
     const response = await pexels.photos.search({ query, per_page: 20 });
     return NextResponse.json(response);
-  } catch (error) {
+  } catch {
     return NextResponse.json(
       { error: "Failed to fetch images" },
       { status: 500 }

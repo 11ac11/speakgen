@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter, useParams } from "next/navigation";
 import styled from "styled-components";
 import { Button } from "@/app/components/ui";
@@ -53,7 +53,7 @@ const StyledButton = styled(Button)`
 
 export const QuestionControls = ({
   part,
-  question,
+  question
 }: {
   part: string;
   question: any;

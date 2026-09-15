@@ -7,7 +7,7 @@ const StyledLabel = styled.label`
 
 export const Label = ({
   text,
-  htmlFor,
+  htmlFor
 }: {
   text: string;
   htmlFor?: string | undefined;

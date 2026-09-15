@@ -39,7 +39,7 @@ const LoadingCircle = styled.div`
   margin: 1rem 0;
 `;
 
-export const LoadingSpinner = ({}) => {
+export const LoadingSpinner = () => {
   return (
     <Container>
       <LoadingCircle />

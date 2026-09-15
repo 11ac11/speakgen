@@ -17,5 +17,5 @@ export {
   Label,
   QuickStart,
   Modal,
-  Checkbox,
+  Checkbox
 };

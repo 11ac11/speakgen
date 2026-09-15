@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import styled, { css } from "styled-components";
 
 const TextSection = styled.div`
@@ -29,12 +28,14 @@ const StyledPill = styled.div<{ $showHoverEffect: boolean }>`
   display: inline-flex;
   transition: filter 0.1s ease-in;
   ${({ $showHoverEffect }) => css`
-    ${$showHoverEffect &&
-    `
+    ${
+      $showHoverEffect &&
+      `
       &:hover {
         filter: brightness(1.2);
       }
-    `}
+    `
+    }
   `}
 `;
 
@@ -45,7 +46,7 @@ export default function Pill({
   text,
   onClick,
   showRemove,
-  style,
+  style
 }: {
   className?: string;
   bgColor?: string;
@@ -85,8 +86,6 @@ export default function Pill({
 
 // Function to generate color based on text
 function generateColor(text: string, forBg: boolean) {
-  const normalizedText = text.trim().toLowerCase();
-
   return generateColorFromText(text, forBg);
 }
 
@@ -121,5 +120,5 @@ const BASE_COLORS = [
   { bg: [174, 213, 129], text: [30, 47, 9] },
   { bg: [255, 204, 128], text: [66, 36, 0] },
   { bg: [248, 187, 208], text: [59, 0, 19] },
-  { bg: [179, 157, 219], text: [23, 11, 46] },
+  { bg: [179, 157, 219], text: [23, 11, 46] }
 ];

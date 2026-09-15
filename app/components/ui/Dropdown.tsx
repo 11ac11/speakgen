@@ -148,7 +148,7 @@ export const Dropdown = ({
   width,
   inputAsButton,
   isDashboardButton,
-  disabled,
+  disabled
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);

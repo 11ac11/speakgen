@@ -101,7 +101,7 @@ const Button: React.FC<ButtonProps> = ({
   iconUrl,
   isBigButton,
   isDashboardButton,
-  width,
+  width
 }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -115,7 +115,7 @@ const Button: React.FC<ButtonProps> = ({
 
       try {
         await onClick(); // Trigger the async function
-      } catch (err) {
+      } catch {
         setError("An error occurred. Please try again.");
       } finally {
         setIsLoading(false); // Reset loading state after async operation completes

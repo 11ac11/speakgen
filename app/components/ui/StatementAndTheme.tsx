@@ -22,7 +22,7 @@ export const StatementAndTheme = ({
   themes,
   statement,
   statementTwo,
-  smallFont = false,
+  smallFont = false
 }: {
   themes: string[];
   statement: string;

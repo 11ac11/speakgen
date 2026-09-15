@@ -35,7 +35,7 @@ const StyledInput = styled(Input)`
 const Prompts = ({
   prompts,
   setPrompts,
-  placeholders,
+  placeholders
 }: {
   prompts: string[];
   setPrompts: React.Dispatch<React.SetStateAction<string[]>>; // Correct type for setState

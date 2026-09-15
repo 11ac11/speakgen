@@ -83,7 +83,7 @@ const Checkbox: React.FC<CustomCheckboxProps> = ({
   required = false,
   error,
   width,
-  disabled,
+  disabled
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
 

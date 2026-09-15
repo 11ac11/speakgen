@@ -20,7 +20,7 @@ async function getUser(email: string): Promise<User | undefined> {
 
 export const authOptions = {
   pages: {
-    signIn: "/login",
+    signIn: "/login"
   },
   debug: process.env.NODE_ENV === "development", // Only enable debug in dev mode
   providers: [
@@ -28,14 +28,14 @@ export const authOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "text" },
-        password: { label: "Password", type: "password" },
+        password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
         // Validate credentials using Zod
         const parsedCredentials = z
           .object({
             email: z.string().email(),
-            password: z.string().min(6),
+            password: z.string().min(6)
           })
           .safeParse(credentials);
 
@@ -63,19 +63,19 @@ export const authOptions = {
         // Return user (omit password)
         return {
           id: String(user.id), // Ensure `id` is a string
-          email: user.email,
+          email: user.email
         };
-      },
+      }
     }),
     GoogleProvider({
       clientId: process.env.GOOGLE_ID || "", // TODO: look into this
-      clientSecret: process.env.GOOGLE_SECRET || "",
-    }),
+      clientSecret: process.env.GOOGLE_SECRET || ""
+    })
   ],
   session: {
-    strategy: "jwt" as SessionStrategy, // Use JSON Web Tokens for session management
+    strategy: "jwt" as SessionStrategy // Use JSON Web Tokens for session management
   },
-  secret: process.env.AUTH_SECRET, // Required for JWT encryption
+  secret: process.env.AUTH_SECRET // Required for JWT encryption
 };
 
 // Export handlers for Next.js API routes

@@ -20,7 +20,7 @@ const StyledTab = styled.div<StyledTabProps>`
 export default function Tab({
   isActive,
   text,
-  onClick,
+  onClick
 }: {
   isActive: Boolean;
   text: String;

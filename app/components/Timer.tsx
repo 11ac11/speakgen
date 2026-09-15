@@ -23,13 +23,13 @@ const TimerBox = styled.div`
 
 const CountdownTimer = ({
   timeLeft,
-  question,
+  question
 }: {
   timeLeft: number;
   question: QuestionStructures | String | undefined;
 }) => {
   const [seconds, setSeconds] = useState(timeLeft);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     // Reset the timer whenever timeLeft changes

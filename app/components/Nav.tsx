@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 import styled from "styled-components";
 
@@ -80,7 +80,7 @@ const NavItem = styled.li`
 `;
 
 export default function Nav() {
-  const { data: session, status } = useSession();
+  const { status } = useSession();
   const isAuthenticated = status === "authenticated";
 
   return (

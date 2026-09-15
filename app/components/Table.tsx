@@ -7,9 +7,8 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  SortingFn,
   SortingState,
-  useReactTable,
+  useReactTable
 } from "@tanstack/react-table";
 
 interface Question {
@@ -45,7 +44,7 @@ const TableData = styled.td`
 
 export default function Table({
   ownerId,
-  filters,
+  filters
 }: {
   ownerId: string;
   filters: any;
@@ -76,7 +75,7 @@ export default function Table({
           if (!data?.part) {
             return {
               ...data,
-              part: filters.part,
+              part: filters.part
             };
           }
           return data;
@@ -100,7 +99,7 @@ export default function Table({
   const handleDelete = async (level: string, part: string, id: number) => {
     try {
       const response = await fetch(`/api/questions/${level}/${part}/${id}`, {
-        method: "DELETE",
+        method: "DELETE"
       });
 
       if (response.ok) {
@@ -139,12 +138,12 @@ export default function Table({
             );
           }
         },
-        size: 70,
+        size: 70
       },
       {
         header: "Question",
         accessorKey: "statement",
-        size: 400,
+        size: 400
       },
       {
         header: "Themes",
@@ -168,7 +167,7 @@ export default function Table({
             }
           });
         },
-        size: 200,
+        size: 200
       },
       {
         header: "Public",
@@ -189,7 +188,7 @@ export default function Table({
             );
           }
           return null;
-        },
+        }
       },
       {
         header: "",
@@ -205,8 +204,8 @@ export default function Table({
               handleDelete={handleDelete}
             />
           );
-        },
-      },
+        }
+      }
     ],
     [filters?.level, data]
   );
@@ -219,8 +218,8 @@ export default function Table({
     getSortedRowModel: getSortedRowModel(),
     onSortingChange: setSorting,
     state: {
-      sorting,
-    },
+      sorting
+    }
   });
 
   if (loading) return <p>Loading questions...</p>;
@@ -240,7 +239,7 @@ export default function Table({
                     colSpan={header.colSpan}
                     style={{
                       width: `${header.getSize()}px`,
-                      maxWidth: `${header.getSize()}px`,
+                      maxWidth: `${header.getSize()}px`
                     }}
                   >
                     {header.isPlaceholder ? null : (
@@ -256,8 +255,8 @@ export default function Table({
                             ? header.column.getNextSortingOrder() === "asc"
                               ? "Sort ascending"
                               : header.column.getNextSortingOrder() === "desc"
-                              ? "Sort descending"
-                              : "Clear sort"
+                                ? "Sort descending"
+                                : "Clear sort"
                             : undefined
                         }
                       >
@@ -267,7 +266,7 @@ export default function Table({
                         )}
                         {{
                           asc: " 🔼",
-                          desc: " 🔽",
+                          desc: " 🔽"
                         }[header.column.getIsSorted() as string] ?? null}
                       </div>
                     )}
@@ -292,7 +291,7 @@ export default function Table({
                           width: `${cell.column.getSize()}px`,
                           maxWidth: `${cell.column.getSize()}px`,
                           textAlign:
-                            cell.column.id === "public" ? "center" : "left",
+                            cell.column.id === "public" ? "center" : "left"
                         }}
                       >
                         {flexRender(

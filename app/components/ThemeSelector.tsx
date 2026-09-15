@@ -42,7 +42,7 @@ const NoThemesSelectedWrap = styled.div`
 export default function ThemeSelector({
   label,
   themes,
-  setThemes,
+  setThemes
 }: {
   label?: string;
   themes: string[];

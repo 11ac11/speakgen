@@ -25,5 +25,5 @@ export async function middleware(req: NextRequest) {
 
 // Apply middleware only to protected pages
 export const config = {
-  matcher: ["/dashboard", "/profile"], // Add other protected pages here
+  matcher: ["/dashboard", "/profile"] // Add other protected pages here
 };

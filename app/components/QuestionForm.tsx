@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { Input, Button, Dropdown, Checkbox } from "@/app/components/ui/index";
@@ -30,7 +30,7 @@ const FormRow = styled.div`
 const QuestionForm = ({
   question,
   partParam,
-  levelParam,
+  levelParam
 }: {
   question?: any; // TODO: change any type
   partParam?: string | undefined;
@@ -97,7 +97,7 @@ interest.`;
           "starting a family",
           "moving to another country",
           "finding a job",
-          "getting married",
+          "getting married"
         ];
       case "c2":
         return [];
@@ -119,17 +119,19 @@ interest.`;
       public: true,
       ...(part === "2" && {
         image_ids: imageIds,
-        instructions: [instructionOne, instructionTwo],
+        instructions: [instructionOne, instructionTwo]
       }),
       ...(part === "3" && {
-        prompts: prompts,
-      }),
+        prompts: prompts
+      })
     };
 
     try {
-      const res = isEdit
-        ? await updateQuestion(level, part, question.id, requestData)
-        : await createQuestion(level, part, requestData);
+      if (isEdit) {
+        await updateQuestion(level, part, question.id, requestData);
+      } else {
+        await createQuestion(level, part, requestData);
+      }
     } catch (error) {
       console.error("Error submitting question:", error);
     } finally {

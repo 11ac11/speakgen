@@ -61,7 +61,7 @@ const LoginForm = () => {
       redirect: false, // don't redirect automatically
       email,
       password,
-      callbackUrl: "http://localhost:3000/dashboard",
+      callbackUrl: "http://localhost:3000/dashboard"
     });
 
     if (res?.error) {

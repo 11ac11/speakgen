@@ -18,7 +18,7 @@ const getQuestion = async (level: string, part: string, id: string) => {
 
 // ✅ Fetch data at the top level instead of inside the component
 const EditQuestion = async ({
-  params,
+  params
 }: {
   params: Promise<{ id: string; part: string; level: string }>;
 }) => {

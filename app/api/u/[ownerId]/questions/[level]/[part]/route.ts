@@ -5,7 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 // Handle GET requests to fetch all questions
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ ownerId: string; level: string; part: string }> }
+  context: {
+    params: Promise<{ ownerId: string; level: string; part: string }>;
+  }
 ) {
   try {
     // ✅ Await params before using it
@@ -23,7 +25,7 @@ export async function GET(
       "1": `${level}.part1`,
       "2": `${level}.part2`,
       "3": `${level}.part3`,
-      "4": `${level}.part4`,
+      "4": `${level}.part4`
     };
 
     const tableName = tableMap[part];
@@ -70,7 +72,7 @@ export async function POST(
       "1": [],
       "2": ["image_ids"],
       "3": ["prompts"],
-      "4": [],
+      "4": []
     };
 
     const allFields = [
@@ -78,7 +80,7 @@ export async function POST(
       ...(partSpecificFields[part] || []),
       ...((level === "c1" || level === "c2") && part === "2"
         ? ["statement_two"]
-        : []),
+        : [])
     ];
 
     // Check that all required fields exist

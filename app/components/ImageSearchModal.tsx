@@ -21,7 +21,7 @@ const ImageGrid = styled.div`
 
 const ImageSearchModal = ({
   setImage,
-  closeModal,
+  closeModal
 }: {
   setImage: React.Dispatch<any>;
   closeModal: () => void;
@@ -74,7 +74,7 @@ const ImageSearchModal = ({
                     style={{
                       width: "100%",
                       objectFit: "cover",
-                      cursor: "pointer",
+                      cursor: "pointer"
                     }}
                     height={100}
                     width={100}

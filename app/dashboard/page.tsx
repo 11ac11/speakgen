@@ -1,7 +1,7 @@
 import Dashboard from "./Dashboard";
 
 export default async function Page({
-  searchParams,
+  searchParams
 }: {
   searchParams?: Promise<{ [key: string]: string | undefined }>;
 }) {

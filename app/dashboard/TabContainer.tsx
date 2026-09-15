@@ -12,7 +12,7 @@ const Container = styled.div`
 `;
 
 export default function TabContainer({
-  activeTab,
+  activeTab
 }: {
   activeTab: "questions" | "exams" | "settings";
 }) {

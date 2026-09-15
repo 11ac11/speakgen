@@ -5,7 +5,7 @@ import { SUPPORTED_LEVELS } from "@/constants";
 
 export default function QuickStart({
   isDashboardButton,
-  width,
+  width
 }: {
   isDashboardButton?: boolean | undefined;
   width?: string | undefined;

@@ -48,7 +48,7 @@ const LoginForm = () => {
 
     setEmail(newValue);
 
-    if (!!emailError) {
+    if (emailError) {
       if (!emailRegex.test(email)) {
         setEmailError("Please enter a valid email address.");
       } else {
@@ -77,7 +77,7 @@ const LoginForm = () => {
       const response = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password }),
+        body: JSON.stringify({ username, email, password })
       });
 
       const data = await response.json();

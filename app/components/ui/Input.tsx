@@ -95,7 +95,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
   width,
   children,
   disabled,
-  isTextArea,
+  isTextArea
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
   const [inputPlaceholder, setInputPlaceholder] = useState<string | undefined>(
@@ -129,11 +129,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
     // }
   };
 
-  const handleBlur = (
-    e:
-      | React.ChangeEvent<HTMLInputElement>
-      | React.ChangeEvent<HTMLTextAreaElement>
-  ) => (!!onBlur ? onBlur() : null);
+  const handleBlur = () => onBlur?.();
 
   return (
     <Wrap className={className} width={width}>
@@ -146,8 +142,8 @@ const SecureInput: React.FC<SecureInputProps> = ({
           onChange={handleChange}
           onClick={onClick}
           onFocus={() => setInputPlaceholder("")}
-          onBlur={(e) => {
-            handleBlur?.(e); // optional chaining if `handleBlur` exists
+          onBlur={() => {
+            handleBlur?.(); // optional chaining if `handleBlur` exists
             setInputPlaceholder(placeholder); // restore
           }}
           required={required}
@@ -167,8 +163,8 @@ const SecureInput: React.FC<SecureInputProps> = ({
           onChange={handleChange}
           onClick={onClick}
           onFocus={() => setInputPlaceholder("")}
-          onBlur={(e) => {
-            handleBlur?.(e); // optional chaining if `handleBlur` exists
+          onBlur={() => {
+            handleBlur?.(); // optional chaining if `handleBlur` exists
             setInputPlaceholder(placeholder); // restore
           }}
           required={required}
