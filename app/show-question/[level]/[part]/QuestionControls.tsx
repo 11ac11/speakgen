@@ -32,7 +32,7 @@ const StyledButton = styled(Button)`
   button {
     border-radius: 8px;
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 12px;
 
     &:hover {

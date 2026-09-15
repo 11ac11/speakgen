@@ -6,7 +6,7 @@ import styled from "styled-components";
 const Statement = styled.span<{ $smallFont?: boolean }>`
   font-size: ${(props) => (props.$smallFont ? "24px" : "32px")};
   margin: 0.5rem 1rem;
-  font-weight: 700;
+  font-weight: 500;
   white-space: pre-line;
 
   @media only screen and (max-width: 768px) {

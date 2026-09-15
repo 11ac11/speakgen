@@ -44,7 +44,7 @@ const StyledButton = styled.button<StyledButtonProps>`
     `
     background: var(--limegreen);
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 500;
     font-size: 1.2rem;
     padding: 0.8rem 2rem;
     border-radius: 4rem;
@@ -59,7 +59,7 @@ const StyledButton = styled.button<StyledButtonProps>`
     outline: none;
     padding: 0.5rem 1rem;
     font-size: 16px;
-    font-weight: 700;
+    font-weight: 500;
     transition: border-color 0.3s, box-shadow 0.3s;
   `}
 

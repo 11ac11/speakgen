@@ -93,7 +93,7 @@ const Prompt = styled.div`
 
   p {
     font-size: 1.2rem;
-    font-weight: 700;
+    font-weight: 500;
     text-transform: lowercase;
 
     @media only screen and (max-width: 768px) {

@@ -21,7 +21,7 @@ const StyledPill = styled.div<{ $showHoverEffect: boolean }>`
   display: inline-block;
   border-radius: 3px;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 500;
   text-transform: capitalize;
   white-space: nowrap;
   margin-right: 5px;

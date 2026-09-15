@@ -42,7 +42,7 @@ const NavContainer = styled.div`
 const Title = styled.h1`
   font-size: 2rem;
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 500;
   margin: 0;
 
   @media only screen and (max-width: 768px) {
@@ -71,7 +71,7 @@ const NavItem = styled.li`
     font-size: 1rem;
     text-decoration: none;
     text-transform: uppercase;
-    font-weight: 700;
+    font-weight: 500;
 
     @media only screen and (max-width: 768px) {
       font-size: 0.8rem;
