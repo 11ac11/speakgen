@@ -1,5 +1,7 @@
 // /app/api/questions/route.ts
 import { sql } from "@/lib/db";
+import { getValidatedQuestionTable } from "@/lib/questionRules";
+import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
 // Handle GET requests to fetch all questions
@@ -12,23 +14,20 @@ export async function GET(
   try {
     // ✅ Await params before using it
     const { ownerId, level, part } = await context.params;
+    const authenticatedUserId = await getAuthenticatedUserId();
 
-    if (!["1", "2", "3", "4"].includes(part)) {
+    if (!authenticatedUserId || authenticatedUserId !== ownerId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const tableName = getValidatedQuestionTable(level, part);
+    if (!tableName) {
       return NextResponse.json(
-        { error: "Invalid part number" },
+        { error: "Invalid level or part" },
         { status: 400 }
       );
     }
 
-    // ✅ Safe table name mapping
-    const tableMap: Record<string, string> = {
-      "1": `${level}.part1`,
-      "2": `${level}.part2`,
-      "3": `${level}.part3`,
-      "4": `${level}.part4`
-    };
-
-    const tableName = tableMap[part];
     const query = `SELECT * FROM ${tableName} WHERE owner_id = $1`;
     const result = await sql(query, [ownerId]);
 

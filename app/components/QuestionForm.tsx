@@ -54,6 +54,7 @@ const QuestionForm = ({
   const [prompts, setPrompts] = useState<string[]>(question?.prompts || []);
   const [themes, setThemes] = useState<string[]>(question?.themes || []);
   const [imageIds, setImageIds] = useState(question?.image_ids || []);
+  const [isPublic, setIsPublic] = useState(question?.public ?? true);
   const [loading, setLoading] = useState(false);
   const [createAnother, setCreateAnother] = useState(false);
 
@@ -115,7 +116,7 @@ interest.`;
       statement: statement,
       statement_two: statementTwo,
       themes: themes,
-      public: true,
+      public: isPublic,
       ...(part === "2" && {
         image_ids: imageIds,
         instructions: [instructionOne, instructionTwo]
@@ -239,6 +240,11 @@ interest.`;
             />
           )}
           <ThemeSelector label="Themes" themes={themes} setThemes={setThemes} />
+          <Checkbox
+            checked={isPublic}
+            onChange={setIsPublic}
+            label="Public question"
+          />
           {!isEdit && (
             <>
               <Checkbox

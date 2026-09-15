@@ -123,14 +123,21 @@ export const PART_VALUES_FOR_PILLS: {
 ];
 
 export const getQuestionPartOptions = (level: string) => {
-  const defaultOptions = ["1", "2", "3", "4"];
-
-  if (level === "c2") {
-    defaultOptions.splice(-1, 1);
-  }
-
-  return defaultOptions;
+  return QUESTION_LEVELS[level.toLowerCase()]?.parts ?? [];
 };
 
-// TODO: reintegrate C2 level at somepoint
 export const SUPPORTED_LEVELS = ["B2", "C1"];
+
+export const QUESTION_LEVELS: Record<string, { parts: string[] }> = {
+  b2: { parts: ["1", "2", "3", "4"] },
+  c1: { parts: ["1", "2", "3", "4"] }
+};
+
+export const getQuestionTable = (level: string, part: string) => {
+  const normalizedLevel = level.toLowerCase();
+  if (!QUESTION_LEVELS[normalizedLevel]?.parts.includes(part)) {
+    return undefined;
+  }
+
+  return `${normalizedLevel}.part${part}`;
+};

@@ -1,4 +1,10 @@
 import { sql } from "@/lib/db";
+import {
+  getQuestionColumns,
+  getValidatedQuestionTable,
+  questionPayloadSchema
+} from "@/lib/questionRules";
+import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
 // Handle GET request: Fetch a specific question by id
@@ -9,24 +15,21 @@ export async function GET(
   try {
     const { level, part, id } = await context.params;
 
-    if (!["1", "2", "3", "4"].includes(part)) {
+    const tableName = getValidatedQuestionTable(level, part);
+    if (!tableName) {
       return NextResponse.json(
-        { error: "Invalid part number" },
+        { error: "Invalid level or part" },
         { status: 400 }
       );
     }
 
-    // Safe table name mapping
-    const tableMap: Record<string, string> = {
-      "1": `${level}.part1`,
-      "2": `${level}.part2`,
-      "3": `${level}.part3`,
-      "4": `${level}.part4`
-    };
-
-    const tableName = tableMap[part];
-    const query = `SELECT * FROM ${tableName} WHERE id = $1 LIMIT 1`;
-    const result = await sql(query, [id]);
+    const ownerId = await getAuthenticatedUserId();
+    const query = ownerId
+      ? `SELECT * FROM ${tableName} WHERE id = $1 AND (public = true OR owner_id = $2) LIMIT 1`
+      : `SELECT * FROM ${tableName} WHERE id = $1 AND public = true LIMIT 1`;
+    const result = ownerId
+      ? await sql(query, [id, ownerId])
+      : await sql(query, [id]);
 
     if (result.length === 0) {
       return NextResponse.json(
@@ -52,37 +55,53 @@ export async function PATCH(
 ) {
   try {
     const { level, part, id } = await context.params;
-    const body = await req.json();
-
-    if (!["1", "2", "3", "4"].includes(part)) {
+    const tableName = getValidatedQuestionTable(level, part);
+    if (!tableName) {
       return NextResponse.json(
-        { error: "Invalid part number" },
+        { error: "Invalid level or part" },
         { status: 400 }
       );
     }
 
-    const tableMap: Record<string, string> = {
-      "1": `${level}.part1`,
-      "2": `${level}.part2`,
-      "3": `${level}.part3`,
-      "4": `${level}.part4`
-    };
+    const ownerId = await getAuthenticatedUserId();
+    if (!ownerId) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
 
-    const tableName = tableMap[part];
+    const parsed = questionPayloadSchema.partial().safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid question payload" },
+        { status: 400 }
+      );
+    }
 
-    const keys = Object.keys(body);
+    const allowedColumns = getQuestionColumns(level.toLowerCase(), part).filter(
+      (column) => column !== "owner_id"
+    );
+    const keys = Object.keys(parsed.data).filter((key) =>
+      allowedColumns.includes(key)
+    );
     if (keys.length === 0) {
       return NextResponse.json({ error: "No data to update" }, { status: 400 });
     }
 
-    // Build SET clause with positional parameters: $2, $3, ...
     const setClauses = keys
       .map((key, index) => `${key} = $${index + 2}`)
       .join(", ");
 
-    const values = [id, ...keys.map((key) => body[key])];
+    const values = [
+      id,
+      ...keys.map((key) => parsed.data[key as keyof typeof parsed.data])
+    ];
 
-    const query = `UPDATE ${tableName} SET ${setClauses} WHERE id = $1 RETURNING *`;
+    const query = `UPDATE ${tableName} SET ${setClauses} WHERE id = $1 AND owner_id = $${
+      values.length + 1
+    } RETURNING *`;
+    values.push(ownerId);
     const result = await sql(query, values);
 
     if (result.length === 0) {
@@ -110,23 +129,24 @@ export async function DELETE(
   try {
     const { level, part, id } = await context.params;
 
-    if (!["1", "2", "3", "4"].includes(part)) {
+    const tableName = getValidatedQuestionTable(level, part);
+    if (!tableName) {
       return NextResponse.json(
-        { error: "Invalid part number" },
+        { error: "Invalid level or part" },
         { status: 400 }
       );
     }
 
-    const tableMap: Record<string, string> = {
-      "1": `${level}.part1`,
-      "2": `${level}.part2`,
-      "3": `${level}.part3`,
-      "4": `${level}.part4`
-    };
+    const ownerId = await getAuthenticatedUserId();
+    if (!ownerId) {
+      return NextResponse.json(
+        { error: "Authentication required" },
+        { status: 401 }
+      );
+    }
 
-    const tableName = tableMap[part];
-    const query = `DELETE FROM ${tableName} WHERE id = $1 RETURNING *`;
-    const result = await sql(query, [id]);
+    const query = `DELETE FROM ${tableName} WHERE id = $1 AND owner_id = $2 RETURNING *`;
+    const result = await sql(query, [id, ownerId]);
 
     if (result.length === 0) {
       return NextResponse.json(

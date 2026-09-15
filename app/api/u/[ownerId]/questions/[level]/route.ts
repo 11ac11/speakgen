@@ -1,5 +1,7 @@
 // /app/api/questions/route.ts
 import { sql } from "@/lib/db";
+import { getValidatedQuestionTable } from "@/lib/questionRules";
+import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
 // Handle GET requests to fetch all questions
@@ -10,11 +12,20 @@ export async function GET(
   try {
     // ✅ Await params before using it
     const { level, ownerId } = await context.params;
+    const authenticatedUserId = await getAuthenticatedUserId();
 
-    const parts = ["part1", "part2", "part3", "part4"];
+    if (!authenticatedUserId || authenticatedUserId !== ownerId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const parts = ["1", "2", "3", "4"];
 
     const queries = parts.map((part, index) => {
-      const table = `${level}.${part}`;
+      const table = getValidatedQuestionTable(level, part);
+      if (!table) {
+        throw new Error("Invalid level or part");
+      }
+
       const query = `SELECT *, '${
         index + 1
       }' AS part FROM ${table} WHERE owner_id = $1`;

@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db";
+import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
 // List schemas you want to include (manually for safety)
@@ -11,12 +12,17 @@ export async function GET(
   try {
     // ✅ Await params before using it
     const { ownerId } = await context.params;
+    const authenticatedUserId = await getAuthenticatedUserId();
 
-    if (!ownerId) {
+    if (!ownerId || !authenticatedUserId) {
       return NextResponse.json(
-        { error: "Missing owner_id parameter" },
-        { status: 400 }
+        { error: "Authentication required" },
+        { status: 401 }
       );
+    }
+
+    if (authenticatedUserId !== ownerId) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const allQueries: string[] = [];
