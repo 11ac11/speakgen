@@ -224,6 +224,7 @@ export default function Table({
 
   if (loading) return <p>Loading questions...</p>;
   if (error) return <p>Error: {error}</p>;
+  if (data.length === 0) return <p>No questions found for this selection.</p>;
 
   return (
     <div className="p-2">

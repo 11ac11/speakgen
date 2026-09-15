@@ -24,13 +24,6 @@ export async function GET(
     const results = await Promise.all(queries);
     const allResults = results.flat(); // flatten into one array
 
-    if (allResults.length === 0) {
-      return NextResponse.json(
-        { error: "Question not found" },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json(allResults);
   } catch (error) {
     console.error("Database query failed:", error);

@@ -32,13 +32,6 @@ export async function GET(
     const query = `SELECT * FROM ${tableName} WHERE owner_id = $1`;
     const result = await sql(query, [ownerId]);
 
-    if (result.length === 0) {
-      return NextResponse.json(
-        { error: "Question not found" },
-        { status: 404 }
-      );
-    }
-
     return NextResponse.json(result);
   } catch (error) {
     console.error("Database query failed:", error);
