@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Table from "../components/Table";
@@ -44,7 +45,8 @@ const Dashboardbutton = styled(Button)`
 export default function DashboardTable() {
   const [filters, setFilters] = useState({ part: "all", level: "b2" });
   const router = useRouter();
-  const ownerId = "2"; // TODO: make dynamic
+  const { data: session } = useSession();
+  const ownerId = session?.user?.id || "";
 
   const capitalizeFirstLetter = (str: string) =>
     str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();

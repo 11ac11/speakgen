@@ -94,7 +94,7 @@ export default function Table({
     if (ownerId) {
       fetchQuestions();
     }
-  }, [filters]);
+  }, [filters, ownerId]);
 
   const handleDelete = async (level: string, part: string, id: number) => {
     try {

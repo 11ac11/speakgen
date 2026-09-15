@@ -112,7 +112,6 @@ interest.`;
 
     setLoading(true);
     const requestData = {
-      owner_id: "2", // TODO: make dynamic
       statement: statement,
       statement_two: statementTwo,
       themes: themes,

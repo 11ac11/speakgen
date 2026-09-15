@@ -1,4 +1,4 @@
-import NextAuth, { SessionStrategy } from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import { z } from "zod";
@@ -18,7 +18,7 @@ async function getUser(email: string): Promise<User | undefined> {
   }
 }
 
-export const authOptions = {
+export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login"
   },
@@ -73,10 +73,21 @@ export const authOptions = {
     })
   ],
   session: {
-    strategy: "jwt" as SessionStrategy // Use JSON Web Tokens for session management
+    strategy: "jwt" // Use JSON Web Tokens for session management
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user?.id) {
+        token.id = user.id;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user && token.id) {
+        session.user.id = token.id;
+      }
+      return session;
+    }
   },
   secret: process.env.AUTH_SECRET // Required for JWT encryption
 };
-
-// Export handlers for Next.js API routes
-export const { handlers, auth, signIn, signOut } = NextAuth(authOptions);
