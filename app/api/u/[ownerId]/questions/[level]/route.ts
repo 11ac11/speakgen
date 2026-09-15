@@ -17,8 +17,8 @@ export async function GET(
       const table = `${level}.${part}`;
       const query = `SELECT *, '${
         index + 1
-      }' AS part FROM ${table} WHERE owner_id = ${ownerId}`;
-      return sql(query);
+      }' AS part FROM ${table} WHERE owner_id = $1`;
+      return sql(query, [ownerId]);
     });
 
     const results = await Promise.all(queries);

@@ -26,7 +26,7 @@ export async function GET(
         allQueries.push(`
           SELECT '${level}' AS level, '${part}' AS part, id, statement, themes, owner_id, public
           FROM ${level}.part${part}
-          WHERE owner_id = ${ownerId}
+          WHERE owner_id = $1
         `);
       }
     }
@@ -39,7 +39,7 @@ export async function GET(
       ORDER BY level, part::int, id
     `;
 
-    const result = await sql(finalQuery);
+    const result = await sql(finalQuery, [ownerId]);
 
     return NextResponse.json(result);
   } catch (error) {

@@ -27,8 +27,8 @@ export async function GET(
     };
 
     const tableName = tableMap[part];
-    const query = `SELECT * FROM ${tableName} WHERE owner_id = ${ownerId}`;
-    const result = await sql(query);
+    const query = `SELECT * FROM ${tableName} WHERE owner_id = $1`;
+    const result = await sql(query, [ownerId]);
 
     if (result.length === 0) {
       return NextResponse.json(
