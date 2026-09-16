@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import styled from "styled-components";
 import { Button } from "@/app/components/ui";
 import Timer from "@/app/components/Timer";
+import { getCambridgeSpeakingTask } from "@/lib/cambridgeBlueprints";
 
 const Container = styled.div`
   display: flex;
@@ -61,20 +62,8 @@ export const QuestionControls = ({
   const router = useRouter();
   const { level } = useParams();
 
-  const returnPartTimes = (part: string) => {
-    switch (part) {
-      case "1":
-        return 60;
-      case "2":
-        return 120;
-      case "3":
-        return 180;
-      case "4":
-        return 180;
-      default:
-        return 0;
-    }
-  };
+  const suggestedSeconds =
+    getCambridgeSpeakingTask(String(level), part)?.suggestedSeconds ?? 0;
 
   return (
     <Container>
@@ -99,7 +88,7 @@ export const QuestionControls = ({
         />
       </CenterControls>
       <RightControl>
-        <Timer timeLeft={returnPartTimes(part)} question={question} />
+        <Timer timeLeft={suggestedSeconds} question={question} />
       </RightControl>
     </Container>
   );
