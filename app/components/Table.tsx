@@ -197,17 +197,20 @@ export default function Table({
         cell: ({ row }) => {
           // console.log("filters:", filters);
           return (
+            // The row's own level, not the filter's. Every question carries
+            // its level, and using the filter breaks as soon as a listing can
+            // span levels.
             <Actions
               questionId={row.original.id}
               part={row.original.part}
-              level={filters?.level}
+              level={row.original.level}
               handleDelete={handleDelete}
             />
           );
         }
       }
     ],
-    [filters?.level, data]
+    [data]
   );
 
   const table = useReactTable({

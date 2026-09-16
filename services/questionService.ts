@@ -1,16 +1,19 @@
-export async function getPartOneQuestions() {
-  try {
-    const response = await fetch("api/questions/partone/");
-    return response;
-  } catch (error) {
-    console.error("Database query failed:", error);
-    return [];
-  }
-}
+// getPartOneQuestions was removed: it fetched "api/questions/partone/", a route
+// that has never existed, and nothing called it.
 
-export async function getRandomPartOneQuestion() {
+/**
+ * A random question for a level and part.
+ *
+ * This used to request "api/questions/1?random=true", which is missing the
+ * level, so it matched no route and always returned the 404 page. The API is
+ * /api/questions/[level]/[part], and the path needs a leading slash or it
+ * resolves relative to whatever page is open.
+ */
+export async function getRandomQuestion(level: string, part: string) {
   try {
-    const response = await fetch("api/questions/1?random=true");
+    const response = await fetch(
+      `/api/questions/${level.toLowerCase()}/${part}?random=true`
+    );
     if (!response.ok) throw new Error("Failed to fetch question");
     return await response.json();
   } catch (error) {

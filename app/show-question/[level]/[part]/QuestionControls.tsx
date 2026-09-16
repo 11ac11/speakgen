@@ -61,6 +61,9 @@ export const QuestionControls = ({
 }) => {
   const router = useRouter();
   const { level } = useParams();
+  // Pushing the URL the page is already on is a no-op, so "Change Question"
+  // did nothing. The page picks a new random question on each render, so what
+  // it needs is a refetch.
 
   const suggestedSeconds =
     getCambridgeSpeakingTask(String(level), part)?.suggestedSeconds ?? 0;
@@ -76,7 +79,7 @@ export const QuestionControls = ({
           disabled={part === "1"}
         />
         <StyledButton
-          onClick={() => router.push(`/show-question/${level}/${part}`)}
+          onClick={() => router.refresh()}
           text={"Change Question"}
         />
         <StyledButton

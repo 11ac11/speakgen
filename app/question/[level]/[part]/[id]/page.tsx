@@ -1,36 +1,30 @@
+import { notFound } from "next/navigation";
 import QuestionForm from "@/app/components/QuestionForm";
+import { getQuestionById } from "@/lib/questions";
+import { getViewer } from "@/lib/questionAccess";
 
-const getQuestion = async (level: string, part: string, id: string) => {
-  console.log("Fetching question:", level, part, id);
+export const dynamic = "force-dynamic";
 
-  const apiUrl = `${process.env.NEXT_PUBLIC_API_URL}/questions/${level}/${part}/${id}`;
-
-  const res = await fetch(apiUrl, { cache: "no-store" });
-
-  console.log("res:", res);
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch question");
-  }
-
-  return res.json();
-};
-
-// ✅ Fetch data at the top level instead of inside the component
 const EditQuestion = async ({
   params
 }: {
   params: Promise<{ id: string; part: string; level: string }>;
 }) => {
-  const { part, id, level } = await params; // Destructure to ensure params are awaited
+  const { id } = await params;
 
-  const question = await getQuestion(level, part, id);
+  // Queried directly rather than fetched back through the API, which used to
+  // go out over HTTP to NEXT_PUBLIC_API_URL and therefore to a hardcoded host
+  // and port. A question id is unique on its own, so level and part in the
+  // path are only there for the form's benefit.
+  const question = await getQuestionById(await getViewer(), id);
+
+  if (!question) notFound();
 
   return (
     <QuestionForm
       question={question}
-      partParam={part}
-      levelParam={level.toUpperCase()}
+      partParam={question.part}
+      levelParam={question.level.toUpperCase()}
     />
   );
 };

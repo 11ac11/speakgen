@@ -1,19 +1,28 @@
 "use client";
 
 import React, { useState } from "react";
-import { getRandomPartOneQuestion } from "@/services/part1Service";
+import { getRandomQuestion } from "@/services/questionService";
 import Button from "./ui/Button";
 import Timer from "./Timer";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 
-export default function QuestionContainer() {
+// Not currently rendered anywhere; kept because its markup is half written.
+// The level and part used to be implicit in a service function that requested
+// a route with no level in it and so never returned a question.
+export default function QuestionContainer({
+  level = "b2",
+  part = "1"
+}: {
+  level?: string;
+  part?: string;
+}) {
   const [question, setQuestion] = useState<any | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
   async function fetchNextQuestion() {
     try {
       setLoading(true);
-      const newQuestion = await getRandomPartOneQuestion();
+      const newQuestion = await getRandomQuestion(level, part);
       setQuestion(newQuestion);
     } catch (e) {
       console.error(e);

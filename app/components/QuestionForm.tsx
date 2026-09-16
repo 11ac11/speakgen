@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { Input, Button, Dropdown, Checkbox } from "@/app/components/ui/index";
 import Prompts from "./Prompts";
-import { createQuestion, updateQuestion } from "@/services/part1Service";
+import { createQuestion, updateQuestion } from "@/services/questionService";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ImageSelectors from "./ImageSelectors";
 import { getQuestionPartOptions, SUPPORTED_LEVELS } from "@/constants";
