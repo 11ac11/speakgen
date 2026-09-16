@@ -39,3 +39,27 @@ export function questionReadPredicate(
 
   return { clause: `q.visibility = 'public'`, params: [] };
 }
+
+/**
+ * Which exams a viewer may read. An exam with no owner is house content, free
+ * and visible to logged-out visitors. A user's own exam is visible only to
+ * them; there is no exam sharing between users.
+ *
+ * Access to the questions inside an exam comes from access to the exam itself,
+ * not from each question's own visibility. That is what will let a student
+ * follow a share link and see a teacher's private questions in that exam and
+ * nowhere else.
+ */
+export function examReadPredicate(
+  viewer: Viewer,
+  nextParamIndex: number
+): { clause: string; params: unknown[] } {
+  if (viewer.kind === "user") {
+    return {
+      clause: `(e.owner_id IS NULL OR e.owner_id = $${nextParamIndex})`,
+      params: [viewer.userId]
+    };
+  }
+
+  return { clause: `e.owner_id IS NULL`, params: [] };
+}
