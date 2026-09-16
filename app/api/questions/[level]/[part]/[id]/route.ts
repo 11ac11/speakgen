@@ -84,7 +84,11 @@ export async function PATCH(
     );
     const keys = Object.keys(parsed.data)
       .map((key) => {
-        if (key === "image_ids" && level.toLowerCase() === "c1" && part === "2") {
+        if (
+          key === "image_ids" &&
+          level.toLowerCase() === "c1" &&
+          part === "2"
+        ) {
           return ["image_one", "image_two"];
         }
         return [key];

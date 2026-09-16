@@ -40,9 +40,7 @@ export type User = {
 };
 
 export type QuestionStructures =
-  | NewPart1QStructure
-  | Part2QStructure
-  | Part3QStructure;
+  NewPart1QStructure | Part2QStructure | Part3QStructure;
 
 export type Part2QStructure = {
   id: number;

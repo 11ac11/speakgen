@@ -1,0 +1,13 @@
+node_modules/
+.next/
+out/
+build/
+public/
+next-env.d.ts
+
+# Generated / not ours to reformat
+package-lock.json
+pnpm-lock.yaml
+
+# SQL is formatted by hand
+migrations/

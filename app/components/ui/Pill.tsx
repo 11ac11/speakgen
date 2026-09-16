@@ -97,7 +97,7 @@ function generateColorFromText(text: string, forBg: boolean) {
   const char2 = text.charCodeAt(1);
   const index = (char1 + char2) % BASE_COLORS.length;
 
-  let [r, g, b] = forBg ? BASE_COLORS[index].bg : BASE_COLORS[index].text;
+  const [r, g, b] = forBg ? BASE_COLORS[index].bg : BASE_COLORS[index].text;
 
   return `rgb(${r}, ${g}, ${b})`;
 }

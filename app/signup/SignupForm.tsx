@@ -181,10 +181,7 @@ const LoginForm = () => {
         isAsync={false}
         type="submit"
         disabled={
-          isSubmitting ||
-          !allFieldsCompleted ||
-          !!passwordError ||
-          !!emailError
+          isSubmitting || !allFieldsCompleted || !!passwordError || !!emailError
         }
       />
       {formError && <p role="alert">{formError}</p>}

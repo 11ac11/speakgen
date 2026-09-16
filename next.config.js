@@ -2,26 +2,26 @@
 const nextConfig = {
   reactStrictMode: true,
   compiler: {
-    styledComponents: true,
+    styledComponents: true
   },
   images: {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "**.unsplash.com",
+        hostname: "**.unsplash.com"
       },
 
       {
         protocol: "https",
-        hostname: "**.pexels.com",
+        hostname: "**.pexels.com"
       },
 
       {
         protocol: "https",
-        hostname: "**.football4football.com",
-      },
-    ],
-  },
+        hostname: "**.football4football.com"
+      }
+    ]
+  }
 };
 
 module.exports = nextConfig;
