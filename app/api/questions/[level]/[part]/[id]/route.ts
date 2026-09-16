@@ -1,44 +1,40 @@
-import { sql } from "@/lib/db";
 import {
-  getQuestionColumns,
-  getValidatedQuestionTable,
-  questionPayloadSchema
-} from "@/lib/questionRules";
+  deleteQuestion,
+  getQuestionById,
+  InvalidReferenceError,
+  updateQuestion
+} from "@/lib/questions";
+import { getViewer } from "@/lib/questionAccess";
+import { isValidLevelPart, questionPayloadSchema } from "@/lib/questionRules";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
-// Handle GET request: Fetch a specific question by id
+// A question id is now globally unique, so level and part are validated but the
+// lookup is by id alone. They stay in the path because the editor routes are
+// shaped around them.
+
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ level: string; part: string; id: string }> }
 ) {
   try {
     const { level, part, id } = await context.params;
-
-    const tableName = getValidatedQuestionTable(level, part);
-    if (!tableName) {
+    if (!isValidLevelPart(level, part)) {
       return NextResponse.json(
         { error: "Invalid level or part" },
         { status: 400 }
       );
     }
 
-    const ownerId = await getAuthenticatedUserId();
-    const query = ownerId
-      ? `SELECT * FROM ${tableName} WHERE id = $1 AND (public = true OR owner_id = $2) LIMIT 1`
-      : `SELECT * FROM ${tableName} WHERE id = $1 AND public = true LIMIT 1`;
-    const result = ownerId
-      ? await sql(query, [id, ownerId])
-      : await sql(query, [id]);
-
-    if (result.length === 0) {
+    const question = await getQuestionById(await getViewer(), id);
+    if (!question) {
       return NextResponse.json(
         { error: "Question not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(result[0]);
+    return NextResponse.json(question);
   } catch (error) {
     console.error("Database query failed:", error);
     return NextResponse.json(
@@ -48,20 +44,12 @@ export async function GET(
   }
 }
 
-// Handle PATCH request: Update a specific question by id
 export async function PATCH(
   req: NextRequest,
   context: { params: Promise<{ level: string; part: string; id: string }> }
 ) {
   try {
-    const { level, part, id } = await context.params;
-    const tableName = getValidatedQuestionTable(level, part);
-    if (!tableName) {
-      return NextResponse.json(
-        { error: "Invalid level or part" },
-        { status: 400 }
-      );
-    }
+    const { id } = await context.params;
 
     const ownerId = await getAuthenticatedUserId();
     if (!ownerId) {
@@ -79,52 +67,21 @@ export async function PATCH(
       );
     }
 
-    const allowedColumns = getQuestionColumns(level.toLowerCase(), part).filter(
-      (column) => column !== "owner_id"
-    );
-    const keys = Object.keys(parsed.data)
-      .map((key) => {
-        if (
-          key === "image_ids" &&
-          level.toLowerCase() === "c1" &&
-          part === "2"
-        ) {
-          return ["image_one", "image_two"];
-        }
-        return [key];
-      })
-      .flat()
-      .filter((key) => allowedColumns.includes(key));
-    if (keys.length === 0) {
-      return NextResponse.json({ error: "No data to update" }, { status: 400 });
-    }
-
-    const setClauses = keys
-      .map((key, index) => `${key} = $${index + 2}`)
-      .join(", ");
-
-    const values: unknown[] = [id];
-    for (const key of keys) {
-      if (key === "image_one") values.push(parsed.data.image_ids?.[0]);
-      else if (key === "image_two") values.push(parsed.data.image_ids?.[1]);
-      else values.push(parsed.data[key as keyof typeof parsed.data]);
-    }
-
-    const query = `UPDATE ${tableName} SET ${setClauses} WHERE id = $1 AND owner_id = $${
-      values.length + 1
-    } RETURNING *`;
-    values.push(ownerId);
-    const result = await sql(query, values);
-
-    if (result.length === 0) {
+    // Scoped to owner_id, so editing house content or somebody else's question
+    // is a 404 rather than a silent no-op.
+    const question = await updateQuestion(ownerId, id, parsed.data);
+    if (!question) {
       return NextResponse.json(
         { error: "Question not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json(result[0]);
+    return NextResponse.json(question);
   } catch (error) {
+    if (error instanceof InvalidReferenceError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error("Database update failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
@@ -133,21 +90,12 @@ export async function PATCH(
   }
 }
 
-// Handle DELETE request: Delete a specific question by id
 export async function DELETE(
   req: NextRequest,
   context: { params: Promise<{ level: string; part: string; id: string }> }
 ) {
   try {
-    const { level, part, id } = await context.params;
-
-    const tableName = getValidatedQuestionTable(level, part);
-    if (!tableName) {
-      return NextResponse.json(
-        { error: "Invalid level or part" },
-        { status: 400 }
-      );
-    }
+    const { id } = await context.params;
 
     const ownerId = await getAuthenticatedUserId();
     if (!ownerId) {
@@ -157,10 +105,8 @@ export async function DELETE(
       );
     }
 
-    const query = `DELETE FROM ${tableName} WHERE id = $1 AND owner_id = $2 RETURNING *`;
-    const result = await sql(query, [id, ownerId]);
-
-    if (result.length === 0) {
+    const deleted = await deleteQuestion(ownerId, id);
+    if (!deleted) {
       return NextResponse.json(
         { error: "Question not found" },
         { status: 404 }

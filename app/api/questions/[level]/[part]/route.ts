@@ -1,47 +1,41 @@
-import { sql } from "@/lib/db";
 import {
-  getQuestionColumns,
-  getValidatedQuestionTable,
-  questionPayloadSchema
-} from "@/lib/questionRules";
+  createQuestion,
+  InvalidReferenceError,
+  listQuestions
+} from "@/lib/questions";
+import { getViewer } from "@/lib/questionAccess";
+import { isValidLevelPart, questionPayloadSchema } from "@/lib/questionRules";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
-// Handle GET requests to fetch all questions
 export async function GET(
   req: NextRequest,
   context: { params: Promise<{ level: string; part: string }> }
 ) {
   try {
-    const { searchParams } = new URL(req.url);
-    const isRandom = searchParams.get("random") === "true";
-
-    // ✅ Await params before using it
     const { level, part } = await context.params;
-
-    const tableName = getValidatedQuestionTable(level, part);
-    if (!tableName) {
+    if (!isValidLevelPart(level, part)) {
       return NextResponse.json(
         { error: "Invalid level or part" },
         { status: 400 }
       );
     }
 
-    const ownerId = await getAuthenticatedUserId();
-    const random = isRandom ? " ORDER BY RANDOM() LIMIT 1" : "";
-    const query = ownerId
-      ? `SELECT * FROM ${tableName} WHERE public = true OR owner_id = $1${random}`
-      : `SELECT * FROM ${tableName} WHERE public = true${random}`;
-    const result = ownerId ? await sql(query, [ownerId]) : await sql(query);
+    const random = new URL(req.url).searchParams.get("random") === "true";
+    const questions = await listQuestions(await getViewer(), {
+      level: level.toLowerCase(),
+      part,
+      random
+    });
 
-    if (result.length === 0) {
-      return NextResponse.json(
-        { error: "Question not found" },
-        { status: 404 }
-      );
+    // ?random=true returns a single question; the plain list returns an array.
+    if (random) {
+      return questions.length
+        ? NextResponse.json(questions[0])
+        : NextResponse.json({ error: "Question not found" }, { status: 404 });
     }
 
-    return NextResponse.json(result[0]);
+    return NextResponse.json(questions);
   } catch (error) {
     console.error("Database query failed:", error);
     return NextResponse.json(
@@ -57,9 +51,7 @@ export async function POST(
 ) {
   try {
     const { level, part } = await context.params;
-
-    const tableName = getValidatedQuestionTable(level, part);
-    if (!tableName) {
+    if (!isValidLevelPart(level, part)) {
       return NextResponse.json(
         { error: "Invalid level or part" },
         { status: 400 }
@@ -82,22 +74,26 @@ export async function POST(
       );
     }
 
-    const body = parsed.data;
-    const allFields = getQuestionColumns(level.toLowerCase(), part);
-    const columns = allFields.join(", ");
-    const placeholders = allFields.map((_, i) => `$${i + 1}`).join(", ");
-    const values = allFields.map((field) => {
-      if (field === "owner_id") return ownerId;
-      if (field === "image_one") return body.image_ids?.[0];
-      if (field === "image_two") return body.image_ids?.[1];
-      return body[field as keyof typeof body];
-    });
+    const question = await createQuestion(
+      ownerId,
+      level.toLowerCase(),
+      part,
+      parsed.data
+    );
 
-    const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *;`;
-    const result = await sql(query, values);
+    // No row means content.levels.enabled is false for this level.
+    if (!question) {
+      return NextResponse.json(
+        { error: "Level is not available" },
+        { status: 400 }
+      );
+    }
 
-    return NextResponse.json(result[0], { status: 201 });
+    return NextResponse.json(question, { status: 201 });
   } catch (error) {
+    if (error instanceof InvalidReferenceError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
     console.error("Database insertion failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },

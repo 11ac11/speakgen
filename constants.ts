@@ -126,18 +126,13 @@ export const getQuestionPartOptions = (level: string) => {
   return QUESTION_LEVELS[level.toLowerCase()]?.parts ?? [];
 };
 
+// Levels offered in the UI. content.levels.enabled is the authority; C2 exists
+// in the database but is not yet offered, so it is absent here.
 export const SUPPORTED_LEVELS = ["B2", "C1"];
 
+// Mirrors content.level_parts. C2 Proficiency has three parts, not four.
 export const QUESTION_LEVELS: Record<string, { parts: string[] }> = {
   b2: { parts: ["1", "2", "3", "4"] },
-  c1: { parts: ["1", "2", "3", "4"] }
-};
-
-export const getQuestionTable = (level: string, part: string) => {
-  const normalizedLevel = level.toLowerCase();
-  if (!QUESTION_LEVELS[normalizedLevel]?.parts.includes(part)) {
-    return undefined;
-  }
-
-  return `${normalizedLevel}.part${part}`;
+  c1: { parts: ["1", "2", "3", "4"] },
+  c2: { parts: ["1", "2", "3"] }
 };

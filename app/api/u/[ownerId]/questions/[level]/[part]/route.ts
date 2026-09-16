@@ -1,10 +1,15 @@
-// /app/api/questions/route.ts
-import { sql } from "@/lib/db";
-import { getValidatedQuestionTable } from "@/lib/questionRules";
+import { listOwnedQuestions } from "@/lib/questions";
+import { isValidLevelPart } from "@/lib/questionRules";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
-// Handle GET requests to fetch all questions
+// The POST that used to live here was removed. It ran no authentication check,
+// took owner_id from the request body so a caller could write rows as anybody,
+// and interpolated the unvalidated `level` path segment straight into
+// `INSERT INTO ${level}.part${part}`. Creating a question goes through
+// POST /api/questions/[level]/[part], which authenticates and takes the owner
+// from the session.
+
 export async function GET(
   req: NextRequest,
   context: {
@@ -12,7 +17,6 @@ export async function GET(
   }
 ) {
   try {
-    // ✅ Await params before using it
     const { ownerId, level, part } = await context.params;
     const authenticatedUserId = await getAuthenticatedUserId();
 
@@ -20,80 +24,18 @@ export async function GET(
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
-    const tableName = getValidatedQuestionTable(level, part);
-    if (!tableName) {
+    if (!isValidLevelPart(level, part)) {
       return NextResponse.json(
         { error: "Invalid level or part" },
         { status: 400 }
       );
     }
 
-    const query = `SELECT * FROM ${tableName} WHERE owner_id = $1`;
-    const result = await sql(query, [ownerId]);
-
-    return NextResponse.json(result);
+    return NextResponse.json(
+      await listOwnedQuestions(ownerId, { level: level.toLowerCase(), part })
+    );
   } catch (error) {
     console.error("Database query failed:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 }
-    );
-  }
-}
-
-export async function POST(
-  req: NextRequest,
-  context: { params: Promise<{ level: string; part: string }> }
-) {
-  try {
-    const { level, part } = await context.params;
-
-    if (!["1", "2", "3", "4"].includes(part)) {
-      return NextResponse.json(
-        { error: "Invalid part number" },
-        { status: 400 }
-      );
-    }
-
-    const body = await req.json();
-    const tableName = `${level}.part${part}`;
-
-    // Define required fields
-    const commonFields = ["statement", "themes", "owner_id", "public"];
-    const partSpecificFields: Record<string, string[]> = {
-      "1": [],
-      "2": ["image_ids"],
-      "3": ["prompts"],
-      "4": []
-    };
-
-    const allFields = [
-      ...commonFields,
-      ...(partSpecificFields[part] || []),
-      ...((level === "c1" || level === "c2") && part === "2"
-        ? ["statement_two"]
-        : [])
-    ];
-
-    // Check that all required fields exist
-    const missingFields = allFields.filter((field) => !(field in body));
-    if (missingFields.length > 0) {
-      return NextResponse.json(
-        { error: `Missing required fields: ${missingFields.join(", ")}` },
-        { status: 400 }
-      );
-    }
-
-    const columns = allFields.join(", ");
-    const placeholders = allFields.map((_, i) => `$${i + 1}`).join(", ");
-    const values = allFields.map((field) => body[field]);
-
-    const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *;`;
-    const result = await sql(query, values);
-
-    return NextResponse.json(result[0], { status: 201 });
-  } catch (error) {
-    console.error("Database insertion failed:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

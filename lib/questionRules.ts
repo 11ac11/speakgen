@@ -1,9 +1,13 @@
 import { z } from "zod";
-import { getQuestionTable, QUESTION_LEVELS } from "@/constants";
+import { QUESTION_LEVELS } from "@/constants";
 
 export const questionPayloadSchema = z.object({
   statement: z.string().trim().min(1).max(200),
   statement_two: z.string().trim().max(500).optional(),
+  // Part 2: the 30-second question the other candidate answers about the same
+  // photographs. Part 3: the second-phase task, "now decide which...".
+  follow_up: z.string().trim().max(500).optional(),
+  decision: z.string().trim().max(500).optional(),
   themes: z.array(z.string().trim().min(1)).min(1),
   public: z.boolean(),
   image_ids: z.array(z.number().int()).optional(),
@@ -13,33 +17,11 @@ export const questionPayloadSchema = z.object({
 
 export type QuestionPayload = z.infer<typeof questionPayloadSchema>;
 
-export function getValidatedQuestionTable(level: string, part: string) {
-  const normalizedLevel = level.toLowerCase();
-  const table = getQuestionTable(normalizedLevel, part);
-
-  if (!table || !QUESTION_LEVELS[normalizedLevel]) {
-    return undefined;
-  }
-
-  return table;
-}
-
-export function getQuestionColumns(level: string, part: string) {
-  const columns = ["statement", "themes", "owner_id", "public"];
-
-  if (part === "2" && level === "c1") {
-    columns.push("image_one", "image_two");
-  } else if (part === "2") {
-    columns.push("image_ids");
-  }
-
-  if (part === "3") {
-    columns.push("prompts");
-  }
-
-  if (level === "c2" && part === "2") {
-    columns.push("statement_two");
-  }
-
-  return columns;
+/**
+ * Cheap shape check so an obviously wrong URL gets a 400 rather than an empty
+ * list. content.level_parts is the actual authority: the (level, part) foreign
+ * key on content.questions rejects anything invalid on write, whatever this says.
+ */
+export function isValidLevelPart(level: string, part: string) {
+  return QUESTION_LEVELS[level.toLowerCase()]?.parts.includes(part) ?? false;
 }
