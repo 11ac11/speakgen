@@ -27,7 +27,9 @@ export function getValidatedQuestionTable(level: string, part: string) {
 export function getQuestionColumns(level: string, part: string) {
   const columns = ["statement", "themes", "owner_id", "public"];
 
-  if (part === "2") {
+  if (part === "2" && level === "c1") {
+    columns.push("image_one", "image_two");
+  } else if (part === "2") {
     columns.push("image_ids");
   }
 
@@ -35,7 +37,7 @@ export function getQuestionColumns(level: string, part: string) {
     columns.push("prompts");
   }
 
-  if ((level === "c1" || level === "c2") && part === "2") {
+  if (level === "c2" && part === "2") {
     columns.push("statement_two");
   }
 

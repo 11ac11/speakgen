@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useSession, signOut } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import styled from "styled-components";
 
@@ -80,8 +80,8 @@ const NavItem = styled.li`
 `;
 
 export default function Nav() {
-  const { status } = useSession();
-  const isAuthenticated = status === "authenticated";
+  const { data: session } = authClient.useSession();
+  const isAuthenticated = !!session?.user;
 
   return (
     <Navbar>
@@ -113,7 +113,7 @@ export default function Nav() {
                 <NavItem>
                   <Link href="/dashboard">Dashboard</Link>
                 </NavItem>
-                <NavItem onClick={() => signOut()}>
+                <NavItem onClick={() => authClient.signOut()}>
                   <Link href="/">Sign Out</Link>
                 </NavItem>
               </>

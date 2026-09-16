@@ -82,9 +82,15 @@ export async function PATCH(
     const allowedColumns = getQuestionColumns(level.toLowerCase(), part).filter(
       (column) => column !== "owner_id"
     );
-    const keys = Object.keys(parsed.data).filter((key) =>
-      allowedColumns.includes(key)
-    );
+    const keys = Object.keys(parsed.data)
+      .map((key) => {
+        if (key === "image_ids" && level.toLowerCase() === "c1" && part === "2") {
+          return ["image_one", "image_two"];
+        }
+        return [key];
+      })
+      .flat()
+      .filter((key) => allowedColumns.includes(key));
     if (keys.length === 0) {
       return NextResponse.json({ error: "No data to update" }, { status: 400 });
     }
@@ -93,10 +99,12 @@ export async function PATCH(
       .map((key, index) => `${key} = $${index + 2}`)
       .join(", ");
 
-    const values = [
-      id,
-      ...keys.map((key) => parsed.data[key as keyof typeof parsed.data])
-    ];
+    const values: unknown[] = [id];
+    for (const key of keys) {
+      if (key === "image_one") values.push(parsed.data.image_ids?.[0]);
+      else if (key === "image_two") values.push(parsed.data.image_ids?.[1]);
+      else values.push(parsed.data[key as keyof typeof parsed.data]);
+    }
 
     const query = `UPDATE ${tableName} SET ${setClauses} WHERE id = $1 AND owner_id = $${
       values.length + 1

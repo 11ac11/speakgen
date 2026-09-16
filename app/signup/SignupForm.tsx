@@ -1,8 +1,10 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { Input, Button } from "@/app/components/ui/index";
+import { authClient } from "@/lib/auth-client";
 
 const StyledForm = styled.form`
   display: flex;
@@ -18,6 +20,9 @@ const LoginForm = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
   const [emailError, setEmailError] = useState("");
+  const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -30,6 +35,19 @@ const LoginForm = () => {
 
     return () => clearTimeout(timer);
   }, [password, confirmPassword]);
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const sensitiveParams = ["username", "email", "password", "password2"];
+    const hadSensitiveParams = sensitiveParams.some((param) =>
+      url.searchParams.has(param)
+    );
+
+    if (hadSensitiveParams) {
+      sensitiveParams.forEach((param) => url.searchParams.delete(param));
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, []);
 
   const handleUsernameChange = (newValue: string) => {
     setUsername(newValue);
@@ -73,34 +91,43 @@ const LoginForm = () => {
   const handleSignup = async () => {
     if (!allFieldsCompleted || passwordError || emailError) return;
 
+    setFormError("");
+    setIsSubmitting(true);
+
     try {
-      const response = await fetch("/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, email, password })
+      const response = await authClient.signUp.email({
+        name: username,
+        email,
+        password,
+        callbackURL: "/dashboard"
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Something went wrong");
+      if (response.error) {
+        throw new Error(response.error.message);
       }
 
-      alert("Signup successful! You can now log in.");
+      router.push("/dashboard");
     } catch (error) {
       console.error("Signup failed:", error);
 
-      // Type guard to check if error is an instance of Error
       if (error instanceof Error) {
-        alert(error.message);
+        setFormError(error.message);
       } else {
-        alert("An unknown error occurred");
+        setFormError("Unable to create your account");
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <StyledForm>
+    <StyledForm
+      method="post"
+      onSubmit={(event) => {
+        event.preventDefault();
+        void handleSignup();
+      }}
+    >
       <Input
         label="Username"
         type="text"
@@ -149,11 +176,18 @@ const LoginForm = () => {
         name="password2"
       />
       <Button
-        onClick={handleSignup}
+        onClick={() => undefined}
         text={"Sign up"}
         isAsync={false}
-        disabled={!allFieldsCompleted || !!passwordError || !!emailError}
+        type="submit"
+        disabled={
+          isSubmitting ||
+          !allFieldsCompleted ||
+          !!passwordError ||
+          !!emailError
+        }
       />
+      {formError && <p role="alert">{formError}</p>}
     </StyledForm>
   );
 };

@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { Input, Button } from "@/app/components/ui/index";
 import { useSearchParams, useRouter } from "next/navigation";
-import { signIn } from "next-auth/react";
 import GoogleIcon from "@/public/google-icon.svg";
+import { authClient } from "@/lib/auth-client";
 
 const Container = styled.div`
   display: flex;
@@ -57,16 +57,15 @@ const LoginForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const res = await signIn("credentials", {
-      redirect: false, // don't redirect automatically
+    const res = await authClient.signIn.email({
       email,
       password,
-      callbackUrl: "http://localhost:3000/dashboard"
+      callbackURL: callbackUrl
     });
 
-    if (res?.error) {
-      setError(res.error);
-    } else if (res?.ok) {
+    if (res.error) {
+      setError(res.error.message || "Unable to log in");
+    } else {
       router.push(callbackUrl); // manual redirect
     }
   };
@@ -83,7 +82,10 @@ const LoginForm = () => {
     <Container>
       <GoogleButton
         onClick={async () => {
-          await signIn("google", { callbackUrl: "/dashboard" });
+          await authClient.signIn.social({
+            provider: "google",
+            callbackURL: "/dashboard"
+          });
         }}
         isAsync={true}
         text="Login with Google"

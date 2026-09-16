@@ -86,9 +86,12 @@ export async function POST(
     const allFields = getQuestionColumns(level.toLowerCase(), part);
     const columns = allFields.join(", ");
     const placeholders = allFields.map((_, i) => `$${i + 1}`).join(", ");
-    const values = allFields.map((field) =>
-      field === "owner_id" ? ownerId : body[field as keyof typeof body]
-    );
+    const values = allFields.map((field) => {
+      if (field === "owner_id") return ownerId;
+      if (field === "image_one") return body.image_ids?.[0];
+      if (field === "image_two") return body.image_ids?.[1];
+      return body[field as keyof typeof body];
+    });
 
     const query = `INSERT INTO ${tableName} (${columns}) VALUES (${placeholders}) RETURNING *;`;
     const result = await sql(query, values);

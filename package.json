@@ -9,8 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.731.1",
-    "@aws-sdk/rds-signer": "^3.731.1",
+    "@neondatabase/auth": "^0.5.0-beta",
+    "@neondatabase/auth-ui": "^0.3.0-beta",
     "@neondatabase/serverless": "^0.10.4",
     "@tanstack/react-table": "^8.21.2",
     "@types/node": "18.11.15",
@@ -18,14 +18,11 @@
     "@types/react-dom": "19.0.3",
     "@vercel/functions": "^1.5.2",
     "@vercel/postgres": "^0.10.0",
-    "bcrypt": "^5.1.1",
     "dotenv": "^16.4.7",
     "eslint": "^9.25.1",
     "eslint-config-next": "^15.5.25",
-    "next": "^15.5.25",
-    "next-auth": "^4.24.11",
+    "next": "^16.0.0",
     "pexels": "^1.4.0",
-    "pg": "^8.13.1",
     "postgres": "^3.4.5",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -37,8 +34,6 @@
     "@types/react-dom": "19.0.3"
   },
   "devDependencies": {
-    "@types/bcrypt": "^5.0.2",
-    "@types/pg": "^8.11.10",
     "@typescript-eslint/eslint-plugin": "^8.70.0",
     "@typescript-eslint/parser": "^8.70.0",
     "eslint-config-prettier": "^10.1.8",

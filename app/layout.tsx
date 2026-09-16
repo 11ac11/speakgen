@@ -4,7 +4,8 @@ import React from "react";
 import "../styles/globals.css";
 import StyledComponentsRegistry from "../lib/registry";
 import Navbar from "@/app/components/Nav";
-import { SessionProvider } from "next-auth/react";
+import Providers from "./providers";
+import "@neondatabase/auth-ui/css";
 
 export default function RootLayout({
   // Layouts must accept a children prop.
@@ -14,16 +15,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SessionProvider>
-      <html lang="en">
-        <body>
+    <html lang="en" suppressHydrationWarning>
+      <body>
+        <Providers>
           <StyledComponentsRegistry>
             <Navbar />
             <main>{children}</main>
             {/* <BackgroundToggle /> */}
           </StyledComponentsRegistry>
-        </body>
-      </html>
-    </SessionProvider>
+        </Providers>
+      </body>
+    </html>
   );
 }

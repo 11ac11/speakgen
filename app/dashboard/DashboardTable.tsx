@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { useSession } from "next-auth/react";
+import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Table from "../components/Table";
@@ -45,7 +45,7 @@ const Dashboardbutton = styled(Button)`
 export default function DashboardTable() {
   const [filters, setFilters] = useState({ part: "all", level: "b2" });
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session } = authClient.useSession();
   const ownerId = session?.user?.id || "";
 
   const capitalizeFirstLetter = (str: string) =>
