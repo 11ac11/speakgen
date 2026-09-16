@@ -15,8 +15,20 @@ export type ExamQuestion = QuestionRow & { candidate: string };
 
 export type Exam = ExamSummary & { questions: ExamQuestion[] };
 
-export async function listExams(viewer: Viewer): Promise<ExamSummary[]> {
-  const access = examReadPredicate(viewer, 1);
+export async function listExams(
+  viewer: Viewer,
+  options: { level?: string } = {}
+): Promise<ExamSummary[]> {
+  const params: unknown[] = [];
+  let where = "";
+
+  if (options.level) {
+    params.push(options.level);
+    where = `e.level = $${params.length} AND `;
+  }
+
+  const access = examReadPredicate(viewer, params.length + 1);
+  params.push(...access.params);
 
   return (await sql(
     `SELECT e.id::int          AS id,
@@ -27,9 +39,9 @@ export async function listExams(viewer: Viewer): Promise<ExamSummary[]> {
             (SELECT count(*)::int FROM content.exam_questions eq
               WHERE eq.exam_id = e.id) AS question_count
        FROM content.exams e
-      WHERE ${access.clause}
+      WHERE ${where}${access.clause}
       ORDER BY e.owner_id IS NULL DESC, e.level, e.title`,
-    access.params
+    params
   )) as unknown as ExamSummary[];
 }
 
