@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db";
+import { parseId } from "@/lib/ids";
 import { questionReadPredicate, type Viewer } from "@/lib/questionAccess";
 import type { QuestionPayload } from "@/lib/questionRules";
 
@@ -81,7 +82,10 @@ export async function listQuestions(
   viewer: Viewer,
   options: { level: string; part: string; random?: boolean }
 ) {
-  const params: unknown[] = [options.level, Number(options.part)];
+  const part = parseId(options.part);
+  if (part === null) return [];
+
+  const params: unknown[] = [options.level, part];
   const access = questionReadPredicate(viewer, params.length + 1);
   params.push(...access.params);
 
@@ -95,7 +99,10 @@ export async function listQuestions(
 }
 
 export async function getQuestionById(viewer: Viewer, id: string) {
-  const params: unknown[] = [Number(id)];
+  const questionId = parseId(id);
+  if (questionId === null) return null;
+
+  const params: unknown[] = [questionId];
   const access = questionReadPredicate(viewer, params.length + 1);
   params.push(...access.params);
 
@@ -119,7 +126,9 @@ export async function listOwnedQuestions(
     where += ` AND q.level = $${params.length}`;
   }
   if (options.part) {
-    params.push(Number(options.part));
+    const part = parseId(options.part);
+    if (part === null) return [];
+    params.push(part);
     where += ` AND q.part = $${params.length}`;
   }
 
@@ -135,6 +144,9 @@ export async function createQuestion(
   part: string,
   payload: QuestionPayload
 ) {
+  const partNumber = parseId(part);
+  if (partNumber === null) return null;
+
   // The insert is gated on content.levels.enabled, so a disabled level yields
   // zero rows rather than a question nobody can reach. The (level, part)
   // foreign key rejects a part the level does not have, e.g. a C2 Part 4.
@@ -163,7 +175,7 @@ export async function createQuestion(
        FROM inserted q`,
     [
       level,
-      Number(part),
+      partNumber,
       ownerId,
       payload.public ? "public" : "private",
       payload.statement,
@@ -184,8 +196,11 @@ export async function updateQuestion(
   id: string,
   payload: Partial<QuestionPayload>
 ) {
+  const questionId = parseId(id);
+  if (questionId === null) return null;
+
   const sets: string[] = [];
-  const params: unknown[] = [Number(id), ownerId];
+  const params: unknown[] = [questionId, ownerId];
 
   const assign = (column: string, value: unknown) => {
     params.push(value);
@@ -255,12 +270,15 @@ export async function updateQuestion(
  * removing the row underneath them would gut it.
  */
 export async function deleteQuestion(ownerId: string, id: string) {
+  const questionId = parseId(id);
+  if (questionId === null) return null;
+
   const rows = (await sql(
     `UPDATE content.questions
         SET deleted_at = now()
       WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL
       RETURNING id::int AS id`,
-    [Number(id), ownerId]
+    [questionId, ownerId]
   )) as unknown as { id: number }[];
   return rows[0] ?? null;
 }

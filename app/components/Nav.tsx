@@ -108,6 +108,11 @@ export default function Nav() {
             <NavItem>
               <Link href="/speaking4">Part 4</Link> */}
             {/* </NavItem> */}
+            {/* Outside the auth split on purpose: house exams are the free,
+                logged-out way in, so this has to be reachable before signup. */}
+            <NavItem>
+              <Link href="/exams">Exams</Link>
+            </NavItem>
             {isAuthenticated ? (
               <>
                 <NavItem>

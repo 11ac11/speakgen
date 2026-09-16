@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db";
+import { parseId } from "@/lib/ids";
 import { examReadPredicate, type Viewer } from "@/lib/questionAccess";
 import type { QuestionRow } from "@/lib/questions";
 
@@ -49,7 +50,10 @@ export async function getExam(
   viewer: Viewer,
   id: string
 ): Promise<Exam | null> {
-  const params: unknown[] = [Number(id)];
+  const examId = parseId(id);
+  if (examId === null) return null;
+
+  const params: unknown[] = [examId];
   const access = examReadPredicate(viewer, params.length + 1);
   params.push(...access.params);
 
