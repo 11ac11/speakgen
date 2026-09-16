@@ -22,6 +22,10 @@ const Steps = styled.div`
   gap: 0.5rem;
 `;
 
+// A button does not inherit colour from its parent: without an explicit value
+// it takes the browser's own button colour, which is near-white when the OS is
+// in dark mode and disappears against the translucent card. Every button in
+// this codebase has to set its own colour, as StyledButton in ui/Button does.
 const Step = styled.button<{ $active: boolean }>`
   border: none;
   cursor: pointer;
@@ -29,7 +33,13 @@ const Step = styled.button<{ $active: boolean }>`
   padding: 0.35rem 0.9rem;
   font-size: 0.85rem;
   font-weight: 600;
-  opacity: ${(props) => (props.$active ? 1 : 0.5)};
+  font-family: inherit;
+  color: var(--slategrey);
+  opacity: ${(props) => (props.$active ? 1 : 0.6)};
+
+  &:hover {
+    opacity: ${(props) => (props.$active ? 1 : 0.85)};
+  }
 `;
 
 const Interlocutor = styled.div`
@@ -38,15 +48,22 @@ const Interlocutor = styled.div`
   border-radius: 1rem;
   font-size: 0.95rem;
   line-height: 1.5;
+  color: var(--slategrey);
 
   strong {
     display: block;
     text-transform: uppercase;
     font-size: 0.7rem;
     letter-spacing: 0.08em;
-    opacity: 0.7;
+    color: var(--lightgrey);
     margin-bottom: 0.35rem;
   }
+`;
+
+const Meta = styled.span`
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--lightgrey);
 `;
 
 /**
@@ -100,9 +117,7 @@ export default function ExamRunner({ exam }: { exam: Exam }) {
         {stepLabel(current)}
         {task ? ` — ${task.title}` : ""}
         {task ? (
-          <span style={{ opacity: 0.6, fontWeight: 400, fontSize: "1rem" }}>
-            {`  ·  ~${Math.round(task.suggestedSeconds / 60)} min`}
-          </span>
+          <Meta>{`  ·  ~${Math.round(task.suggestedSeconds / 60)} min`}</Meta>
         ) : null}
       </h2>
 

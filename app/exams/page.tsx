@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { listExams } from "@/lib/exams";
 import { getViewer } from "@/lib/questionAccess";
 import { CAMBRIDGE_SPEAKING_BLUEPRINTS } from "@/lib/cambridgeBlueprints";
+import { ExamCard, ExamList, ExamMeta, ExamTitle } from "./ExamCards";
 
 export const dynamic = "force-dynamic";
 
@@ -20,14 +20,7 @@ export default async function ExamsPage() {
         {exams.length === 0 ? (
           <p>No exams yet.</p>
         ) : (
-          <ul
-            style={{
-              listStyle: "none",
-              padding: 0,
-              display: "grid",
-              gap: "1rem"
-            }}
-          >
+          <ExamList>
             {exams.map((exam) => {
               const blueprint =
                 CAMBRIDGE_SPEAKING_BLUEPRINTS[
@@ -36,18 +29,9 @@ export default async function ExamsPage() {
 
               return (
                 <li key={exam.id}>
-                  <Link
-                    href={`/exams/${exam.id}`}
-                    className="glass"
-                    style={{
-                      display: "block",
-                      padding: "1.25rem 1.5rem",
-                      borderRadius: "1rem",
-                      textDecoration: "none"
-                    }}
-                  >
-                    <strong style={{ fontSize: "1.2rem" }}>{exam.title}</strong>
-                    <div style={{ opacity: 0.75, marginTop: "0.4rem" }}>
+                  <ExamCard href={`/exams/${exam.id}`} className="glass">
+                    <ExamTitle>{exam.title}</ExamTitle>
+                    <ExamMeta>
                       {exam.level.toUpperCase()}
                       {blueprint ? ` · ${blueprint.qualification}` : ""}
                       {` · ${exam.question_count} questions`}
@@ -55,12 +39,12 @@ export default async function ExamsPage() {
                         ? ` · ~${blueprint.speakingPairMinutes} min`
                         : ""}
                       {exam.is_house ? " · Free" : ""}
-                    </div>
-                  </Link>
+                    </ExamMeta>
+                  </ExamCard>
                 </li>
               );
             })}
-          </ul>
+          </ExamList>
         )}
       </div>
     </div>

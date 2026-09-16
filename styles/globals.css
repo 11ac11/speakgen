@@ -31,6 +31,10 @@ html,
 body {
   padding: 0;
   margin: 0;
+  /* The app is light-themed throughout. Without this, a browser in dark mode
+     restyles its own controls - button and input text, scrollbars, autofill -
+     against backgrounds that stay light, so text disappears. */
+  color-scheme: light;
   font-family: "Rubik", sans-serif;
   -webkit-font-smoothing: antialiased; /* Chrome, Safari */
   -moz-osx-font-smoothing: grayscale; /* Firefox on macOS */
