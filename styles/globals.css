@@ -7,6 +7,52 @@
   --offwhite: #fafafa;
   --leafgreen: #62cc54;
   --limegreen: #bfe285;
+
+  /* Neon Auth UI theme hooks.
+     @neondatabase/auth-ui is imported after this file in layout.tsx and its
+     stylesheet sets `body { color: var(--neon-foreground) }`. next-themes
+     arrives as one of its dependencies and puts class="dark" on <html> from
+     the operating system setting, which is what suppressHydrationWarning on
+     the html tag is for. Under :root.dark the package flips --neon-foreground
+     to near-white, so on a machine in dark mode every element that inherited
+     its colour - headings, question statements - turned white while the
+     backgrounds here stayed light.
+
+     Each --neon-* variable resolves var(--name, <fallback>) in both the light
+     and the dark branch, so the fallback only applies when the variable is
+     undefined. Defining them pins the auth UI to this app's single light
+     theme whichever branch is active. Values are the package's own light
+     theme, so its components still look the way they were designed to.
+     Delete this block if the app ever grows a real dark mode. */
+  --background: oklch(1 0 0);
+  /* Body text. The package's `body { color: var(--neon-foreground) }` is loaded
+     after this file and wins, so this value is what the app's text actually
+     becomes - hence the app's own slate grey rather than the package's near
+     black. The rest below are the package's light defaults, used by its own
+     components. */
+  --foreground: #313131;
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.205 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
 }
 
 /*
