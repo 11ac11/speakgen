@@ -5,7 +5,7 @@ import {
 } from "@/lib/questions";
 import { getViewer } from "@/lib/questionAccess";
 import { isValidLevelPart, questionCreateSchema } from "@/lib/questionRules";
-import { getAuthenticatedUserId } from "@/lib/session";
+import { getAuthenticatedUserWithProfile } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
 // The questions collection. Items live at /api/questions/[id], keyed on the id
@@ -55,13 +55,17 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const ownerId = await getAuthenticatedUserId();
-    if (!ownerId) {
+    // Resolving the profile here is what guarantees a row exists for anyone
+    // who signed up after migration 006. It is also where the plan limits will
+    // be checked, so the read is not wasted.
+    const session = await getAuthenticatedUserWithProfile();
+    if (!session) {
       return NextResponse.json(
         { error: "Authentication required" },
         { status: 401 }
       );
     }
+    const ownerId = session.userId;
 
     const parsed = questionCreateSchema.safeParse(await req.json());
     if (!parsed.success) {
