@@ -24,6 +24,7 @@ export default function QuickStart({
       placeholder="Quick Start"
       width={width || "200px"}
       inputAsButton={true}
+      secondary
       isDashboardButton={isDashboardButton}
     />
   );

@@ -1,7 +1,7 @@
 import styled, { css } from "styled-components";
 
 const TextSection = styled.div`
-  padding: 4px 6px;
+  padding: 2px 9px;
 `;
 
 const RemoveBox = styled.div`
@@ -21,13 +21,13 @@ const StyledPill = styled.div<{ $showHoverEffect: boolean; $shadow: string }>`
   display: inline-flex;
   align-items: center;
   border-radius: var(--radius-pill);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   text-transform: capitalize;
   white-space: nowrap;
-  margin-right: 5px;
-  padding: 1px 3px;
-  border: 1.5px solid rgba(0, 0, 0, 0.14);
+  /* Wraps rather than colliding when a question carries several themes. */
+  margin: 0 5px 4px 0;
+  border: 1px solid rgba(0, 0, 0, 0.12);
   transition:
     transform 0.12s var(--lift),
     box-shadow 0.12s ease,

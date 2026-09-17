@@ -15,7 +15,7 @@ const Wrap = styled.div`
 `;
 
 const StyledButton = styled.button<StyledButtonProps>`
-  font-family: "Rubik", sans-serif;
+  font-family: var(--font-body), sans-serif;
   font-size: 1rem;
   font-weight: 500;
   min-height: 48px;

@@ -1,5 +1,3 @@
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Rubik:wght@300..700&display=swap");
-
 :root {
   --slategrey: #313131;
   --lightgrey: #6f6f6f;
@@ -112,7 +110,7 @@ body {
      restyles its own controls - button and input text, scrollbars, autofill -
      against backgrounds that stay light, so text disappears. */
   color-scheme: light;
-  font-family: "Rubik", sans-serif;
+  font-family: var(--font-body), sans-serif;
   -webkit-font-smoothing: antialiased; /* Chrome, Safari */
   -moz-osx-font-smoothing: grayscale; /* Firefox on macOS */
   text-rendering: optimizeLegibility; /* Better kerning and ligatures */
@@ -144,7 +142,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Bricolage Grotesque", sans-serif;
+  font-family: var(--font-display), sans-serif;
   color: var(--ink);
   letter-spacing: -0.02em;
 }

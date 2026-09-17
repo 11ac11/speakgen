@@ -146,6 +146,7 @@ interface DropdownProps {
   width?: string | undefined;
   inputAsButton?: boolean | undefined;
   isDashboardButton?: boolean | undefined;
+  secondary?: boolean | undefined;
   disabled?: boolean | undefined;
 }
 
@@ -160,6 +161,7 @@ export const Dropdown = ({
   width,
   inputAsButton,
   isDashboardButton,
+  secondary,
   disabled
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -199,8 +201,8 @@ export const Dropdown = ({
               <Button
                 text={placeholder}
                 onClick={toggleDropdown}
-                isBigButton
                 width={width}
+                secondary={secondary}
                 isDashboardButton={isDashboardButton}
               />
             ) : (

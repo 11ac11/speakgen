@@ -9,7 +9,7 @@ const Wrap = styled.div<{ width: string | undefined }>`
 `;
 
 const StyledInput = styled.input<{ error: string | undefined }>`
-  font-family: "Rubik", sans-serif;
+  font-family: var(--font-body), sans-serif;
   font-size: 1rem;
   color: var(--slategrey);
   background: #fff;
@@ -67,7 +67,7 @@ const StyledTextArea = styled.textarea<{ error: string | undefined }>`
   background: #fff;
   /* Was "Sofia Sans", which the font import never loaded — it has been
      falling back to the default sans all along. */
-  font-family: "Rubik", sans-serif;
+  font-family: var(--font-body), sans-serif;
 
   &:hover {
     border-color: var(--field-edge-hover);
