@@ -245,11 +245,14 @@ for (const [name, path, expect] of [
 }
 
 console.log("\nREDIRECTS FROM OLD PATHS");
-for (const [from, to] of [
-  [`/question/b2/2/${p2.body.id}`, `/b2/questions/${p2.body.id}`],
-  ["/question/new", "/questions/new"],
-  ["/show-question/b2/1", "/b2/questions/random/1"],
-  ["/show-question/c1/3", "/c1/questions/random/3"]
+for (const [from, to, status] of [
+  [`/question/b2/2/${p2.body.id}`, `/b2/questions/${p2.body.id}`, 308],
+  ["/question/new", "/questions/new", 308],
+  ["/show-question/b2/1", "/b2/questions/random/1", 308],
+  ["/show-question/c1/3", "/c1/questions/random/3", 308],
+  // Not permanent: a default entry point rather than a moved resource.
+  ["/b2/questions/random", "/b2/questions/random/1", 307],
+  ["/c1/questions/random", "/c1/questions/random/1", 307]
 ]) {
   const res = await fetch(BASE + from, {
     redirect: "manual",
@@ -258,7 +261,7 @@ for (const [from, to] of [
   const location = (res.headers.get("location") || "").replace(BASE, "");
   pass(
     `${from} -> ${to}`,
-    res.status === 308 && location === to,
+    res.status === status && location === to,
     `${res.status} ${location}`
   );
 }
