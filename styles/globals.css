@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Outfit:wght@100..900&family=Rubik:wght@300..900&family=Sofia+Sans+Semi+Condensed:wght@100;200;300;400;500;600;700;800;900&family=TikTok+Sans:opsz,wght@12..36,300..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Rubik:wght@300..700&display=swap");
 
 :root {
   --slategrey: #313131;
@@ -7,6 +7,30 @@
   --offwhite: #fafafa;
   --leafgreen: #62cc54;
   --limegreen: #bfe285;
+
+  /* Interface tokens.
+     --green-600 is the fill for anything carrying white text. The brand
+     --leafgreen is about 2.2:1 against white and fails as a text background,
+     so it stays an accent: focus rings, hover edges, selected states. */
+  --ink: #171e19;
+  --green-600: #1f6e3c;
+  --green-500: #247f45;
+  --green-800: #123f23;
+  --green-tint: #f4fbf2;
+  --green-edge: #c9dcc6;
+
+  /* Off. A grey that is neither the white surface nor the green, pressed into
+     the page by an inset shadow while live controls stand proud of it. */
+  --off-bg: #e4e2db;
+  --off-text: #908d85;
+  --off-edge: #d6d3cb;
+  --off-inset: inset 0 2px 3px rgba(87, 82, 70, 0.13);
+
+  --field-edge: #d7dcd5;
+  --field-edge-hover: #b6c2b3;
+  --danger: #c6402f;
+
+  --lift: cubic-bezier(0.2, 0.8, 0.3, 1);
 
   /* Neon Auth UI theme hooks.
      @neondatabase/auth-ui is imported after this file in layout.tsx and its
@@ -113,7 +137,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Outfit", sans-serif;
+  font-family: "Bricolage Grotesque", sans-serif;
+  color: var(--ink);
+  letter-spacing: -0.02em;
 }
 
 /* Explicit sizes for every heading level, because the Tailwind preflight that

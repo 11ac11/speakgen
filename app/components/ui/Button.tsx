@@ -15,62 +15,105 @@ const Wrap = styled.div`
 `;
 
 const StyledButton = styled.button<StyledButtonProps>`
-  cursor: ${({ disabled }) => (disabled ? "not-allowed" : "pointer")};
-  ${({ $width }) => $width && `width: ${$width};`}
-  background: ${({ $secondary }) =>
-    $secondary ? "transparent" : "rgba(255, 255, 255, 0.8)"};
-  border-radius: 1rem;
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  backdrop-filter: blur(8.2px);
-  -webkit-backdrop-filter: blur(8.2px);
-  border: 1px solid rgba(255, 255, 255, 0.27);
-  padding: 0.5rem 1rem;
-  color: var(--slategrey);
+  font-family: "Rubik", sans-serif;
   font-size: 1rem;
-  overflow: hidden;
+  font-weight: 500;
+  min-height: 48px;
+  padding: 0.8rem 1.4rem;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
   display: flex;
   justify-content: center;
-  gap: 1rem;
   align-items: center;
+  gap: 0.6rem;
+  overflow: hidden;
+  cursor: pointer;
+  ${({ $width }) => $width && `width: ${$width};`}
+
+  /* The whole personality of the system is here: a hard shadow gives the
+     button a physical edge, hover lifts it, pressing pushes it down. */
+  transition:
+    transform 0.12s var(--lift),
+    box-shadow 0.12s ease,
+    background-color 0.12s ease,
+    border-color 0.12s ease;
+
+  background: var(--green-600);
+  color: #fff;
+  box-shadow: 0 3px 0 0 var(--green-800);
+
+  &:hover {
+    background: var(--green-500);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 0 var(--green-800);
+  }
+
+  &:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 0 var(--green-800);
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--leafgreen);
+    outline-offset: 2px;
+  }
+
   ${({ $secondary }) =>
     $secondary &&
     `
-    background-color: rgba(0, 0, 0, 0.5);
-    color: white;
-    border: 1px solid rgba(0, 0, 0, 0);
+    background: #fff;
+    color: var(--green-600);
+    border-color: var(--green-edge);
+    box-shadow: 0 3px 0 0 #e4ebe2;
+
+    &:hover {
+      background: var(--green-tint);
+      border-color: var(--leafgreen);
+      box-shadow: 0 5px 0 0 #e4ebe2;
+    }
+
+    &:active {
+      box-shadow: 0 1px 0 0 #e4ebe2;
+    }
   `}
+
   ${({ $isBigButton }) =>
     $isBigButton &&
     `
-    background: var(--limegreen);
-    text-transform: uppercase;
-    font-weight: 500;
-    font-size: 1.2rem;
-    padding: 0.8rem 2rem;
-    border-radius: 4rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    padding: 0.9rem 1.9rem;
+    border-radius: 999px;
   `}
+
   ${({ $isDashboardButton }) =>
     $isDashboardButton &&
     `
-      display: flex;
-    border-radius: 8px;
-    border-style: solid;
-    border-width: 1px;
-    outline: none;
-    padding: 0.5rem 1rem;
-    font-size: 16px;
-    font-weight: 500;
-    transition: border-color 0.3s, box-shadow 0.3s;
+    min-height: 44px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.95rem;
   `}
 
-  transition: color 0.3s linear, opacity 0.1s linear;
-
-  &:active {
-    ${({ disabled }) => !disabled && "background: rgba(255, 255, 255, 0.4)"};
+  /* Off is off: primary and secondary collapse to the same look. Declared last
+     so it wins, and its own hover and active rules stop the live styles
+     reasserting on a dead button. */
+  &:disabled {
+    background: var(--off-bg);
+    color: var(--off-text);
+    border-color: var(--off-edge);
+    box-shadow: var(--off-inset);
+    cursor: not-allowed;
+    transform: none;
+    font-weight: 400;
   }
 
-  &:hover {
-    opacity: 0.9;
+  &:disabled:hover,
+  &:disabled:active {
+    background: var(--off-bg);
+    color: var(--off-text);
+    border-color: var(--off-edge);
+    box-shadow: var(--off-inset);
+    transform: none;
   }
 `;
 

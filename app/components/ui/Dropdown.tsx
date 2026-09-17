@@ -43,10 +43,12 @@ const Label = styled.label`
 `;
 
 const DropdownOptions = styled.div`
-  border: 1px solid var(--verylightgrey);
-  border-radius: 8px;
+  border: 1.5px solid var(--field-edge);
+  border-radius: 12px;
   background-color: white;
-  color: grey;
+  color: var(--slategrey);
+  box-shadow: 0 10px 24px -12px rgba(23, 30, 25, 0.35);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   position: absolute;
@@ -65,17 +67,24 @@ const DropdownOptions = styled.div`
     margin: 0;
 
     li {
-      padding: 0.5rem;
+      padding: 0.7rem 0.9rem;
       cursor: pointer;
-      border-bottom: 1px solid var(--verylightgrey);
+      border-bottom: 1px solid #eef0ec;
+      font-size: 0.95rem;
+      min-height: 44px;
       text-align: center;
       display: flex;
       justify-content: center;
       align-items: center;
+      transition:
+        background-color 0.12s ease,
+        color 0.12s ease;
 
+      /* The tint, not the full lime: a whole row of saturated green is loud,
+         and the selected row needs somewhere louder to go. */
       &:hover {
-        color: black;
-        background-color: var(--limegreen);
+        color: var(--green-600);
+        background-color: var(--green-tint);
       }
     }
 

@@ -10,6 +10,16 @@ const Row = styled.div`
   gap: 0.5rem;
   margin-top: 1.25rem;
   flex-wrap: wrap;
+
+  /* The redesigned buttons are taller, so a pair wraps inside a plan card.
+     Stretching them keeps the stack tidy instead of leaving ragged widths. */
+  > * {
+    flex: 1 1 140px;
+  }
+
+  button {
+    width: 100%;
+  }
 `;
 
 const Current = styled.div`

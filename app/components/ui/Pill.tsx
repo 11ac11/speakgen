@@ -17,22 +17,41 @@ const RemoveBox = styled.div`
 `;
 
 // Styled component for the pill
-const StyledPill = styled.div<{ $showHoverEffect: boolean }>`
-  display: inline-block;
-  border-radius: 3px;
-  font-size: 12px;
+const StyledPill = styled.div<{ $showHoverEffect: boolean; $shadow: string }>`
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  font-size: 13px;
   font-weight: 500;
   text-transform: capitalize;
   white-space: nowrap;
   margin-right: 5px;
-  display: inline-flex;
-  transition: filter 0.1s ease-in;
-  ${({ $showHoverEffect }) => css`
+  padding: 1px 3px;
+  border: 1.5px solid rgba(0, 0, 0, 0.14);
+  transition:
+    transform 0.12s var(--lift),
+    box-shadow 0.12s ease,
+    filter 0.12s ease;
+
+  /* A clickable pill behaves like a button: it sits on a hard shadow in its
+     own darker ink and lifts on hover. A pill that is only a label stays flat,
+     so nothing looks clickable that is not. */
+  ${({ $showHoverEffect, $shadow }) => css`
     ${
       $showHoverEffect &&
       `
+      cursor: pointer;
+      box-shadow: 0 3px 0 0 ${$shadow};
+
       &:hover {
-        filter: brightness(1.2);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 0 0 ${$shadow};
+        filter: brightness(1.04);
+      }
+
+      &:active {
+        transform: translateY(1px);
+        box-shadow: 0 1px 0 0 ${$shadow};
       }
     `
     }
@@ -58,6 +77,9 @@ export default function Pill({
 }) {
   const backgroundColor = bgColor ? bgColor : generateColor(text, true);
   const _textColor = textColor ? textColor : generateColor(text, false);
+  // Derived rather than configured: a nineteenth theme gets a correct shadow
+  // without anyone adding a hex to constants.ts.
+  const shadowColor = darken(backgroundColor, 0.18);
 
   return (
     <StyledPill
@@ -65,6 +87,7 @@ export default function Pill({
       onClick={onClick}
       className={className}
       $showHoverEffect={!!onClick}
+      $shadow={shadowColor}
     >
       <TextSection>{text}</TextSection>
       {showRemove && (
@@ -82,6 +105,30 @@ export default function Pill({
       )}
     </StyledPill>
   );
+}
+
+/**
+ * Mixes a colour towards black by `amount`, for the hard shadow a pill sits on.
+ * Anything it cannot parse falls back to a neutral, so a bad value is a dull
+ * pill rather than a broken one.
+ */
+function darken(color: string, amount: number) {
+  const hex = color.trim().replace("#", "");
+  const full =
+    hex.length === 3
+      ? hex
+          .split("")
+          .map((c) => c + c)
+          .join("")
+      : hex;
+
+  if (!/^[0-9a-f]{6}$/i.test(full)) return "rgba(0, 0, 0, 0.18)";
+
+  const channels = [0, 2, 4].map((i) =>
+    Math.round(parseInt(full.slice(i, i + 2), 16) * (1 - amount))
+  );
+
+  return `rgb(${channels.join(", ")})`;
 }
 
 // Function to generate color based on text

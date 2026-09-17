@@ -9,37 +9,82 @@ const Wrap = styled.div<{ width: string | undefined }>`
 `;
 
 const StyledInput = styled.input<{ error: string | undefined }>`
-  border-radius: 8px;
-  border-style: solid;
-  border-width: 1px;
+  font-family: "Rubik", sans-serif;
+  font-size: 1rem;
+  color: var(--slategrey);
+  background: #fff;
+  border: 1.5px solid var(--field-edge);
+  border-radius: 12px;
   outline: none;
-  padding: 0.5rem 1rem;
-  font-size: 16px;
-  font-weight: 300;
+  padding: 0.75rem 0.9rem;
+  min-height: 48px;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+
+  &::placeholder {
+    color: #9ba29a;
+  }
+
+  &:hover {
+    border-color: var(--field-edge-hover);
+  }
+
+  /* Focus is the one place the bright brand green earns its keep. */
+  &:focus {
+    border-color: var(--green-600);
+    box-shadow: 0 0 0 4px rgba(98, 204, 84, 0.28);
+  }
 
   &:disabled {
-    background-color: var(--verylightgrey);
+    background: var(--off-bg);
+    color: var(--off-text);
+    border-color: var(--off-edge);
+    box-shadow: var(--off-inset);
     cursor: not-allowed;
     user-select: none;
+  }
+
+  &:disabled:hover {
+    border-color: var(--off-edge);
   }
 
   ${({ error }) =>
     !!error &&
     `
-    border-color: rgb(255, 65, 80);
-    box-shadow: 0 0 5px 2px rgba(255, 65, 80, 0.5);
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px rgba(198, 64, 47, 0.14);
   `}
-  transition: border-color 0.3s, box-shadow 0.3s;
 `;
 
 const StyledTextArea = styled.textarea<{ error: string | undefined }>`
-  border-radius: 8px;
-  border-style: solid;
-  border-width: 1px;
+  border-radius: 12px;
+  border: 1.5px solid var(--field-edge);
   outline: none;
-  padding: 0.5rem 1rem;
-  font-size: 16px;
-  font-family: "Sofia Sans", sans-serif;
+  padding: 0.75rem 0.9rem;
+  font-size: 1rem;
+  color: var(--slategrey);
+  background: #fff;
+  /* Was "Sofia Sans", which the font import never loaded — it has been
+     falling back to the default sans all along. */
+  font-family: "Rubik", sans-serif;
+
+  &:hover {
+    border-color: var(--field-edge-hover);
+  }
+
+  &:focus {
+    border-color: var(--green-600);
+    box-shadow: 0 0 0 4px rgba(98, 204, 84, 0.28);
+  }
+
+  &:disabled {
+    background: var(--off-bg);
+    color: var(--off-text);
+    border-color: var(--off-edge);
+    box-shadow: var(--off-inset);
+    cursor: not-allowed;
+  }
 
   ${({ error }) =>
     !!error &&
