@@ -6,6 +6,17 @@ import styled from "styled-components";
 import Button from "@/app/components/ui/Button";
 import { AD_CONSENT_COOKIE } from "@/lib/ads";
 
+// The bar is fixed, so without this the last of the page sits underneath it and
+// cannot be scrolled into view. Caught by looking at the exam builder, where it
+// covered a whole slot.
+const Spacer = styled.div`
+  height: 96px;
+
+  @media only screen and (max-width: 768px) {
+    height: 150px;
+  }
+`;
+
 const Bar = styled.div`
   position: fixed;
   left: 0;
@@ -41,15 +52,18 @@ export default function ConsentBannerUI() {
   };
 
   return (
-    <Bar role="region" aria-label="Advertising consent">
-      <p>
-        We would like to show ads on some pages to keep the free plan free. May
-        we? Paid plans never show ads, and you can change your mind later.
-      </p>
-      <div style={{ display: "flex", gap: "0.5rem" }}>
-        <Button text="Allow ads" onClick={() => choose("granted")} />
-        <Button text="No thanks" secondary onClick={() => choose("denied")} />
-      </div>
-    </Bar>
+    <>
+      <Spacer aria-hidden />
+      <Bar role="region" aria-label="Advertising consent">
+        <p>
+          We would like to show ads on some pages to keep the free plan free.
+          May we? Paid plans never show ads, and you can change your mind later.
+        </p>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <Button text="Allow ads" onClick={() => choose("granted")} />
+          <Button text="No thanks" secondary onClick={() => choose("denied")} />
+        </div>
+      </Bar>
+    </>
   );
 }

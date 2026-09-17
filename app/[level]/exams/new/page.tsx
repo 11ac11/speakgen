@@ -30,9 +30,19 @@ export default async function NewExamPage({
     )
   );
 
-  const questions: PickerQuestion[] = perPart
-    .flat()
-    .map((q) => ({ id: q.id, part: q.part, statement: q.statement }));
+  // The whole question, not just its text: the picker shows themes, and the
+  // chosen question previews its photographs or prompts.
+  const questions: PickerQuestion[] = perPart.flat().map((q) => ({
+    id: q.id,
+    part: q.part,
+    statement: q.statement,
+    statement_two: q.statement_two,
+    follow_up: q.follow_up,
+    decision: q.decision,
+    themes: q.themes,
+    image_ids: q.image_ids,
+    prompts: q.prompts
+  }));
 
   return (
     <div

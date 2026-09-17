@@ -3,6 +3,7 @@
 import { config } from "dotenv";
 config();
 import { neon } from "@neondatabase/serverless";
+import { signUpTestUser } from "./lib/testAuth.mjs";
 
 const sql = neon(process.env.DATABASE_URL);
 let failed = 0;
@@ -21,14 +22,24 @@ const rejects = async (name, query, params = []) => {
   }
 };
 
-const [u] = await sql(`SELECT
-  (SELECT count(*)::int FROM neon_auth."user") users,
-  (SELECT count(*)::int FROM content.user_profiles) profiles`);
 console.log("SCHEMA");
+// Not "every user has a profile": a user who signs up and never writes anything
+// legitimately has none, since the row appears on first authenticated write, on
+// a dashboard visit, or when a plan is read. The invariant that matters is that
+// nobody who owns something, or is paying, is missing one.
+const orphans = await sql(`
+  SELECT DISTINCT owner AS user_id FROM (
+    SELECT owner_id AS owner FROM content.questions WHERE owner_id IS NOT NULL
+    UNION SELECT owner_id FROM content.exams WHERE owner_id IS NOT NULL
+    UNION SELECT user_id FROM content.subscriptions WHERE user_id IS NOT NULL
+  ) o
+  WHERE NOT EXISTS (
+    SELECT 1 FROM content.user_profiles p WHERE p.user_id = o.owner
+  )`);
 pass(
-  "every auth user has a profile",
-  u.users === u.profiles,
-  `${u.profiles}/${u.users}`
+  "everyone who owns content or pays has a profile",
+  orphans.length === 0,
+  orphans.length ? JSON.stringify(orphans) : ""
 );
 
 const cols =
@@ -45,7 +56,19 @@ const [v] = await sql(`SELECT count(*)::int n FROM information_schema.views
 pass("ai_credit_balances view exists", v.n === 1);
 
 console.log("\nCONSTRAINTS");
-const [me] = await sql(`SELECT id FROM neon_auth."user" LIMIT 1`);
+// A throwaway user, never a real one. This used to take the first row of
+// neon_auth."user" and write to its profile and subscriptions, which meant
+// running the suite could and did clobber a real account's plan.
+const BASE = "http://localhost:3001";
+const me = { id: (await signUpTestUser(BASE, "plancheck")).userId };
+
+// Profiles appear on first authenticated write, so a fresh signup has none and
+// the UPDATEs below would silently affect zero rows and prove nothing.
+await sql(
+  `INSERT INTO content.user_profiles (user_id) VALUES ($1)
+   ON CONFLICT (user_id) DO NOTHING`,
+  [me.id]
+);
 await rejects(
   "plan must be a known value",
   `UPDATE content.user_profiles SET plan='enterprise' WHERE user_id=$1`,
@@ -159,6 +182,7 @@ const [left] = await sql(
      (SELECT count(*)::int FROM content.ai_credit_events WHERE user_id = $1) events`,
   [me.id]
 );
+await sql(`DELETE FROM neon_auth."user" WHERE id=$1`, [me.id]);
 pass(
   "this run's rows removed",
   left.subs === 0 && left.events === 0,
