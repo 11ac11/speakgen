@@ -43,6 +43,8 @@ const RightSide = styled.div`
 
 const Title = styled.h1`
   font-size: var(--text-hero);
+  line-height: 1.08;
+  text-wrap: balance;
 
   @media only screen and (max-width: 600px) {
     font-size: var(--text-3xl);
@@ -85,7 +87,7 @@ export default function LandingContent() {
     <Container className={"container"}>
       <HeroContainer>
         <LeftSide>
-          <Title>Level Up Your English Speaking—With Speakgen</Title>
+          <Title>Level up your English speaking</Title>
           <SubTitle>
             Realistic English Speaking Exam Practice for Students and Teachers.
           </SubTitle>
