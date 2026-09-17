@@ -45,11 +45,8 @@ export default async function NewExamPage({
   }));
 
   return (
-    <div
-      className="container"
-      style={{ paddingTop: "3rem", flexDirection: "column" }}
-    >
-      <div style={{ width: "100%", maxWidth: 820, marginBottom: "1rem" }}>
+    <div className="page" style={{ paddingTop: "3rem" }}>
+      <div style={{ marginBottom: "1rem" }}>
         <BackLink href={`/${level.code}/exams`}>
           {`← All ${level.label} exams`}
         </BackLink>

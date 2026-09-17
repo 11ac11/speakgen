@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import styled from "styled-components";
+import NextLink from "next/link";
 import Button from "@/app/components/ui/Button";
 import { authClient } from "@/lib/auth-client";
 
 const Panel = styled.div`
   width: 100%;
-  max-width: 680px;
   padding: 1.75rem;
   border-radius: 1rem;
   color: var(--text-body);
@@ -51,7 +51,7 @@ const Field = styled.div`
   }
 `;
 
-const Link = styled.div`
+const InviteLink = styled.div`
   margin-top: 1rem;
   padding: 0.75rem 1rem;
   border-radius: 0.6rem;
@@ -67,6 +67,52 @@ const Error = styled.p`
   font-size: var(--text-sm);
 `;
 
+/* The seat limit is the whole reason a school exists, so saying it is out of
+   reach without saying how to reach it leaves the card as a dead end. */
+const Upgrade = styled.div`
+  margin-top: 1.25rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-control);
+  background: var(--green-tint);
+  border: 1px solid var(--green-edge);
+
+  p {
+    margin: 0 0 0.85rem;
+    font-size: var(--text-sm);
+    color: var(--text-body);
+  }
+`;
+
+const UpgradeButton = styled(NextLink)`
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radius-control);
+  background: var(--green-600);
+  color: #fff;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  box-shadow: 0 3px 0 0 var(--green-800);
+  transition:
+    transform 0.12s var(--lift),
+    box-shadow 0.12s ease,
+    background-color 0.12s ease;
+
+  &:hover {
+    color: #fff;
+    background: var(--green-500);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 0 var(--green-800);
+  }
+
+  &:active {
+    color: #fff;
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 0 var(--green-800);
+  }
+`;
+
 export type SchoolMember = {
   user_id: string;
   name: string;
@@ -79,14 +125,17 @@ export default function SchoolPanel({
   members,
   seats,
   canAdmin,
-  origin
+  origin,
+  plan
 }: {
   school: { id: string; name: string } | null;
   members: SchoolMember[];
   seats: { used: number; seats: number; pending: number };
   canAdmin: boolean;
   origin: string;
+  plan: string;
 }) {
+  const isAcademy = plan === "academy";
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
@@ -151,8 +200,7 @@ export default function SchoolPanel({
         <p style={{ fontSize: "var(--text-base)" }}>
           Create a school to share a question bank with colleagues. Content
           written by anyone in the school belongs to the school, so it stays
-          when a teacher moves on. Adding teachers needs an Academy
-          subscription.
+          when a teacher moves on.
         </p>
         <Field>
           <input
@@ -168,6 +216,15 @@ export default function SchoolPanel({
           />
         </Field>
         {error ? <Error>{error}</Error> : null}
+        {isAcademy ? null : (
+          <Upgrade>
+            <p>
+              A school is free to create, and the question bank is shared from
+              the moment it exists. Inviting colleagues into it needs Academy.
+            </p>
+            <UpgradeButton href="/pricing">Upgrade to Academy</UpgradeButton>
+          </Upgrade>
+        )}
       </Panel>
     );
   }
@@ -193,7 +250,20 @@ export default function SchoolPanel({
         </Row>
       ))}
 
-      {canAdmin ? (
+      {canAdmin && !isAcademy ? (
+        <Upgrade>
+          <p>
+            {`You have a school but no seats, so ${
+              members.length === 1 ? "you are" : "its teachers are"
+            } the only ${
+              members.length === 1 ? "member" : "members"
+            }. Academy opens it up to your colleagues.`}
+          </p>
+          <UpgradeButton href="/pricing">Upgrade to Academy</UpgradeButton>
+        </Upgrade>
+      ) : null}
+
+      {canAdmin && isAcademy ? (
         <>
           <Field>
             <input
@@ -210,10 +280,10 @@ export default function SchoolPanel({
           </Field>
           {error ? <Error>{error}</Error> : null}
           {inviteLink ? (
-            <Link>
+            <InviteLink>
               <strong>Send this link to the teacher.</strong>
               <div style={{ marginTop: "0.35rem" }}>{inviteLink}</div>
-            </Link>
+            </InviteLink>
           ) : null}
         </>
       ) : null}

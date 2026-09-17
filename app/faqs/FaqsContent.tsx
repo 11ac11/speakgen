@@ -7,7 +7,7 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  max-width: 800px;
+  max-width: var(--page-max);
   color: var(--text-muted);
 
   h2 {

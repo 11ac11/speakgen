@@ -17,7 +17,7 @@ const Container = styled.div`
 `;
 
 const HeroContainer = styled.div`
-  max-width: 1200px;
+  max-width: var(--page-max);
   display: flex;
   align-items: center;
 

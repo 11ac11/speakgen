@@ -28,7 +28,7 @@ export default async function RandomQuestionPage({
 
   if (!question) {
     return (
-      <div className="container" style={{ paddingTop: "3rem" }}>
+      <div className="page" style={{ paddingTop: "3rem" }}>
         <p>{`No ${level.toUpperCase()} Part ${part} questions yet.`}</p>
       </div>
     );

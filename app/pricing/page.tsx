@@ -39,8 +39,8 @@ export default async function PricingPage() {
   const billingEnabled = isBillingEnabled();
 
   return (
-    <div className="container" style={{ paddingTop: "4rem" }}>
-      <div style={{ maxWidth: 900, width: "100%" }}>
+    <div className="page" style={{ paddingTop: "4rem" }}>
+      <div>
         <h1>Plans</h1>
         <p style={{ marginBottom: "2.5rem", color: "var(--text-muted)" }}>
           Your question bank is unlimited on every plan, including the free one.

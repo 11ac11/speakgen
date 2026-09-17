@@ -27,11 +27,8 @@ export default async function LevelExamPage({
   if (exam.level !== level.code) redirect(`/${exam.level}/exams/${exam.id}`);
 
   return (
-    <div
-      className="container"
-      style={{ paddingTop: "3rem", flexDirection: "column" }}
-    >
-      <div style={{ width: "100%", maxWidth: 1100, marginBottom: "1rem" }}>
+    <div className="page page-wide" style={{ paddingTop: "3rem" }}>
+      <div style={{ marginBottom: "1rem" }}>
         <BackLink href={`/${level.code}/exams`}>
           {`← All ${level.label} exams`}
         </BackLink>

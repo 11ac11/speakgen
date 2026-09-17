@@ -7,7 +7,6 @@ import Button from "@/app/components/ui/Button";
 
 const Panel = styled.div`
   width: 100%;
-  max-width: 620px;
   padding: 1.75rem;
   border-radius: 1rem;
   color: var(--text-body);

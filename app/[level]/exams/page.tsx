@@ -35,8 +35,8 @@ export default async function LevelExamsPage({
     usage.exams.used >= usage.exams.limit;
 
   return (
-    <div className="container" style={{ paddingTop: "4rem" }}>
-      <div style={{ maxWidth: 900, width: "100%" }}>
+    <div className="page" style={{ paddingTop: "4rem" }}>
+      <div>
         <h1>{level.label} practice exams</h1>
         <p style={{ marginBottom: "2rem" }}>
           {`Free ${level.label} speaking tests, about ${level.minutes} minutes for a pair of candidates. No account needed.`}

@@ -40,7 +40,7 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
     }));
 
   return (
-    <>
+    <div className="page">
       <TabMenu activeTab={activeTab} />
       <Suspense fallback={<p>Loading content...</p>}>
         <TabContainer
@@ -50,6 +50,6 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
         />
       </Suspense>
       <AdSlot placement="dashboard" />
-    </>
+    </div>
   );
 }

@@ -50,16 +50,8 @@ export default async function SettingsPage() {
     : null;
 
   return (
-    <div className="container" style={{ paddingTop: "3rem" }}>
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 720,
-          display: "flex",
-          flexDirection: "column",
-          gap: "1rem"
-        }}
-      >
+    <div className="page page-narrow" style={{ paddingTop: "3rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
         <h1 style={{ marginBottom: "0.75rem" }}>Settings</h1>
 
         <PlanPanel
@@ -75,6 +67,7 @@ export default async function SettingsPage() {
         />
 
         <SchoolPanel
+          plan={usage.plan}
           school={school ? { id: school.id, name: school.name } : null}
           members={members.map((m) => ({
             user_id: m.user_id,

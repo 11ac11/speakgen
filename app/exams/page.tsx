@@ -23,8 +23,8 @@ export default async function AllExamsPage() {
   const byCode = new Map(levels.map((level) => [level.code, level]));
 
   return (
-    <div className="container" style={{ paddingTop: "4rem" }}>
-      <div style={{ maxWidth: 900, width: "100%" }}>
+    <div className="page" style={{ paddingTop: "4rem" }}>
+      <div>
         <h1>Practice exams</h1>
         <p style={{ marginBottom: "2rem" }}>
           Full Cambridge speaking tests, run straight through. Free ones need no

@@ -155,8 +155,12 @@ body {
   min-height: 100vh;
 }
 
+/* main no longer sets the measure. It used to cap at 800px, which silently
+   overrode every page that asked for 900, 1100 or 1200 and made those numbers
+   lie about what was on screen. The measure is now the page's own, declared
+   with .page below. */
 main {
-  padding-top: 2rem;
+  padding: 2rem 1.5rem 0;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
@@ -164,8 +168,31 @@ main {
   /* Takes the slack in .app-shell rather than claiming a fixed 90vh, which
      left the footer just below the fold on every page however short. */
   flex: 1;
-  max-width: 800px;
-  margin: auto;
+  width: 100%;
+}
+
+/* One of these goes on the outermost element of every page, so a page's width
+   is a choice between three named measures rather than a number invented on
+   the spot. Standard is the default; wide is for laying photographs out side
+   by side, narrow for reading and for forms. */
+.page {
+  width: 100%;
+  max-width: var(--page-max);
+  margin: 0 auto;
+}
+
+.page-wide {
+  max-width: var(--page-max-wide);
+}
+
+.page-narrow {
+  max-width: var(--page-max-narrow);
+}
+
+@media only screen and (max-width: 600px) {
+  main {
+    padding: 1.5rem 1rem 0;
+  }
 }
 
 * {
@@ -341,12 +368,6 @@ a:active {
   }
 }
 
-@media only screen and (max-width: 1200px) {
-  main {
-    width: 90%;
-  }
-}
-
 @media only screen and (max-width: 1000px) {
   .btn-bar {
     position: unset;
@@ -355,12 +376,6 @@ a:active {
   .instructionBox {
     max-width: 80%;
     padding: 2rem;
-  }
-}
-
-@media only screen and (max-width: 768px) {
-  main {
-    width: 100%;
   }
 }
 

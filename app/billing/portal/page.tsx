@@ -15,12 +15,10 @@ export default async function DummyPortalPage({
 
   // Only same-origin paths, so the return cannot be turned into an open redirect.
   const safeReturn =
-    returnUrl && returnUrl.startsWith("/")
-      ? returnUrl
-      : "/settings";
+    returnUrl && returnUrl.startsWith("/") ? returnUrl : "/settings";
 
   return (
-    <div className="container" style={{ paddingTop: "4rem" }}>
+    <div className="page page-narrow" style={{ paddingTop: "4rem" }}>
       <DummyPortal returnUrl={safeReturn} />
     </div>
   );

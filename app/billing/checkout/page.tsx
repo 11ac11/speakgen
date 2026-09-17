@@ -22,7 +22,7 @@ export default async function DummyCheckoutPage({
   const price = getPrice(decoded.plan, decoded.interval);
 
   return (
-    <div className="container" style={{ paddingTop: "4rem" }}>
+    <div className="page page-narrow" style={{ paddingTop: "4rem" }}>
       <DummyCheckout
         intent={intent as string}
         planLabel={decoded.plan === "pro" ? "Teacher Pro" : "Academy"}

@@ -35,7 +35,7 @@ export default async function JoinSchoolPage({
   if (rows.length === 0) notFound();
 
   return (
-    <div className="container" style={{ paddingTop: "4rem" }}>
+    <div className="page page-narrow" style={{ paddingTop: "4rem" }}>
       <JoinSchool invitationId={invitation} schoolName={rows[0].name} />
     </div>
   );

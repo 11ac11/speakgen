@@ -22,7 +22,6 @@ const ExamsHeader = styled.div`
   gap: 1rem;
   flex-wrap: wrap;
   width: 100%;
-  max-width: 620px;
 
   span {
     color: var(--text-muted);
@@ -32,7 +31,6 @@ const ExamsHeader = styled.div`
 
 const Empty = styled.p`
   width: 100%;
-  max-width: 620px;
   color: var(--text-muted);
   font-size: var(--text-base);
 
@@ -54,7 +52,6 @@ const ExamList = styled.ul`
   padding: 0;
   margin: 0;
   width: 100%;
-  max-width: 620px;
   display: grid;
   gap: 0.75rem;
 `;
