@@ -1,5 +1,9 @@
 import { PLANS, ENTITLEMENTS } from "@/lib/entitlements";
 import { formatPrice, getPrice } from "@/lib/billing/prices";
+import { isBillingEnabled, isBillingSimulated } from "@/lib/billing/provider";
+import { getAuthenticatedUserId } from "@/lib/session";
+import { getProfile } from "@/lib/profile";
+import PlanActions from "./PlanActions";
 
 export const metadata = { title: "Plans — Speakgen" };
 
@@ -26,7 +30,14 @@ function limit(value: number | null, singular: string, plural: string) {
   return `${value} ${value === 1 ? singular : plural}`;
 }
 
-export default function PricingPage() {
+export const dynamic = "force-dynamic";
+
+export default async function PricingPage() {
+  const userId = await getAuthenticatedUserId();
+  const profile = userId ? await getProfile(userId) : null;
+  const currentPlan = profile?.plan ?? null;
+  const billingEnabled = isBillingEnabled();
+
   return (
     <div className="container" style={{ paddingTop: "4rem" }}>
       <div style={{ maxWidth: 900, width: "100%" }}>
@@ -106,6 +117,12 @@ export default function PricingPage() {
                   <li>{e.ads ? "Includes ads" : "No ads"}</li>
                   {e.seats > 1 ? <li>{`${e.seats} teachers`}</li> : null}
                 </ul>
+                <PlanActions
+                  plan={plan}
+                  currentPlan={currentPlan}
+                  signedIn={Boolean(userId)}
+                  billingEnabled={billingEnabled}
+                />
               </div>
             );
           })}
@@ -118,7 +135,11 @@ export default function PricingPage() {
             fontSize: "0.85rem"
           }}
         >
-          Paid plans are not available to buy yet. The limits above are live.
+          {!billingEnabled
+            ? "Paid plans are not available to buy yet. The limits above are live."
+            : isBillingSimulated()
+              ? "Checkout is simulated while a payment provider is being chosen. No card is collected and nothing is charged."
+              : "Prices include VAT where applicable."}
         </p>
       </div>
     </div>

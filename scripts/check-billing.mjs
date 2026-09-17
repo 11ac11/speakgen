@@ -29,7 +29,15 @@ const cookie = signup.headers
 const me = (await signup.json()).user.id;
 const json = { "Content-Type": "application/json" };
 
-console.log("ROUTES WITH NO PROVIDER CONFIGURED");
+// The routes behave differently depending on whether a provider is wired, and
+// both states are legitimate, so assert whichever one applies rather than
+// assuming the world has not moved on.
+const configured = Boolean(process.env.BILLING_PROVIDER);
+console.log(
+  configured
+    ? `ROUTES WITH A PROVIDER CONFIGURED (${process.env.BILLING_PROVIDER})`
+    : "ROUTES WITH NO PROVIDER CONFIGURED"
+);
 const checkoutAnon = await fetch(`${BASE}/api/billing/checkout`, {
   method: "POST",
   headers: json,
@@ -46,8 +54,8 @@ const checkout = await fetch(`${BASE}/api/billing/checkout`, {
   body: JSON.stringify({ plan: "pro", interval: "month" })
 });
 pass(
-  "checkout answers 503, not 500",
-  checkout.status === 503,
+  configured ? "checkout issues a session" : "checkout answers 503, not 500",
+  checkout.status === (configured ? 200 : 503),
   JSON.stringify(await checkout.json())
 );
 
@@ -62,7 +70,10 @@ const portal = await fetch(`${BASE}/api/billing/portal`, {
   method: "POST",
   headers: { ...json, Cookie: cookie }
 });
-pass("portal answers 503", portal.status === 503);
+pass(
+  configured ? "portal 404s with nothing to manage" : "portal answers 503",
+  portal.status === (configured ? 404 : 503)
+);
 
 const hook = await fetch(`${BASE}/api/billing/webhook`, {
   method: "POST",
@@ -70,8 +81,9 @@ const hook = await fetch(`${BASE}/api/billing/webhook`, {
   body: JSON.stringify({ id: "evt_1" })
 });
 pass(
-  "webhook answers 503 and never trusts an unsigned body",
-  hook.status === 503
+  "webhook never trusts an unsigned body",
+  hook.status === (configured ? 400 : 503),
+  `${hook.status}`
 );
 
 console.log("\nRECONCILIATION (provider-agnostic)");
@@ -192,12 +204,14 @@ pass("released claim can be retried", (await claim("evt_dup_1")) === true);
 console.log("\nCLEANUP");
 await sql(`DELETE FROM content.billing_events WHERE event_id LIKE 'evt_dup_%'`);
 await sql(`DELETE FROM neon_auth."user" WHERE id=$1`, [me]);
-const [left] = await sql(`SELECT
-  (SELECT count(*)::int FROM content.subscriptions) subs,
-  (SELECT count(*)::int FROM content.billing_events) events`);
+// Scoped to this run: a concurrent or previous run must not make this fail.
+const [left] = await sql(
+  `SELECT count(*)::int AS subs FROM content.subscriptions WHERE user_id = $1`,
+  [me]
+);
 pass(
-  "test rows removed with the user",
-  left.subs === 0 && left.events === 0,
+  "this run's subscription removed with its user",
+  left.subs === 0,
   JSON.stringify(left)
 );
 

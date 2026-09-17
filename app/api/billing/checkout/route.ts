@@ -1,5 +1,9 @@
 import { z } from "zod";
-import { getBillingProvider, isBillingEnabled } from "@/lib/billing/provider";
+import {
+  getBillingProvider,
+  isBillingEnabled,
+  isBillingSimulated
+} from "@/lib/billing/provider";
 import { getPrice } from "@/lib/billing/prices";
 import { BillingNotConfiguredError } from "@/lib/billing/types";
 import { getAuthenticatedUserId } from "@/lib/session";
@@ -36,8 +40,11 @@ export async function POST(req: NextRequest) {
     }
 
     const { plan, interval, seats } = parsed.data;
+
+    // A real provider needs its own id for the price; the simulated one prices
+    // from the catalogue directly and has nothing to look up.
     const price = getPrice(plan, interval);
-    if (!price.providerPriceId) {
+    if (!isBillingSimulated() && !price.providerPriceId) {
       return NextResponse.json(
         { error: "That plan is not purchasable yet" },
         { status: 503 }

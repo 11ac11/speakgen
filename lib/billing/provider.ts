@@ -1,3 +1,4 @@
+import { createDummyProvider } from "@/lib/billing/dummy";
 import {
   BillingNotConfiguredError,
   type BillingProvider,
@@ -22,9 +23,22 @@ const adapters: Partial<Record<BillingProviderName, () => BillingProvider>> = {
   // paddle: () => createPaddleProvider(),
 };
 
+/**
+ * The dummy provider is selected by BILLING_PROVIDER=dummy rather than living
+ * in the table above, because it is not a real provider and must never be
+ * reachable by a typo in a provider name.
+ */
+function isDummySelected() {
+  return process.env.BILLING_PROVIDER === "dummy";
+}
+
 export function getConfiguredProviderName(): BillingProviderName | null {
   const name = process.env.BILLING_PROVIDER;
   if (!name) return null;
+
+  // Stored against "stripe" so subscription rows stay valid when a real
+  // provider replaces it.
+  if (name === "dummy") return "stripe";
 
   if (name === "stripe" || name === "paddle" || name === "lemonsqueezy") {
     return name;
@@ -35,11 +49,20 @@ export function getConfiguredProviderName(): BillingProviderName | null {
 }
 
 export function isBillingEnabled() {
+  if (isDummySelected()) return true;
+
   const name = getConfiguredProviderName();
   return name !== null && adapters[name] !== undefined;
 }
 
+/** True when checkout is a simulation. The UI says so rather than pretending. */
+export function isBillingSimulated() {
+  return isDummySelected();
+}
+
 export function getBillingProvider(): BillingProvider {
+  if (isDummySelected()) return createDummyProvider();
+
   const name = getConfiguredProviderName();
   const factory = name ? adapters[name] : undefined;
 
