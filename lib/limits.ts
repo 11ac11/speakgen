@@ -1,0 +1,71 @@
+import { sql } from "@/lib/db";
+import { entitlementsFor, withinLimit, type Plan } from "@/lib/entitlements";
+import { ensureProfile } from "@/lib/profile";
+
+export type LimitedResource = "exams" | "practices";
+
+/**
+ * Raised when a plan limit would be exceeded. Carries enough for the caller to
+ * render a useful upgrade prompt rather than a bare refusal.
+ */
+export class PlanLimitError extends Error {
+  constructor(
+    readonly resource: LimitedResource,
+    readonly limit: number,
+    readonly plan: Plan
+  ) {
+    super(`Plan limit reached: ${limit} ${resource} on the ${plan} plan`);
+    this.name = "PlanLimitError";
+  }
+}
+
+async function countOwned(resource: LimitedResource, ownerId: string) {
+  // Practices do not exist yet. When they do, this gains a branch rather than
+  // the callers gaining a second code path.
+  if (resource === "practices") return 0;
+
+  const rows = (await sql(
+    `SELECT count(*)::int AS n FROM content.exams WHERE owner_id = $1`,
+    [ownerId]
+  )) as unknown as { n: number }[];
+
+  return rows[0]?.n ?? 0;
+}
+
+/**
+ * Checks a plan limit before creating something. Throws PlanLimitError, which
+ * the routes turn into a 402 so the client can tell "you need to upgrade" apart
+ * from "your request was wrong".
+ *
+ * Counting on demand rather than keeping a tally: the numbers are tiny, and a
+ * counter would be one more thing to drift.
+ */
+export async function assertWithinPlan(
+  ownerId: string,
+  resource: LimitedResource
+) {
+  const profile = await ensureProfile(ownerId);
+  const limit = entitlementsFor(profile.plan)[resource];
+
+  if (limit === null) return;
+
+  const current = await countOwned(resource, ownerId);
+  if (!withinLimit(limit, current)) {
+    throw new PlanLimitError(resource, limit, profile.plan);
+  }
+}
+
+/** For the UI: what the viewer has used and what they are allowed. */
+export async function getUsage(ownerId: string) {
+  const profile = await ensureProfile(ownerId);
+  const entitlements = entitlementsFor(profile.plan);
+
+  return {
+    plan: profile.plan,
+    exams: {
+      used: await countOwned("exams", ownerId),
+      limit: entitlements.exams
+    },
+    practices: { used: 0, limit: entitlements.practices }
+  };
+}

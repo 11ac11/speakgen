@@ -101,3 +101,75 @@ export async function getExam(
 
   return { ...exam, questions, question_count: questions.length };
 }
+
+export type ExamSlotInput = {
+  part: string;
+  candidate: "A" | "B" | "-";
+  question_id: number;
+};
+
+/**
+ * Creates an exam and its questions in one statement.
+ *
+ * Atomic because it is a single statement: an exam with some of its slots
+ * filled is not a thing that should be able to exist. The exam row is read back
+ * out of its own CTE, since a data-modifying CTE's effects are invisible to the
+ * statement's own snapshot.
+ *
+ * Nothing here checks that the questions match the level or the part. The
+ * composite foreign keys on content.exam_questions do that, and will reject the
+ * insert outright.
+ */
+export async function createExam(
+  ownerId: string,
+  level: string,
+  title: string,
+  slots: ExamSlotInput[]
+): Promise<{ id: number } | null> {
+  const rows = (await sql(
+    `WITH new_exam AS (
+       INSERT INTO content.exams (owner_id, level, title)
+       SELECT $1, $2, $3
+         FROM content.levels l
+        WHERE l.code = $2 AND l.enabled
+       RETURNING id, level
+     ), new_slots AS (
+       INSERT INTO content.exam_questions
+         (exam_id, level, part, candidate, question_id)
+       SELECT new_exam.id, new_exam.level, s.part, s.candidate, s.question_id
+         FROM new_exam,
+              unnest($4::int[], $5::text[], $6::bigint[])
+                AS s(part, candidate, question_id)
+       RETURNING exam_id
+     )
+     SELECT id::int AS id FROM new_exam`,
+    [
+      ownerId,
+      level,
+      title,
+      slots.map((s) => Number(s.part)),
+      slots.map((s) => s.candidate),
+      slots.map((s) => s.question_id)
+    ]
+  )) as unknown as { id: number }[];
+
+  return rows[0] ?? null;
+}
+
+/**
+ * Hard delete, unlike questions. An exam is a container rather than content:
+ * nothing else references it, and its rows cascade.
+ */
+export async function deleteExam(ownerId: string, id: string) {
+  const examId = parseId(id);
+  if (examId === null) return null;
+
+  const rows = (await sql(
+    `DELETE FROM content.exams
+      WHERE id = $1 AND owner_id = $2
+      RETURNING id::int AS id`,
+    [examId, ownerId]
+  )) as unknown as { id: number }[];
+
+  return rows[0] ?? null;
+}

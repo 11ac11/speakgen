@@ -128,3 +128,30 @@ export function getCambridgeSpeakingTask(level: string, part: string) {
     (task) => task.part === part
   );
 }
+
+export type ExamSlot = { part: CambridgePart; candidate: "A" | "B" | "-" };
+
+/**
+ * The slots an exam of this level must fill, in order.
+ *
+ * Part 2 appears twice because the real test runs it twice: candidate A
+ * compares their photographs, then candidate B compares different ones. Every
+ * other part is shared, which is what the "-" candidate means in
+ * content.exam_questions.
+ *
+ * The database enforces that a question matches its slot's level and part; this
+ * is the other half, the set of slots that makes an exam complete.
+ */
+export function getRequiredSlots(level: string): ExamSlot[] {
+  const blueprint = getCambridgeSpeakingBlueprint(level);
+  if (!blueprint) return [];
+
+  return blueprint.tasks.flatMap((task): ExamSlot[] =>
+    task.part === "2"
+      ? [
+          { part: task.part, candidate: "A" },
+          { part: task.part, candidate: "B" }
+        ]
+      : [{ part: task.part, candidate: "-" }]
+  );
+}
