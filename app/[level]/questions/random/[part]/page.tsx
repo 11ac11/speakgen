@@ -35,12 +35,12 @@ export default async function RandomQuestionPage({
   }
 
   return (
-    <>
+    <div className="page" style={{ paddingTop: "3rem" }}>
       <QuestionControls question={question} part={part} />
       <Question
         question={question as unknown as QuestionStructures}
         part={part}
       />
-    </>
+    </div>
   );
 }

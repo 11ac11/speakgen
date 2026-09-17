@@ -2,55 +2,10 @@
 
 import React from "react";
 import { useRouter, useParams } from "next/navigation";
-import styled from "styled-components";
 import { Button } from "@/app/components/ui";
 import Timer from "@/app/components/Timer";
+import { Actions, Bar, Step, Steps } from "@/app/components/RunnerBar";
 import { getCambridgeSpeakingTask } from "@/lib/cambridgeBlueprints";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  width: 100%;
-  margin-bottom: 20px;
-`;
-
-const CenterControls = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 20px;
-`;
-
-const RightControl = styled.div`
-  position: absolute;
-  right: 0;
-`;
-
-const StyledButton = styled(Button)`
-  button {
-    border-radius: 8px;
-    text-transform: uppercase;
-    font-weight: 500;
-    font-size: var(--text-xs);
-
-    &:hover {
-      filter: brightness(1.2);
-    }
-  }
-
-  button:disabled {
-    color: var(--off-text);
-    background-color: var(--verylightgrey);
-
-    &:hover {
-      background-color: var(--verylightgrey);
-      filter: unset;
-    }
-  }
-`;
 
 export const QuestionControls = ({
   part,
@@ -61,38 +16,43 @@ export const QuestionControls = ({
 }) => {
   const router = useRouter();
   const { level } = useParams();
-  // Pushing the URL the page is already on is a no-op, so "Change Question"
-  // did nothing. The page picks a new random question on each render, so what
-  // it needs is a refetch.
+  const levelCode = String(level);
 
   const suggestedSeconds =
-    getCambridgeSpeakingTask(String(level), part)?.suggestedSeconds ?? 0;
+    getCambridgeSpeakingTask(levelCode, part)?.suggestedSeconds ?? 0;
+
+  // C2 has three parts, the other levels four.
+  const parts = levelCode === "c2" ? ["1", "2", "3"] : ["1", "2", "3", "4"];
 
   return (
-    <Container>
-      <CenterControls>
-        <StyledButton
-          onClick={() =>
-            router.push(`/${level}/questions/random/${Number(part) - 1}`)
-          }
-          text={"Prev. part"}
-          disabled={part === "1"}
-        />
-        <StyledButton
+    <Bar>
+      {/* Was a Prev/Next pair, which made reaching Part 4 from Part 1 three
+          clicks and never showed where you were. Same step pills as the exam
+          runner, so the two screens read alike. */}
+      <Steps>
+        {parts.map((p) => (
+          <Step
+            key={p}
+            className="glass"
+            $active={p === part}
+            onClick={() => router.push(`/${levelCode}/questions/random/${p}`)}
+          >
+            {`Part ${p}`}
+          </Step>
+        ))}
+      </Steps>
+
+      <Actions>
+        {/* Pushing the URL the page is already on is a no-op, so this has to
+            refetch rather than navigate: the page picks a new random question
+            on each render. */}
+        <Button
+          text="Change question"
+          secondary
           onClick={() => router.refresh()}
-          text={"Change Question"}
         />
-        <StyledButton
-          onClick={() =>
-            router.push(`/${level}/questions/random/${Number(part) + 1}`)
-          }
-          text={"Next part"}
-          disabled={level === "c2" ? part === "3" : part === "4"}
-        />
-      </CenterControls>
-      <RightControl>
-        <Timer timeLeft={suggestedSeconds} question={question} />
-      </RightControl>
-    </Container>
+        <Timer seconds={suggestedSeconds} resetKey={question?.id ?? part} />
+      </Actions>
+    </Bar>
   );
 };

@@ -44,7 +44,7 @@ export default function QuestionContainer({
             />
           )}
         </div>
-        {question && <Timer question={question} timeLeft={60} />}
+        {question && <Timer seconds={60} resetKey={question.id ?? "q"} />}
       </div>
       {loading && <LoadingSpinner />}
       {/* {question ? (

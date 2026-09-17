@@ -4,43 +4,11 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Question from "@/app/components/Question";
 import Button from "@/app/components/ui/Button";
+import Timer from "@/app/components/Timer";
+import { Actions, Bar, Step, Steps } from "@/app/components/RunnerBar";
 import type { Exam, ExamQuestion } from "@/lib/exams";
 import { getCambridgeSpeakingTask } from "@/lib/cambridgeBlueprints";
 import type { QuestionStructures } from "@/types/types";
-
-const Bar = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  margin-bottom: 1.5rem;
-`;
-
-const Steps = styled.div`
-  display: flex;
-  gap: 0.5rem;
-`;
-
-// A button does not inherit colour from its parent: without an explicit value
-// it takes the browser's own button colour, which is near-white when the OS is
-// in dark mode and disappears against the translucent card. Every button in
-// this codebase has to set its own colour, as StyledButton in ui/Button does.
-const Step = styled.button<{ $active: boolean }>`
-  border: none;
-  cursor: pointer;
-  border-radius: 999px;
-  padding: 0.35rem 0.9rem;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  font-family: inherit;
-  color: var(--text-body);
-  opacity: ${(props) => (props.$active ? 1 : 0.6)};
-
-  &:hover {
-    opacity: ${(props) => (props.$active ? 1 : 0.85)};
-  }
-`;
 
 const Interlocutor = styled.div`
   margin-top: 1.5rem;
@@ -84,7 +52,7 @@ export default function ExamRunner({ exam }: { exam: Exam }) {
   const task = getCambridgeSpeakingTask(exam.level, current.part);
 
   return (
-    <div style={{ width: "100%", maxWidth: 1100 }}>
+    <div style={{ width: "100%" }}>
       <Bar>
         <Steps>
           {exam.questions.map((item, i) => (
@@ -98,19 +66,24 @@ export default function ExamRunner({ exam }: { exam: Exam }) {
             </Step>
           ))}
         </Steps>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
+        <Actions>
           <Button
             text="Back"
             secondary
+            disabled={index === 0}
             onClick={() => setIndex((i) => Math.max(0, i - 1))}
           />
           <Button
             text="Next"
+            disabled={index === exam.questions.length - 1}
             onClick={() =>
               setIndex((i) => Math.min(exam.questions.length - 1, i + 1))
             }
           />
-        </div>
+          {/* A guide to how long the part runs. It stops at zero and does
+              nothing else: moving on is the teacher's call. */}
+          <Timer seconds={task?.suggestedSeconds ?? 0} resetKey={index} />
+        </Actions>
       </Bar>
 
       <h2 style={{ marginTop: 0 }}>
