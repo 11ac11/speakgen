@@ -96,9 +96,9 @@ export default function Table({
     }
   }, [filters, ownerId]);
 
-  const handleDelete = async (level: string, part: string, id: number) => {
+  const handleDelete = async (id: number) => {
     try {
-      const response = await fetch(`/api/questions/${level}/${part}/${id}`, {
+      const response = await fetch(`/api/questions/${id}`, {
         method: "DELETE"
       });
 
@@ -202,7 +202,6 @@ export default function Table({
             // span levels.
             <Actions
               questionId={row.original.id}
-              part={row.original.part}
               level={row.original.level}
               handleDelete={handleDelete}
             />

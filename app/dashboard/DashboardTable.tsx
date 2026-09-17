@@ -84,7 +84,7 @@ export default function DashboardTable() {
         <RightSide>
           <Dashboardbutton
             text={"Create"}
-            onClick={() => router.push("/question/new")}
+            onClick={() => router.push("/questions/new")}
             isBigButton
           />
           <QuickStart isDashboardButton />

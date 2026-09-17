@@ -18,6 +18,15 @@ export const questionPayloadSchema = z.object({
 export type QuestionPayload = z.infer<typeof questionPayloadSchema>;
 
 /**
+ * Creating a question carries its level and part in the body, because the
+ * collection route is /api/questions rather than a level/part path.
+ */
+export const questionCreateSchema = questionPayloadSchema.extend({
+  level: z.string().trim().min(1).max(8),
+  part: z.string().trim().regex(/^\d$/)
+});
+
+/**
  * Cheap shape check so an obviously wrong URL gets a 400 rather than an empty
  * list. content.level_parts is the actual authority: the (level, part) foreign
  * key on content.questions rejects anything invalid on write, whatever this says.

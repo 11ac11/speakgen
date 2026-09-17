@@ -58,7 +58,10 @@ const QuestionForm = ({
   const [loading, setLoading] = useState(false);
   const [createAnother, setCreateAnother] = useState(false);
 
-  const allFieldsCompleted = !!part && !!statement && themes.length > 0;
+  // Level is required too. /questions/new starts with none chosen, and
+  // submitting without one used to build a request with an empty level.
+  const allFieldsCompleted =
+    !!level && !!part && !!statement && themes.length > 0;
 
   const generatePlaceholderByPart = (isSecondStatement?: boolean) => {
     switch (part) {
@@ -128,7 +131,7 @@ interest.`;
 
     try {
       if (isEdit) {
-        await updateQuestion(level, part, question.id, requestData);
+        await updateQuestion(question.id, requestData);
       } else {
         await createQuestion(level, part, requestData);
       }

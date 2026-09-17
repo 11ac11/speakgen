@@ -73,7 +73,7 @@ export const QuestionControls = ({
       <CenterControls>
         <StyledButton
           onClick={() =>
-            router.push(`/show-question/${level}/${Number(part) - 1}`)
+            router.push(`/${level}/questions/random/${Number(part) - 1}`)
           }
           text={"Prev. part"}
           disabled={part === "1"}
@@ -84,7 +84,7 @@ export const QuestionControls = ({
         />
         <StyledButton
           onClick={() =>
-            router.push(`/show-question/${level}/${Number(part) + 1}`)
+            router.push(`/${level}/questions/random/${Number(part) + 1}`)
           }
           text={"Next part"}
           disabled={level === "c2" ? part === "3" : part === "4"}

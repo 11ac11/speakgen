@@ -1,18 +1,13 @@
 // getPartOneQuestions was removed: it fetched "api/questions/partone/", a route
 // that has never existed, and nothing called it.
 
-/**
- * A random question for a level and part.
- *
- * This used to request "api/questions/1?random=true", which is missing the
- * level, so it matched no route and always returned the 404 page. The API is
- * /api/questions/[level]/[part], and the path needs a leading slash or it
- * resolves relative to whatever page is open.
- */
+/** A random question for a level and part. */
 export async function getRandomQuestion(level: string, part: string) {
   try {
     const response = await fetch(
-      `/api/questions/${level.toLowerCase()}/${part}?random=true`
+      `/api/questions?level=${encodeURIComponent(
+        level.toLowerCase()
+      )}&part=${encodeURIComponent(part)}&random=true`
     );
     if (!response.ok) throw new Error("Failed to fetch question");
     return await response.json();
@@ -22,24 +17,21 @@ export async function getRandomQuestion(level: string, part: string) {
   }
 }
 
+// Level and part travel in the body: the collection route is /api/questions,
+// so that an item route can be keyed on the id alone.
 export async function createQuestion(
   level: string,
   part: string,
   payload: any
 ) {
   try {
-    const response = await fetch(
-      `/api/questions/${level.toLowerCase()}/${part}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      }
-    );
-
-    console.log("response:", response);
+    const response = await fetch(`/api/questions`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ ...payload, level: level.toLowerCase(), part })
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to create question: ${response.statusText}`);
@@ -52,23 +44,16 @@ export async function createQuestion(
   }
 }
 
-export async function updateQuestion(
-  level: string,
-  part: string,
-  id: string,
-  payload: any
-) {
+/** A question id is unique on its own, so no level or part is needed. */
+export async function updateQuestion(id: string | number, payload: any) {
   try {
-    const response = await fetch(
-      `/api/questions/${level.toLowerCase()}/${part}/${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(payload)
-      }
-    );
+    const response = await fetch(`/api/questions/${id}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    });
 
     if (!response.ok) {
       throw new Error(`Failed to update question: ${response.statusText}`);

@@ -1,8 +1,5 @@
-import React from "react";
-import QuestionForm from "@/app/components/QuestionForm";
+import { permanentRedirect } from "next/navigation";
 
-const CreateQuestion = () => {
-  return <QuestionForm />;
-};
-
-export default CreateQuestion;
+export default function LegacyNewQuestionPage() {
+  permanentRedirect("/questions/new");
+}

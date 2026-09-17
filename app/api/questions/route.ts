@@ -4,16 +4,25 @@ import {
   listQuestions
 } from "@/lib/questions";
 import { getViewer } from "@/lib/questionAccess";
-import { isValidLevelPart, questionPayloadSchema } from "@/lib/questionRules";
+import { isValidLevelPart, questionCreateSchema } from "@/lib/questionRules";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  context: { params: Promise<{ level: string; part: string }> }
-) {
+// The questions collection. Items live at /api/questions/[id], keyed on the id
+// alone because it is unique across every level and part.
+//
+// Level and part are query parameters here rather than path segments. They used
+// to be the path, as /api/questions/[level]/[part], which cannot coexist with an
+// /api/questions/[id] item route: Next refuses two different dynamic slug names
+// at the same position.
+
+export async function GET(req: NextRequest) {
   try {
-    const { level, part } = await context.params;
+    const { searchParams } = new URL(req.url);
+    const level = searchParams.get("level") ?? "";
+    const part = searchParams.get("part") ?? "";
+    const random = searchParams.get("random") === "true";
+
     if (!isValidLevelPart(level, part)) {
       return NextResponse.json(
         { error: "Invalid level or part" },
@@ -21,7 +30,6 @@ export async function GET(
       );
     }
 
-    const random = new URL(req.url).searchParams.get("random") === "true";
     const questions = await listQuestions(await getViewer(), {
       level: level.toLowerCase(),
       part,
@@ -45,19 +53,8 @@ export async function GET(
   }
 }
 
-export async function POST(
-  req: NextRequest,
-  context: { params: Promise<{ level: string; part: string }> }
-) {
+export async function POST(req: NextRequest) {
   try {
-    const { level, part } = await context.params;
-    if (!isValidLevelPart(level, part)) {
-      return NextResponse.json(
-        { error: "Invalid level or part" },
-        { status: 400 }
-      );
-    }
-
     const ownerId = await getAuthenticatedUserId();
     if (!ownerId) {
       return NextResponse.json(
@@ -66,10 +63,18 @@ export async function POST(
       );
     }
 
-    const parsed = questionPayloadSchema.safeParse(await req.json());
+    const parsed = questionCreateSchema.safeParse(await req.json());
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid question payload" },
+        { status: 400 }
+      );
+    }
+
+    const { level, part, ...payload } = parsed.data;
+    if (!isValidLevelPart(level, part)) {
+      return NextResponse.json(
+        { error: "Invalid level or part" },
         { status: 400 }
       );
     }
@@ -78,7 +83,7 @@ export async function POST(
       ownerId,
       level.toLowerCase(),
       part,
-      parsed.data
+      payload
     );
 
     // No row means content.levels.enabled is false for this level.

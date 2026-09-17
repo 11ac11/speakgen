@@ -31,23 +31,23 @@ const ActionButton = styled.div`
   }
 `;
 
+// part is no longer needed: a question id identifies it, and the edit URL is
+// level-scoped rather than part-scoped.
 export default function Actions({
   questionId,
-  part,
   level,
   handleDelete
 }: {
   questionId: number;
-  part: string;
   level: string;
-  handleDelete: any; // TODO: change
+  handleDelete: (id: number) => void;
 }) {
   const router = useRouter();
 
   return (
     <ActionsWrap className="actions">
       <ActionButton
-        onClick={() => router.push(`/question/${level}/${part}/${questionId}`)}
+        onClick={() => router.push(`/${level}/questions/${questionId}`)}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -59,7 +59,7 @@ export default function Actions({
           <path d="M3 21h3.75L19.81 7.94l-3.75-3.75L3 17.25V21zm18.71-16.29a1 1 0 000-1.42l-2-2a1 1 0 00-1.42 0l-2.12 2.12 3.75 3.75 2.12-2.12z" />
         </svg>
       </ActionButton>
-      <ActionButton onClick={() => handleDelete(level, part, questionId)}>
+      <ActionButton onClick={() => handleDelete(questionId)}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"

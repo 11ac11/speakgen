@@ -49,9 +49,11 @@ const me = (await signup.json()).user.id;
 console.log(`signed in as ${me}\n`);
 
 console.log("CREATE");
-const p1 = await api("/api/questions/b2/1", {
+const p1 = await api("/api/questions", {
   method: "POST",
   body: JSON.stringify({
+    level: "b2",
+    part: "1",
     statement: "Route test: what do you enjoy about studying?",
     themes: ["work_education", "hobbies"],
     public: false
@@ -66,9 +68,11 @@ pass(
 pass("private by default", p1.body.public === false);
 pass("owner is the session user", p1.body.owner_id === me);
 
-const p2 = await api("/api/questions/b2/2", {
+const p2 = await api("/api/questions", {
   method: "POST",
   body: JSON.stringify({
+    level: "b2",
+    part: "2",
     statement: "Route test: compare these two photographs.",
     themes: ["nature"],
     public: true,
@@ -82,9 +86,11 @@ pass(
   JSON.stringify(p2.body.image_ids)
 );
 
-const p3 = await api("/api/questions/b2/3", {
+const p3 = await api("/api/questions", {
   method: "POST",
   body: JSON.stringify({
+    level: "b2",
+    part: "3",
     statement: "Route test: talk about these options together.",
     themes: ["daily_life"],
     public: true,
@@ -100,21 +106,19 @@ pass(
 console.log("\nREAD");
 pass(
   "owner reads own private question",
-  (await api(`/api/questions/b2/1/${p1.body.id}`)).status === 200
+  (await api(`/api/questions/${p1.body.id}`)).status === 200
 );
 pass(
   "anonymous cannot",
-  (await api(`/api/questions/b2/1/${p1.body.id}`, { anon: true })).status ===
-    404
+  (await api(`/api/questions/${p1.body.id}`, { anon: true })).status === 404
 );
 pass(
   "anonymous reads a public one",
-  (await api(`/api/questions/b2/2/${p2.body.id}`, { anon: true })).status ===
-    200
+  (await api(`/api/questions/${p2.body.id}`, { anon: true })).status === 200
 );
 
 console.log("\nUPDATE");
-const patched = await api(`/api/questions/b2/1/${p1.body.id}`, {
+const patched = await api(`/api/questions/${p1.body.id}`, {
   method: "PATCH",
   body: JSON.stringify({
     statement: "Route test: updated",
@@ -133,8 +137,7 @@ pass(
 );
 pass(
   "now visible anonymously",
-  (await api(`/api/questions/b2/1/${p1.body.id}`, { anon: true })).status ===
-    200
+  (await api(`/api/questions/${p1.body.id}`, { anon: true })).status === 200
 );
 
 console.log("\nDASHBOARD LISTS");
@@ -166,82 +169,113 @@ pass(
 pass(
   "anonymous cannot create",
   (
-    await api("/api/questions/b2/1", {
+    await api("/api/questions", {
       method: "POST",
       anon: true,
-      body: JSON.stringify({ statement: "x", themes: ["nature"], public: true })
+      body: JSON.stringify({
+        level: "b2",
+        part: "1",
+        statement: "x",
+        themes: ["nature"],
+        public: true
+      })
     })
   ).status === 401
 );
 
 console.log("\nVALIDATION");
+const post = (body) =>
+  api("/api/questions", { method: "POST", body: JSON.stringify(body) });
+const base = { level: "b2", part: "1", statement: "x", public: true };
+
 pass(
   "bad theme slug rejected",
-  (
-    await api("/api/questions/b2/1", {
-      method: "POST",
-      body: JSON.stringify({
-        statement: "x",
-        themes: ["not_a_theme"],
-        public: true
-      })
-    })
-  ).status === 400
+  (await post({ ...base, themes: ["not_a_theme"] })).status === 400
 );
+pass("missing themes rejected", (await post({ ...base })).status === 400);
 pass(
-  "missing themes rejected",
-  (
-    await api("/api/questions/b2/1", {
-      method: "POST",
-      body: JSON.stringify({ statement: "x", public: true })
-    })
-  ).status === 400
+  "missing level rejected",
+  (await post({ part: "1", statement: "x", themes: ["nature"], public: true }))
+    .status === 400
 );
 pass(
   "invalid part rejected",
-  (
-    await api("/api/questions/b2/9", {
-      method: "POST",
-      body: JSON.stringify({ statement: "x", themes: ["nature"], public: true })
-    })
-  ).status === 400
+  (await post({ ...base, part: "9", themes: ["nature"] })).status === 400
 );
 pass(
   "C2 part 4 rejected (level has 3 parts)",
-  (
-    await api("/api/questions/c2/4", {
-      method: "POST",
-      body: JSON.stringify({ statement: "x", themes: ["nature"], public: true })
-    })
-  ).status === 400
+  (await post({ ...base, level: "c2", part: "4", themes: ["nature"] }))
+    .status === 400
+);
+pass("list needs level and part", (await api("/api/questions")).status === 400);
+pass(
+  "list by level and part",
+  (await api("/api/questions?level=b2&part=1")).body.length > 0
 );
 
 console.log("\nDELETE");
 pass(
   "delete own",
-  (await api(`/api/questions/b2/1/${p1.body.id}`, { method: "DELETE" }))
-    .status === 200
+  (await api(`/api/questions/${p1.body.id}`, { method: "DELETE" })).status ===
+    200
 );
 pass(
   "gone afterwards",
-  (await api(`/api/questions/b2/1/${p1.body.id}`)).status === 404
+  (await api(`/api/questions/${p1.body.id}`)).status === 404
 );
 pass(
   "cannot delete house content",
-  (await api("/api/questions/b2/1/1", { method: "DELETE" })).status === 404
+  (await api("/api/questions/1", { method: "DELETE" })).status === 404
 );
-
 console.log("\nPAGES");
-for (const [name, path] of [
-  ["edit page", `/question/b2/2/${p2.body.id}`],
-  ["show-question", "/show-question/b2/1"],
-  ["show-question part 3", "/show-question/b2/3"],
-  ["show-question bad part", "/show-question/b2/9"],
-  ["edit page, missing id", "/question/b2/1/99999"]
+for (const [name, path, expect] of [
+  ["edit page", `/b2/questions/${p2.body.id}`, 200],
+  ["new question page", "/questions/new", 200],
+  ["random runner", "/b2/questions/random/1", 200],
+  ["random runner part 3", "/b2/questions/random/3", 200],
+  ["random runner, c1", "/c1/questions/random/2", 200],
+  ["random runner, bad part", "/b2/questions/random/9", 404],
+  ["random runner, disabled level", "/c2/questions/random/1", 404],
+  ["edit page, missing id", "/b2/questions/99999", 404],
+  ["edit page, non-numeric id", "/b2/questions/abc", 404],
+  ["edit page, unknown level", "/nope/questions/1", 404]
 ]) {
   const res = await fetch(BASE + path, { headers: { Cookie: cookie } });
-  const expect = name.includes("bad") || name.includes("missing") ? 404 : 200;
   pass(name, res.status === expect, `${res.status}`);
+}
+
+console.log("\nREDIRECTS FROM OLD PATHS");
+for (const [from, to] of [
+  [`/question/b2/2/${p2.body.id}`, `/b2/questions/${p2.body.id}`],
+  ["/question/new", "/questions/new"],
+  ["/show-question/b2/1", "/b2/questions/random/1"],
+  ["/show-question/c1/3", "/c1/questions/random/3"]
+]) {
+  const res = await fetch(BASE + from, {
+    redirect: "manual",
+    headers: { Cookie: cookie }
+  });
+  const location = (res.headers.get("location") || "").replace(BASE, "");
+  pass(
+    `${from} -> ${to}`,
+    res.status === 308 && location === to,
+    `${res.status} ${location}`
+  );
+}
+
+console.log("\nWRONG LEVEL IN PATH");
+{
+  const res = await fetch(`${BASE}/c1/questions/${p2.body.id}`, {
+    redirect: "manual",
+    headers: { Cookie: cookie }
+  });
+  const location = (res.headers.get("location") || "").replace(BASE, "");
+  pass(
+    "b2 question under /c1 redirects to canonical",
+    [307, 308].includes(res.status) &&
+      location === `/b2/questions/${p2.body.id}`,
+    `${res.status} ${location}`
+  );
 }
 
 // clean up

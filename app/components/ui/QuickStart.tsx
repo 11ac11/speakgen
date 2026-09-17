@@ -13,7 +13,7 @@ export default function QuickStart({
   const router = useRouter();
 
   const handleQuickStart = (value: any) => {
-    router.push(`/show-question/${value.toLowerCase()}/1`);
+    router.push(`/${value.toLowerCase()}/questions/random/1`);
   };
 
   return (

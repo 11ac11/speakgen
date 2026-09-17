@@ -5,26 +5,20 @@ import {
   updateQuestion
 } from "@/lib/questions";
 import { getViewer } from "@/lib/questionAccess";
-import { isValidLevelPart, questionPayloadSchema } from "@/lib/questionRules";
+import { questionPayloadSchema } from "@/lib/questionRules";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
-// A question id is now globally unique, so level and part are validated but the
-// lookup is by id alone. They stay in the path because the editor routes are
-// shaped around them.
+// A question id is unique across every level and part, so these routes take the
+// id alone. They used to sit under /api/questions/[level]/[part]/[id], where the
+// level and part were carried through the path but ignored by the lookup.
 
 export async function GET(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string; id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { level, part, id } = await context.params;
-    if (!isValidLevelPart(level, part)) {
-      return NextResponse.json(
-        { error: "Invalid level or part" },
-        { status: 400 }
-      );
-    }
+    const { id } = await context.params;
 
     const question = await getQuestionById(await getViewer(), id);
     if (!question) {
@@ -46,7 +40,7 @@ export async function GET(
 
 export async function PATCH(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string; id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
@@ -92,7 +86,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: NextRequest,
-  context: { params: Promise<{ level: string; part: string; id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await context.params;
