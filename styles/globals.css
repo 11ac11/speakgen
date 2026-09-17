@@ -15,6 +15,13 @@
   --green-500: #247f45;
   --green-800: #123f23;
   --green-tint: #f4fbf2;
+
+  /* One measure for every page, so a container width is a decision made once
+     rather than a number picked per page. Wide is for the two places that show
+     photographs side by side; narrow is for reading and for forms. */
+  --page-max: 960px;
+  --page-max-wide: 1200px;
+  --page-max-narrow: 640px;
   --green-edge: #c9dcc6;
 
   /* Off. A grey that is neither the white surface nor the green, pressed into
@@ -142,13 +149,21 @@ body {
   color: var(--slategrey);
 }
 
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 main {
   padding-top: 2rem;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
   align-items: center;
-  min-height: 90vh;
+  /* Takes the slack in .app-shell rather than claiming a fixed 90vh, which
+     left the footer just below the fold on every page however short. */
+  flex: 1;
   max-width: 800px;
   margin: auto;
 }

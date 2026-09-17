@@ -6,6 +6,7 @@ import StyledComponentsRegistry from "../lib/registry";
 import Navbar from "@/app/components/Nav";
 import Providers from "./providers";
 import ConsentBanner from "@/app/components/ads/ConsentBanner";
+import Footer from "@/app/components/Footer";
 // Library styles first, ours second. auth-ui ships Tailwind's preflight, which
 // includes h1..h6 { font-size: inherit; font-weight: inherit } — loaded after
 // globals.css it flattened every plain heading in the app to body text.
@@ -45,9 +46,15 @@ export default function RootLayout({
       <body>
         <Providers>
           <StyledComponentsRegistry>
-            <Navbar />
-            <main>{children}</main>
-            <ConsentBanner />
+            {/* A column the height of the viewport, so main can take the
+                slack and the footer sits at the bottom of a short page
+                instead of halfway up it. */}
+            <div className="app-shell">
+              <Navbar />
+              <main>{children}</main>
+              <Footer />
+              <ConsentBanner />
+            </div>
             {/* <BackgroundToggle /> */}
           </StyledComponentsRegistry>
         </Providers>
