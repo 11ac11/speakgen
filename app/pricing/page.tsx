@@ -1,27 +1,25 @@
 import { PLANS, ENTITLEMENTS } from "@/lib/entitlements";
+import { formatPrice, getPrice } from "@/lib/billing/prices";
 
 export const metadata = { title: "Plans — Speakgen" };
 
-const PRICES: Record<
-  string,
-  { monthly: string; yearly: string; blurb: string }
-> = {
-  free: {
-    monthly: "€0",
-    yearly: "—",
-    blurb: "Everything you need to try it with a class."
-  },
-  pro: {
-    monthly: "€5",
-    yearly: "€49 a year",
-    blurb: "For a teacher running their own classes."
-  },
-  academy: {
-    monthly: "€29",
-    yearly: "€290 a year",
-    blurb: "For a school, with up to five teachers."
-  }
+const BLURBS: Record<string, string> = {
+  free: "Everything you need to try it with a class.",
+  pro: "For a teacher running their own classes.",
+  academy: "For a school, with up to five teachers."
 };
+
+// Amounts come from the billing price catalogue, so this page and the checkout
+// cannot quote different numbers.
+function priceLabels(plan: string) {
+  if (plan === "free") return { monthly: "\u20ac0", yearly: "\u2014" };
+
+  const paid = plan as "pro" | "academy";
+  return {
+    monthly: formatPrice(getPrice(paid, "month")),
+    yearly: `${formatPrice(getPrice(paid, "year"))} a year`
+  };
+}
 
 function limit(value: number | null, singular: string, plural: string) {
   if (value === null) return `Unlimited ${plural}`;
@@ -47,7 +45,7 @@ export default function PricingPage() {
         >
           {PLANS.map((plan) => {
             const e = ENTITLEMENTS[plan];
-            const price = PRICES[plan];
+            const price = priceLabels(plan);
 
             return (
               <div
@@ -89,7 +87,7 @@ export default function PricingPage() {
                   {price.yearly}
                 </div>
                 <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
-                  {price.blurb}
+                  {BLURBS[plan]}
                 </p>
                 <ul
                   style={{
