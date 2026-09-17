@@ -17,25 +17,30 @@ const ThemesWrap = styled.div`
 `;
 
 const SelectedThemesWrap = styled(ThemesWrap)`
-  height: 30px;
+  min-height: 38px;
+  align-items: center;
   margin-bottom: 30px;
 `;
 
 const PillsWrap = styled.div``;
 
+/* An empty slot waiting to be filled, so it reads as an outline rather than a
+   filled control: transparent, with a dashed edge. Its height matches the row
+   of selected pills below, so nothing shifts when the first theme is added. */
 const NoThemesSelectedWrap = styled.div`
-  background-color: #f1f1f1;
-  border-radius: 5px;
+  background: transparent;
+  border: 1.5px dashed var(--field-edge);
+  border-radius: var(--radius-control);
   padding: 0 1rem;
-  height: 30px;
+  min-height: 38px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 30px;
 
   & > p {
-    font-size: 14px;
-    color: #a1a1a1;
+    font-size: 0.85rem;
+    color: var(--lightgrey);
   }
 `;
 
