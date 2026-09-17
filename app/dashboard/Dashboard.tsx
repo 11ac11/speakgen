@@ -36,7 +36,8 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
       id: exam.id,
       level: exam.level,
       title: exam.title,
-      question_count: exam.question_count
+      question_count: exam.question_count,
+      themes: exam.themes
     }));
 
   return (

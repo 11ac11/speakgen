@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import styled from "styled-components";
+import Pill from "@/app/components/ui/Pill";
+import { THEME_VALUES_FOR_PILLS } from "@/constants";
 
 export const ExamList = styled.ul`
   list-style: none;
@@ -89,3 +91,56 @@ export const ExamsLink = styled(Link)`
     box-shadow: 0 1px 0 0 #e4ebe2;
   }
 `;
+
+const ThemeRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 0.6rem;
+
+  /* Pill carries its own trailing margin, so the overflow count has to match
+     it rather than sit flush against the last one. */
+  span {
+    margin: 0 0 4px 0.15rem;
+    font-size: var(--text-xs);
+    color: var(--text-faint);
+  }
+`;
+
+/**
+ * What an exam is about, taken from the themes of its questions. Capped,
+ * because a five-question exam can easily carry a dozen tags and the card is a
+ * summary, not an index.
+ */
+export function ExamThemes({
+  themes,
+  max = 4
+}: {
+  themes: string[];
+  max?: number;
+}) {
+  if (!themes?.length) return null;
+
+  const known = themes
+    .map((slug) => THEME_VALUES_FOR_PILLS.find((t) => t.value === slug))
+    .filter((t): t is (typeof THEME_VALUES_FOR_PILLS)[number] => Boolean(t));
+
+  if (known.length === 0) return null;
+
+  const shown = known.slice(0, max);
+  const hidden = known.length - shown.length;
+
+  return (
+    <ThemeRow>
+      {shown.map((theme) => (
+        <Pill
+          key={theme.value}
+          text={theme.label}
+          bgColor={theme.colors.bg}
+          textColor={theme.colors.text}
+        />
+      ))}
+      {hidden > 0 ? <span>{`+${hidden} more`}</span> : null}
+    </ThemeRow>
+  );
+}

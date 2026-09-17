@@ -14,6 +14,8 @@ export type ExamSummary = {
   owner_id: string | null;
   is_house: boolean;
   question_count: number;
+  /** Every theme its questions carry, deduplicated. What the exam is about. */
+  themes: string[];
 };
 
 export type ExamQuestion = QuestionRow & { candidate: string };
@@ -49,7 +51,17 @@ export async function listExams(
             e.owner_id,
             e.owner_id IS NULL AS is_house,
             (SELECT count(*)::int FROM content.exam_questions eq
-              WHERE eq.exam_id = e.id) AS question_count
+              WHERE eq.exam_id = e.id) AS question_count,
+            -- The themes of the questions in it, deduplicated: an exam has no
+            -- themes of its own, it inherits whatever it is built from.
+            COALESCE(
+              (SELECT array_agg(DISTINCT qt.theme_slug ORDER BY qt.theme_slug)
+                 FROM content.exam_questions eq
+                 JOIN content.question_themes qt
+                   ON qt.question_id = eq.question_id
+                WHERE eq.exam_id = e.id),
+              '{}'
+            ) AS themes
        FROM content.exams e
       WHERE ${where}${access.clause}
       ORDER BY e.owner_id IS NULL DESC, e.level, e.title`,
@@ -70,7 +82,8 @@ export async function getExam(
 
   const exams = (await sql(
     `SELECT e.id::int AS id, e.level, e.title, e.owner_id,
-            e.owner_id IS NULL AS is_house, 0 AS question_count
+            e.owner_id IS NULL AS is_house, 0 AS question_count,
+            '{}'::text[] AS themes
        FROM content.exams e
       WHERE e.id = $1 AND ${access.clause}
       LIMIT 1`,

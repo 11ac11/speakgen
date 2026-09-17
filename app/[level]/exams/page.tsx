@@ -10,6 +10,7 @@ import {
   ExamList,
   ExamMeta,
   ExamsLink,
+  ExamThemes,
   ExamTitle
 } from "@/app/components/ExamCards";
 
@@ -82,6 +83,7 @@ export default async function LevelExamsPage({
                   <ExamMeta>
                     {`${exam.question_count} questions · ~${level.minutes} min · Free`}
                   </ExamMeta>
+                  <ExamThemes themes={exam.themes} />
                 </ExamCard>
               </li>
             ))}

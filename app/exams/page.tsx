@@ -5,6 +5,7 @@ import {
   ExamCard,
   ExamList,
   ExamMeta,
+  ExamThemes,
   ExamTitle
 } from "@/app/components/ExamCards";
 
@@ -52,6 +53,7 @@ export default async function AllExamsPage() {
                         } min`}
                         {exam.is_house ? " · Free" : ""}
                       </ExamMeta>
+                      <ExamThemes themes={exam.themes} />
                     </ExamCard>
                   </li>
                 ))}

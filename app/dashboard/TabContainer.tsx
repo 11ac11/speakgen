@@ -6,6 +6,7 @@ import styled from "styled-components";
 import { Dropdown } from "@/app/components/ui";
 import { SUPPORTED_LEVELS } from "@/constants";
 import DashboardTable from "./DashboardTable";
+import { ExamThemes } from "@/app/components/ExamCards";
 
 /* stretch, not center: the page sets the measure now, so everything inside
    lines up on the same left edge instead of each block centring itself at
@@ -90,6 +91,7 @@ export type DashboardExam = {
   level: string;
   title: string;
   question_count: number;
+  themes: string[];
 };
 
 export default function TabContainer({
@@ -166,6 +168,7 @@ export default function TabContainer({
                     <span>
                       {`${exam.level.toUpperCase()} · ${exam.question_count} questions`}
                     </span>
+                    <ExamThemes themes={exam.themes} />
                   </ExamCard>
                 </li>
               ))}
