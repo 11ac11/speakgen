@@ -21,9 +21,31 @@ interface Question {
   public: boolean;
 }
 
+/* Scrolls rather than squeezing the columns to nothing on a narrow screen. */
+const Scroller = styled.div`
+  width: 100%;
+  overflow-x: auto;
+`;
+
+const StyledTable = styled.table`
+  /* Was an unsized table inside a centring flex column, so it shrank to its
+     contents and floated away from the toolbar above it. */
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+  table-layout: fixed;
+`;
+
 const TableRow = styled.tr`
-  height: 30px;
   font-size: var(--text-sm);
+
+  tbody &:not(:last-child) {
+    border-bottom: 1px solid var(--verylightgrey);
+  }
+
+  tbody &:hover {
+    background: var(--green-tint);
+  }
 
   &:hover .actions {
     opacity: 1;
@@ -32,14 +54,44 @@ const TableRow = styled.tr`
 
 const TableHeader = styled.th`
   text-align: left;
+  padding: 0 0.75rem 0.6rem;
   font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.07em;
   text-transform: uppercase;
+  color: var(--text-faint);
+  border-bottom: 1px solid var(--field-edge);
+
+  &:first-child {
+    padding-left: 0;
+  }
+`;
+
+const SortToggle = styled.div<{ $sortable: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  cursor: ${({ $sortable }) => ($sortable ? "pointer" : "default")};
+  user-select: none;
+
+  /* Was 🔼 and 🔽, which render as full-colour emoji at the size of the label
+     and sit on the baseline differently in every browser. */
+  span {
+    font-size: 0.7em;
+    color: var(--green-600);
+  }
 `;
 
 const TableData = styled.td`
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  padding: 0.7rem 0.75rem;
+  vertical-align: middle;
+  color: var(--text-body);
+  /* Questions are the point of the table, so they wrap rather than truncate. */
+  overflow-wrap: anywhere;
+
+  &:first-child {
+    padding-left: 0;
+  }
 `;
 
 export default function Table({
@@ -62,7 +114,6 @@ export default function Table({
         if (!res.ok) throw new Error("Failed to load questions");
         const data: Question[] = await res.json();
         setData(data);
-        console.log("res:", res);
       } else {
         const partApiString = filters.part !== "all" ? `/${filters.part}` : "";
         const res = await fetch(
@@ -70,7 +121,6 @@ export default function Table({
         );
         if (!res.ok) throw new Error("Failed to load questions");
         const data: Question[] = await res.json();
-        console.log("data:", data);
         const dataWithPart = data?.map((data) => {
           if (!data?.part) {
             return {
@@ -138,18 +188,17 @@ export default function Table({
             );
           }
         },
-        size: 70
+        size: 12
       },
       {
         header: "Question",
         accessorKey: "statement",
-        size: 400
+        size: 38
       },
       {
         header: "Themes",
         accessorKey: "themes",
         cell: ({ row }) => {
-          console.log("row.original.themes:", row.original.themes);
           return row.original?.themes?.map((themeFromData) => {
             // match the value so we can apply the correct colours to the pill
             const storedTheme = THEME_VALUES_FOR_PILLS.find(
@@ -167,12 +216,12 @@ export default function Table({
             }
           });
         },
-        size: 200
+        size: 28
       },
       {
         header: "Public",
         accessorKey: "public",
-        size: 50,
+        size: 10,
         cell: ({ row }) => {
           if (row.original.public) {
             return (
@@ -193,7 +242,7 @@ export default function Table({
       {
         header: "",
         accessorKey: "actions",
-        size: 100,
+        size: 12,
         cell: ({ row }) => {
           // console.log("filters:", filters);
           return (
@@ -229,9 +278,8 @@ export default function Table({
   if (data.length === 0) return <p>No questions found for this selection.</p>;
 
   return (
-    <div className="p-2">
-      <div className="h-2" />
-      <table>
+    <Scroller>
+      <StyledTable>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -240,18 +288,11 @@ export default function Table({
                   <TableHeader
                     key={header.id}
                     colSpan={header.colSpan}
-                    style={{
-                      width: `${header.getSize()}px`,
-                      maxWidth: `${header.getSize()}px`
-                    }}
+                    style={{ width: `${header.getSize()}%` }}
                   >
                     {header.isPlaceholder ? null : (
-                      <div
-                        className={
-                          header.column.getCanSort()
-                            ? "cursor-pointer select-none"
-                            : ""
-                        }
+                      <SortToggle
+                        $sortable={header.column.getCanSort()}
                         onClick={header.column.getToggleSortingHandler()}
                         title={
                           header.column.getCanSort()
@@ -268,10 +309,10 @@ export default function Table({
                           header.getContext()
                         )}
                         {{
-                          asc: " 🔼",
-                          desc: " 🔽"
+                          asc: <span aria-hidden>{"\u25B2"}</span>,
+                          desc: <span aria-hidden>{"\u25BC"}</span>
                         }[header.column.getIsSorted() as string] ?? null}
-                      </div>
+                      </SortToggle>
                     )}
                   </TableHeader>
                 );
@@ -291,8 +332,6 @@ export default function Table({
                       <TableData
                         key={cell.id}
                         style={{
-                          width: `${cell.column.getSize()}px`,
-                          maxWidth: `${cell.column.getSize()}px`,
                           textAlign:
                             cell.column.id === "public" ? "center" : "left"
                         }}
@@ -308,7 +347,7 @@ export default function Table({
               );
             })}
         </tbody>
-      </table>
-    </div>
+      </StyledTable>
+    </Scroller>
   );
 }

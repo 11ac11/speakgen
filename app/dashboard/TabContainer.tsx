@@ -7,12 +7,15 @@ import { Dropdown } from "@/app/components/ui";
 import { SUPPORTED_LEVELS } from "@/constants";
 import DashboardTable from "./DashboardTable";
 
+/* stretch, not center: the page sets the measure now, so everything inside
+   lines up on the same left edge instead of each block centring itself at
+   whatever width its contents happen to be. */
 const Container = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  align-items: center;
+  gap: 1rem;
+  align-items: stretch;
 `;
 
 const ExamsHeader = styled.div`

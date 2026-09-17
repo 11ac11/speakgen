@@ -4,13 +4,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Tab from "./Tab";
 import styled from "styled-components";
 
+/* Was space-between with each tab fixed at 250px, which on a 960px page threw
+   the two of them into opposite corners with a hole in the middle. A tab strip
+   is a row of labels at the start of a rule. */
 const TabContainer = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
   width: 100%;
-  margin-bottom: 20px;
-  gap: 20px;
+  gap: 1.75rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--field-edge);
 `;
 
 export default function TabMenu({
@@ -28,7 +31,7 @@ export default function TabMenu({
   };
 
   return (
-    <TabContainer>
+    <TabContainer role="tablist">
       {["questions", "exams"].map((tab) => (
         <Tab
           key={tab}
