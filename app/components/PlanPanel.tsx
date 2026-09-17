@@ -10,19 +10,19 @@ const Panel = styled.div`
   max-width: 620px;
   padding: 1.75rem;
   border-radius: 1rem;
-  color: var(--slategrey);
+  color: var(--text-body);
 `;
 
 const PlanName = styled.div`
-  font-size: 1.6rem;
+  font-size: var(--text-2xl);
   font-weight: 600;
   text-transform: capitalize;
-  margin-bottom: 0.2rem;
+  margin: 0 0 0.2rem;
 `;
 
 const Meta = styled.div`
-  color: var(--lightgrey);
-  font-size: 0.9rem;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
   margin-bottom: 1.5rem;
 `;
 
@@ -32,14 +32,14 @@ const UsageRow = styled.div`
   align-items: baseline;
   padding: 0.6rem 0;
   border-bottom: 1px solid var(--verylightgrey);
-  font-size: 0.95rem;
+  font-size: var(--text-base);
 
   &:last-of-type {
     border-bottom: none;
   }
 
   span:last-child {
-    color: var(--lightgrey);
+    color: var(--text-muted);
   }
 `;
 
@@ -57,8 +57,8 @@ const Bar = styled.div<{ $full: boolean }>`
 `;
 
 const Notice = styled.p`
-  font-size: 0.85rem;
-  color: var(--lightgrey);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
   margin-top: 1.25rem;
 `;
 
@@ -149,7 +149,7 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
         <div style={{ width: "100%" }}>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <span>Saved exams</span>
-            <span style={{ color: "var(--lightgrey)" }}>
+            <span style={{ color: "var(--text-muted)" }}>
               {limitText(usage.exams.used, usage.exams.limit)}
             </span>
           </div>
@@ -173,7 +173,9 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
       </UsageRow>
 
       {error ? (
-        <p style={{ color: "#b3261e", fontSize: "0.9rem" }}>{error}</p>
+        <p style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>
+          {error}
+        </p>
       ) : null}
 
       <div

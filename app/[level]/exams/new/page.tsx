@@ -54,7 +54,7 @@ export default async function NewExamPage({
           {`← All ${level.label} exams`}
         </BackLink>
         <h1 style={{ marginBottom: "0.25rem" }}>{`New ${level.label} exam`}</h1>
-        <p style={{ color: "var(--lightgrey)", marginTop: 0 }}>
+        <p style={{ color: "var(--text-muted)", marginTop: 0 }}>
           Pick one question for each part. Part 2 runs twice, once per
           candidate.
         </p>

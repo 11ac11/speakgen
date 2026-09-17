@@ -53,7 +53,9 @@ export default async function LevelExamsPage({
               marginBottom: "1.5rem"
             }}
           >
-            <span style={{ color: "var(--lightgrey)", fontSize: "0.9rem" }}>
+            <span
+              style={{ color: "var(--text-muted)", fontSize: "var(--text-sm)" }}
+            >
               {usage.exams.limit === null
                 ? `${usage.exams.used} of your own exams`
                 : `${usage.exams.used} of ${usage.exams.limit} exams used on the ${usage.plan} plan`}

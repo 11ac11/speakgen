@@ -32,12 +32,12 @@ const Bar = styled.div`
   background: rgba(255, 255, 255, 0.96);
   border-top: 1px solid var(--verylightgrey);
   box-shadow: 0 -4px 30px rgba(0, 0, 0, 0.08);
-  color: var(--slategrey);
+  color: var(--text-body);
 
   p {
     margin: 0;
     max-width: 620px;
-    font-size: 0.85rem;
+    font-size: var(--text-sm);
     line-height: 1.5;
   }
 `;

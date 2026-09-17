@@ -34,7 +34,7 @@ const StyledButton = styled(Button)`
     border-radius: 8px;
     text-transform: uppercase;
     font-weight: 500;
-    font-size: 12px;
+    font-size: var(--text-xs);
 
     &:hover {
       filter: brightness(1.2);
@@ -42,7 +42,7 @@ const StyledButton = styled(Button)`
   }
 
   button:disabled {
-    color: #bababa;
+    color: var(--off-text);
     background-color: var(--verylightgrey);
 
     &:hover {

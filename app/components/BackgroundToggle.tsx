@@ -11,7 +11,7 @@ const FloatingToggle = styled.div`
   margin: 5px;
 
   & button {
-    font-size: 0.8rem;
+    font-size: var(--text-xs);
   }
 `;
 

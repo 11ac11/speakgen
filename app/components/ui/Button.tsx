@@ -16,7 +16,7 @@ const Wrap = styled.div`
 
 const StyledButton = styled.button<StyledButtonProps>`
   font-family: var(--font-body), sans-serif;
-  font-size: 1rem;
+  font-size: var(--text-base);
   font-weight: 500;
   min-height: 48px;
   padding: 0.8rem 1.4rem;
@@ -80,7 +80,7 @@ const StyledButton = styled.button<StyledButtonProps>`
   ${({ $isBigButton }) =>
     $isBigButton &&
     `
-    font-size: 1.05rem;
+    font-size: var(--text-base);
     font-weight: 600;
     padding: 0.9rem 1.9rem;
   `}
@@ -90,7 +90,7 @@ const StyledButton = styled.button<StyledButtonProps>`
     `
     min-height: 44px;
     padding: 0.6rem 1.2rem;
-    font-size: 0.95rem;
+    font-size: var(--text-base);
   `}
 
   /* Off is off: primary and secondary collapse to the same look. Declared last

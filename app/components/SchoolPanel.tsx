@@ -10,7 +10,7 @@ const Panel = styled.div`
   max-width: 680px;
   padding: 1.75rem;
   border-radius: 1rem;
-  color: var(--slategrey);
+  color: var(--text-body);
 `;
 
 const Row = styled.div`
@@ -20,15 +20,15 @@ const Row = styled.div`
   gap: 1rem;
   padding: 0.6rem 0;
   border-bottom: 1px solid var(--verylightgrey);
-  font-size: 0.95rem;
+  font-size: var(--text-base);
 
   &:last-of-type {
     border-bottom: none;
   }
 
   span {
-    color: var(--lightgrey);
-    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
   }
 `;
 
@@ -42,8 +42,8 @@ const Field = styled.div`
     flex: 1;
     min-width: 220px;
     font-family: inherit;
-    font-size: 0.95rem;
-    color: var(--slategrey);
+    font-size: var(--text-base);
+    color: var(--text-body);
     background: #fff;
     padding: 0.55rem 0.7rem;
     border: 1px solid var(--verylightgrey);
@@ -57,14 +57,14 @@ const Link = styled.div`
   border-radius: 0.6rem;
   background: #f3f7f1;
   border: 1px solid var(--verylightgrey);
-  font-size: 0.8rem;
+  font-size: var(--text-xs);
   word-break: break-all;
-  color: var(--slategrey);
+  color: var(--text-body);
 `;
 
 const Error = styled.p`
-  color: #b3261e;
-  font-size: 0.9rem;
+  color: var(--danger);
+  font-size: var(--text-sm);
 `;
 
 export type SchoolMember = {
@@ -147,8 +147,8 @@ export default function SchoolPanel({
   if (!school) {
     return (
       <Panel className="glass">
-        <h2 style={{ marginTop: 0, fontSize: "1.2rem" }}>Your school</h2>
-        <p style={{ fontSize: "0.95rem" }}>
+        <h2>Your school</h2>
+        <p style={{ fontSize: "var(--text-base)" }}>
           Create a school to share a question bank with colleagues. Content
           written by anyone in the school belongs to the school, so it stays
           when a teacher moves on. Adding teachers needs an Academy
@@ -174,8 +174,8 @@ export default function SchoolPanel({
 
   return (
     <Panel className="glass">
-      <h2 style={{ marginTop: 0, fontSize: "1.2rem" }}>{school.name}</h2>
-      <p style={{ color: "var(--lightgrey)", fontSize: "0.9rem" }}>
+      <h2>{school.name}</h2>
+      <p style={{ color: "var(--text-muted)", fontSize: "var(--text-sm)" }}>
         {seats.seats === 0
           ? "No seats. An Academy subscription is needed to add teachers."
           : `${seats.used} of ${seats.seats} seats used${

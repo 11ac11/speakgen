@@ -21,7 +21,7 @@ const StyledPill = styled.div<{ $showHoverEffect: boolean; $shadow: string }>`
   display: inline-flex;
   align-items: center;
   border-radius: var(--radius-pill);
-  font-size: 12px;
+  font-size: var(--text-xs);
   font-weight: 500;
   text-transform: capitalize;
   white-space: nowrap;

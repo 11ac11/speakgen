@@ -23,7 +23,7 @@ interface Question {
 
 const TableRow = styled.tr`
   height: 30px;
-  font-size: 14px;
+  font-size: var(--text-sm);
 
   &:hover .actions {
     opacity: 1;
@@ -32,7 +32,7 @@ const TableRow = styled.tr`
 
 const TableHeader = styled.th`
   text-align: left;
-  font-size: 12px;
+  font-size: var(--text-xs);
   text-transform: uppercase;
 `;
 

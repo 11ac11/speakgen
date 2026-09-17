@@ -19,21 +19,21 @@ const Container = styled.div`
 `;
 
 const Heading = styled.h1`
-  font-size: 1.9rem;
+  font-size: var(--text-2xl);
   margin: 0 0 0.4rem;
   align-self: flex-start;
 `;
 
 const Sub = styled.p`
-  font-size: 0.95rem;
-  color: var(--lightgrey);
+  font-size: var(--text-base);
+  color: var(--text-muted);
   margin: 0 0 1.75rem;
   align-self: flex-start;
 `;
 
 const Alt = styled.p`
-  font-size: 0.9rem;
-  color: var(--lightgrey);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
   margin: 1.75rem 0 0;
 
   a {
@@ -46,7 +46,7 @@ const Alt = styled.p`
 
 const FormError = styled.p`
   color: var(--danger);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   margin: 0;
 `;
 
@@ -58,8 +58,8 @@ const OrContainer = styled.div`
   /* Was 2rem of padding on every side, which pushed the divider away from the
      two things it divides. */
   padding: 1.35rem 0;
-  color: var(--lightgrey);
-  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-size: var(--text-sm);
 `;
 
 const StyledForm = styled.form`

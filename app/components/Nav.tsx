@@ -39,14 +39,17 @@ const NavContainer = styled.div`
   }
 `;
 
-const Title = styled.h1`
-  font-size: 2rem;
+/* Not an h1: it appears on every page, so it would give each page a second
+   top-level heading competing with the one that actually describes it. The
+   site name is a landmark, not the page's title. */
+const Title = styled.div`
+  font-size: var(--text-3xl);
   text-transform: uppercase;
   font-weight: 500;
   margin: 0;
 
   @media only screen and (max-width: 768px) {
-    font-size: 1.4rem;
+    font-size: var(--text-xl);
   }
 `;
 
@@ -68,13 +71,13 @@ const NavList = styled.ul`
 
 const NavItem = styled.li`
   a {
-    font-size: 1rem;
+    font-size: var(--text-base);
     text-decoration: none;
     text-transform: uppercase;
     font-weight: 500;
 
     @media only screen and (max-width: 768px) {
-      font-size: 0.8rem;
+      font-size: var(--text-xs);
     }
   }
 `;

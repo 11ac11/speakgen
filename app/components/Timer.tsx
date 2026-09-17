@@ -9,14 +9,14 @@ const TimerBox = styled.div`
   text-align: end;
 
   & > span {
-    font-size: 3rem;
+    font-size: var(--text-display);
     color: lightgrey;
     font-variant-numeric: tabular-nums;
   }
 
   @media only screen and (max-width: 768px) {
     & > span {
-      font-size: 2rem;
+      font-size: var(--text-3xl);
     }
   }
 `;

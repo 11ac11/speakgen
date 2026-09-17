@@ -10,8 +10,8 @@ const Wrap = styled.div<{ width: string | undefined }>`
 
 const StyledInput = styled.input<{ error: string | undefined }>`
   font-family: var(--font-body), sans-serif;
-  font-size: 1rem;
-  color: var(--slategrey);
+  font-size: var(--text-base);
+  color: var(--text-body);
   background: #fff;
   border: 1.5px solid var(--field-edge);
   border-radius: var(--radius-control);
@@ -23,7 +23,7 @@ const StyledInput = styled.input<{ error: string | undefined }>`
     box-shadow 0.12s ease;
 
   &::placeholder {
-    color: #9ba29a;
+    color: var(--text-faint);
   }
 
   &:hover {
@@ -62,8 +62,8 @@ const StyledTextArea = styled.textarea<{ error: string | undefined }>`
   border: 1.5px solid var(--field-edge);
   outline: none;
   padding: 0.75rem 0.9rem;
-  font-size: 1rem;
-  color: var(--slategrey);
+  font-size: var(--text-base);
+  color: var(--text-body);
   background: #fff;
   /* Was "Sofia Sans", which the font import never loaded — it has been
      falling back to the default sans all along. */
@@ -89,7 +89,7 @@ const StyledTextArea = styled.textarea<{ error: string | undefined }>`
   ${({ error }) =>
     !!error &&
     `
-    border-color: rgb(255, 65, 80);
+    border-color: var(--danger);
     box-shadow: 0 0 5px 2px rgba(255, 65, 80, 0.5);
   `}
   transition: border-color 0.3s, box-shadow 0.3s;
@@ -97,8 +97,8 @@ const StyledTextArea = styled.textarea<{ error: string | undefined }>`
 
 const ErrorMessage = styled.span`
   margin-top: 10px;
-  color: rgb(255, 65, 80);
-  font-size: 14px;
+  color: var(--danger);
+  font-size: var(--text-sm);
 `;
 
 // Types for the component's props

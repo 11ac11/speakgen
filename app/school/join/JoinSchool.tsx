@@ -10,7 +10,7 @@ const Card = styled.div`
   max-width: 460px;
   padding: 2rem;
   border-radius: 1rem;
-  color: var(--slategrey);
+  color: var(--text-body);
 `;
 
 export default function JoinSchool({
@@ -48,12 +48,14 @@ export default function JoinSchool({
       <h1 style={{ marginTop: 0, fontSize: "1.3rem" }}>
         {schoolName ? `Join ${schoolName}` : "Join a school"}
       </h1>
-      <p style={{ fontSize: "0.95rem" }}>
+      <p style={{ fontSize: "var(--text-base)" }}>
         Joining gives you the school&apos;s shared question bank and its plan.
         Anything you write from then on belongs to the school as well as to you.
       </p>
       {error ? (
-        <p style={{ color: "#b3261e", fontSize: "0.9rem" }}>{error}</p>
+        <p style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>
+          {error}
+        </p>
       ) : null}
       <div style={{ marginTop: "1.5rem" }}>
         <Button

@@ -54,8 +54,8 @@ const StyledCheckbox = styled.input<{ error?: string }>`
 
 const ErrorMessage = styled.span`
   margin-top: 8px;
-  color: rgb(255, 65, 80);
-  font-size: 14px;
+  color: var(--danger);
+  font-size: var(--text-sm);
 `;
 
 type CustomCheckboxProps = {

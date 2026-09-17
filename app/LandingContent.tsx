@@ -22,7 +22,7 @@ const HeroContainer = styled.div`
   align-items: center;
 
   p {
-    font-size: 16px;
+    font-size: var(--text-base);
     margin-bottom: 40px;
   }
 
@@ -42,28 +42,28 @@ const RightSide = styled.div`
 `;
 
 const Title = styled.h1`
-  font-size: 3rem;
+  font-size: var(--text-hero);
 
   @media only screen and (max-width: 600px) {
-    font-size: 2.4rem;
+    font-size: var(--text-3xl);
   }
 
   @media only screen and (max-width: 400px) {
-    font-size: 2rem;
+    font-size: var(--text-3xl);
   }
 `;
 
 const SubTitle = styled.h2`
-  font-size: 1.4rem;
+  font-size: var(--text-xl);
   font-weight: 200;
   margin: 0 0 2rem 0;
 
   @media only screen and (max-width: 600px) {
-    font-size: 1.2rem;
+    font-size: var(--text-lg);
   }
 
   @media only screen and (max-width: 400px) {
-    font-size: 1rem;
+    font-size: var(--text-base);
   }
 `;
 

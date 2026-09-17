@@ -8,11 +8,11 @@ const Container = styled.div`
   flex-direction: column;
   align-items: flex-start;
   max-width: 800px;
-  color: grey;
+  color: var(--text-muted);
 
   h2 {
     margin: 0 0 1rem 0;
-    color: var(--slategrey);
+    color: var(--text-body);
   }
 
   p {
@@ -31,6 +31,7 @@ const Section = styled.div`
 export default function FaqsContent() {
   return (
     <Container className={"container"}>
+      <h1>Frequently asked questions</h1>
       <Section>
         <h2>{`What is Speakgen?`}</h2>
         <p>

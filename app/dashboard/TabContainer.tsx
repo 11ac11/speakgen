@@ -27,21 +27,21 @@ const ExamsHeader = styled.div`
   max-width: 620px;
 
   span {
-    color: var(--lightgrey);
-    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
   }
 `;
 
 const Empty = styled.p`
   width: 100%;
   max-width: 620px;
-  color: var(--lightgrey);
-  font-size: 0.95rem;
+  color: var(--text-muted);
+  font-size: var(--text-base);
 
   /* globals.css sets a { color: inherit; text-decoration: none }, so an inline
      link is invisible as one without this. */
   a {
-    color: var(--slategrey);
+    color: var(--text-body);
     text-decoration: underline;
     text-underline-offset: 2px;
   }
@@ -64,19 +64,25 @@ const ExamList = styled.ul`
 const ExamCard = styled(Link)`
   display: block;
   padding: 1rem 1.25rem;
-  border-radius: 0.9rem;
-  color: var(--slategrey);
+  border-radius: var(--radius-card);
+  color: var(--text-body);
   text-decoration: none;
+
+  h3 {
+    font-size: var(--text-lg);
+    color: var(--text-heading);
+    margin: 0;
+  }
 
   &:hover,
   &:active {
-    color: var(--slategrey);
+    color: var(--text-body);
   }
 
   span {
     display: block;
-    color: var(--lightgrey);
-    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-size: var(--text-sm);
     margin-top: 0.25rem;
   }
 `;
@@ -139,9 +145,9 @@ export default function TabContainer({
                 style={{
                   padding: "0.5rem 1rem",
                   borderRadius: "0.6rem",
-                  color: "var(--slategrey)",
+                  color: "var(--text-body)",
                   fontWeight: 500,
-                  fontSize: "0.9rem"
+                  fontSize: "var(--text-sm)"
                 }}
               >
                 Upgrade for more exams
@@ -172,7 +178,7 @@ export default function TabContainer({
                     href={`/${exam.level}/exams/${exam.id}`}
                     className="glass"
                   >
-                    <strong>{exam.title}</strong>
+                    <h3>{exam.title}</h3>
                     <span>
                       {`${exam.level.toUpperCase()} · ${exam.question_count} questions`}
                     </span>

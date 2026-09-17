@@ -8,7 +8,7 @@ const Wrap = styled.div`
 
   & p {
     margin-bottom: 5px;
-    font-size: 1.1rem;
+    font-size: var(--text-lg);
   }
 `;
 
@@ -27,7 +27,7 @@ const StyledInput = styled(Input)`
   width: 220px;
 
   & label {
-    font-size: 14px;
+    font-size: var(--text-sm);
     margin-bottom: 0;
   }
 `;

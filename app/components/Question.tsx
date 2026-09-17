@@ -92,12 +92,12 @@ const Prompt = styled.div`
   }
 
   p {
-    font-size: 1.2rem;
+    font-size: var(--text-lg);
     font-weight: 500;
     text-transform: lowercase;
 
     @media only screen and (max-width: 768px) {
-      font-size: 1rem;
+      font-size: var(--text-base);
     }
   }
 `;

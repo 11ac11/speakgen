@@ -18,18 +18,18 @@ const Field = styled.label`
 
   span {
     display: block;
-    font-size: 0.8rem;
+    font-size: var(--text-xs);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--lightgrey);
+    color: var(--text-muted);
     margin-bottom: 0.35rem;
   }
 
   input {
     width: 100%;
     font-family: inherit;
-    font-size: 1rem;
-    color: var(--slategrey);
+    font-size: var(--text-base);
+    color: var(--text-body);
     background: #fff;
     padding: 0.6rem 0.75rem;
     border: 1px solid var(--verylightgrey);
@@ -47,8 +47,8 @@ const TopBar = styled.div`
 
   p {
     margin: 0;
-    font-size: 0.85rem;
-    color: var(--lightgrey);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
   }
 `;
 
@@ -66,13 +66,13 @@ const SlotHead = styled.div`
   margin-bottom: 0.5rem;
 
   strong {
-    color: var(--slategrey);
+    color: var(--text-body);
   }
 `;
 
 const Chosen = styled.div`
-  font-size: 0.95rem;
-  color: var(--slategrey);
+  font-size: var(--text-base);
+  color: var(--text-body);
   line-height: 1.5;
   white-space: pre-line;
 `;
@@ -80,8 +80,8 @@ const Chosen = styled.div`
 const Search = styled.input`
   width: 100%;
   font-family: inherit;
-  font-size: 0.9rem;
-  color: var(--slategrey);
+  font-size: var(--text-sm);
+  color: var(--text-body);
   background: #fff;
   padding: 0.45rem 0.6rem;
   border: 1px solid var(--verylightgrey);
@@ -120,8 +120,8 @@ const Row = styled.li`
 
 const RowText = styled.div`
   flex: 1;
-  font-size: 0.9rem;
-  color: var(--slategrey);
+  font-size: var(--text-sm);
+  color: var(--text-body);
   line-height: 1.45;
   white-space: pre-line;
 `;
@@ -133,8 +133,8 @@ const AddButton = styled.button`
   border-radius: 50%;
   border: 1px solid var(--verylightgrey);
   background: #fff;
-  color: var(--slategrey);
-  font-size: 1.1rem;
+  color: var(--text-body);
+  font-size: var(--text-lg);
   line-height: 1;
   cursor: pointer;
 
@@ -147,7 +147,7 @@ const Notice = styled.div`
   padding: 1rem 1.25rem;
   border-radius: 0.9rem;
   margin-bottom: 1.25rem;
-  color: var(--slategrey);
+  color: var(--text-body);
   border: 1px solid #f0c98a;
   background: #fff8ec;
 
@@ -347,7 +347,12 @@ export default function ExamBuilder({
                   }
                 />
               ) : (
-                <span style={{ color: "var(--lightgrey)", fontSize: "0.8rem" }}>
+                <span
+                  style={{
+                    color: "var(--text-muted)",
+                    fontSize: "var(--text-xs)"
+                  }}
+                >
                   {`${pool.length} available`}
                 </span>
               )}
@@ -360,7 +365,12 @@ export default function ExamBuilder({
                 <QuestionPreview question={chosen} />
               </>
             ) : pool.length === 0 ? (
-              <span style={{ color: "var(--lightgrey)", fontSize: "0.9rem" }}>
+              <span
+                style={{
+                  color: "var(--text-muted)",
+                  fontSize: "var(--text-sm)"
+                }}
+              >
                 {`No ${levelLabel} Part ${slot.part} questions available yet.`}
               </span>
             ) : (
@@ -394,7 +404,7 @@ export default function ExamBuilder({
                   ))}
                   {shown.length === 0 ? (
                     <Row>
-                      <RowText style={{ color: "var(--lightgrey)" }}>
+                      <RowText style={{ color: "var(--text-muted)" }}>
                         Nothing matches that search.
                       </RowText>
                     </Row>
@@ -407,7 +417,9 @@ export default function ExamBuilder({
       })}
 
       {error ? (
-        <p style={{ color: "#b3261e", fontSize: "0.9rem" }}>{error}</p>
+        <p style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>
+          {error}
+        </p>
       ) : null}
 
       <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>

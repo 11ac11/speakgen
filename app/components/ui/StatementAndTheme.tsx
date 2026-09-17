@@ -10,7 +10,7 @@ const Statement = styled.span<{ $smallFont?: boolean }>`
   white-space: pre-line;
 
   @media only screen and (max-width: 768px) {
-    font-size: 1rem;
+    font-size: var(--text-base);
   }
 `;
 

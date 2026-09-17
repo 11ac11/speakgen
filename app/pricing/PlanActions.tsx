@@ -24,7 +24,7 @@ const Row = styled.div`
 
 const Current = styled.div`
   margin-top: 1.25rem;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--leafgreen);
 `;
@@ -108,7 +108,9 @@ export default function PlanActions({
         />
       </Row>
       {error ? (
-        <p style={{ color: "#b3261e", fontSize: "0.85rem" }}>{error}</p>
+        <p style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>
+          {error}
+        </p>
       ) : null}
     </>
   );

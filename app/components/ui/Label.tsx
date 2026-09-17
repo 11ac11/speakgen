@@ -5,9 +5,9 @@ const StyledLabel = styled.label`
      support for the control, not a heading above it. */
   display: block;
   margin-bottom: 6px;
-  font-size: 0.82rem;
+  font-size: var(--text-xs);
   font-weight: 500;
-  color: #5a625a;
+  color: var(--text-label);
 `;
 
 export const Label = ({

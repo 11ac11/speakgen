@@ -14,8 +14,8 @@ const Frame = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--lightgrey);
-  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-size: var(--text-xs);
   text-align: center;
   padding: 1rem;
 `;
@@ -26,10 +26,10 @@ const Wrap = styled.div`
 `;
 
 const Label = styled.div`
-  font-size: 0.65rem;
+  font-size: var(--text-xs);
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--lightgrey);
+  color: var(--text-muted);
   text-align: center;
   margin-bottom: 0.3rem;
 `;

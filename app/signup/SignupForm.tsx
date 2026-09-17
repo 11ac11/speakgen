@@ -18,21 +18,21 @@ const Container = styled.div`
 `;
 
 const Heading = styled.h1`
-  font-size: 1.9rem;
+  font-size: var(--text-2xl);
   margin: 0 0 0.4rem;
   align-self: flex-start;
 `;
 
 const Sub = styled.p`
-  font-size: 0.95rem;
-  color: var(--lightgrey);
+  font-size: var(--text-base);
+  color: var(--text-muted);
   margin: 0 0 1.75rem;
   align-self: flex-start;
 `;
 
 const Alt = styled.p`
-  font-size: 0.9rem;
-  color: var(--lightgrey);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
   margin: 1.75rem 0 0;
 
   a {
@@ -45,7 +45,7 @@ const Alt = styled.p`
 
 const FormError = styled.p`
   color: var(--danger);
-  font-size: 0.9rem;
+  font-size: var(--text-sm);
   margin: 0;
 `;
 

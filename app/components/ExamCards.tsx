@@ -18,34 +18,37 @@ export const ExamCard = styled(Link)`
   padding: 1.25rem 1.5rem;
   border-radius: 1rem;
   text-decoration: none;
-  color: var(--slategrey);
+  color: var(--text-body);
   transition: box-shadow 0.2s ease;
 
   &:hover,
   &:active,
   &:focus-visible {
-    color: var(--slategrey);
+    color: var(--text-body);
     box-shadow: 0 6px 24px rgba(0, 0, 0, 0.14);
   }
 `;
 
-export const ExamTitle = styled.strong`
-  font-size: 1.2rem;
-  color: var(--slategrey);
+/* A heading, not bold text: each card is a titled thing in a list, and a
+   screen reader should be able to move between them. */
+export const ExamTitle = styled.h3`
+  font-size: var(--text-lg);
+  color: var(--text-heading);
+  margin: 0;
 `;
 
 export const ExamMeta = styled.div`
   margin-top: 0.4rem;
-  color: var(--lightgrey);
+  color: var(--text-muted);
 `;
 
 export const BackLink = styled(Link)`
-  font-size: 0.9rem;
-  color: var(--lightgrey);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
 
   &:hover,
   &:active {
-    color: var(--slategrey);
+    color: var(--text-body);
   }
 `;
 
@@ -63,7 +66,7 @@ export const ExamsLink = styled(Link)`
   border: 1.5px solid var(--green-edge);
   background: #fff;
   color: var(--green-600);
-  font-size: 0.95rem;
+  font-size: var(--text-base);
   font-weight: 500;
   box-shadow: 0 3px 0 0 #e4ebe2;
   transition:

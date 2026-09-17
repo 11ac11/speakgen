@@ -42,7 +42,7 @@ export default async function PricingPage() {
     <div className="container" style={{ paddingTop: "4rem" }}>
       <div style={{ maxWidth: 900, width: "100%" }}>
         <h1>Plans</h1>
-        <p style={{ marginBottom: "2.5rem", color: "var(--lightgrey)" }}>
+        <p style={{ marginBottom: "2.5rem", color: "var(--text-muted)" }}>
           Your question bank is unlimited on every plan, including the free one.
           Paying lifts the limits on saved exams and practices.
         </p>
@@ -62,42 +62,47 @@ export default async function PricingPage() {
               <div
                 key={plan}
                 className="glass"
-                style={{ padding: "1.5rem", borderRadius: "1rem" }}
+                style={{
+                  padding: "1.5rem",
+                  borderRadius: "var(--radius-card)"
+                }}
               >
-                <strong
+                <h2
                   style={{
-                    fontSize: "1.1rem",
+                    fontSize: "var(--text-lg)",
                     textTransform: "capitalize",
-                    color: "var(--slategrey)"
+                    margin: 0
                   }}
                 >
                   {plan}
-                </strong>
+                </h2>
                 <div
                   style={{
-                    fontSize: "2rem",
+                    fontSize: "var(--text-3xl)",
                     fontWeight: 600,
                     margin: "0.5rem 0 0.1rem",
-                    color: "var(--slategrey)"
+                    color: "var(--text-body)"
                   }}
                 >
                   {price.monthly}
                   {plan !== "free" ? (
-                    <span style={{ fontSize: "0.9rem", fontWeight: 400 }}>
+                    <span
+                      style={{ fontSize: "var(--text-sm)", fontWeight: 400 }}
+                    >
                       {" / month"}
                     </span>
                   ) : null}
                 </div>
                 <div
                   style={{
-                    color: "var(--lightgrey)",
-                    fontSize: "0.85rem",
+                    color: "var(--text-muted)",
+                    fontSize: "var(--text-sm)",
                     marginBottom: "1rem"
                   }}
                 >
                   {price.yearly}
                 </div>
-                <p style={{ fontSize: "0.9rem", marginBottom: "1rem" }}>
+                <p style={{ fontSize: "var(--text-sm)", marginBottom: "1rem" }}>
                   {BLURBS[plan]}
                 </p>
                 <ul
@@ -105,7 +110,7 @@ export default async function PricingPage() {
                     listStyle: "none",
                     padding: 0,
                     margin: 0,
-                    fontSize: "0.9rem",
+                    fontSize: "var(--text-sm)",
                     lineHeight: 1.9
                   }}
                 >
@@ -131,8 +136,8 @@ export default async function PricingPage() {
         <p
           style={{
             marginTop: "2rem",
-            color: "var(--lightgrey)",
-            fontSize: "0.85rem"
+            color: "var(--text-muted)",
+            fontSize: "var(--text-sm)"
           }}
         >
           {!billingEnabled

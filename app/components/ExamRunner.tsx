@@ -31,10 +31,10 @@ const Step = styled.button<{ $active: boolean }>`
   cursor: pointer;
   border-radius: 999px;
   padding: 0.35rem 0.9rem;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   font-weight: 600;
   font-family: inherit;
-  color: var(--slategrey);
+  color: var(--text-body);
   opacity: ${(props) => (props.$active ? 1 : 0.6)};
 
   &:hover {
@@ -46,24 +46,24 @@ const Interlocutor = styled.div`
   margin-top: 1.5rem;
   padding: 1rem 1.25rem;
   border-radius: 1rem;
-  font-size: 0.95rem;
+  font-size: var(--text-base);
   line-height: 1.5;
-  color: var(--slategrey);
+  color: var(--text-body);
 
   strong {
     display: block;
     text-transform: uppercase;
-    font-size: 0.7rem;
+    font-size: var(--text-xs);
     letter-spacing: 0.08em;
-    color: var(--lightgrey);
+    color: var(--text-muted);
     margin-bottom: 0.35rem;
   }
 `;
 
 const Meta = styled.span`
   font-weight: 400;
-  font-size: 1rem;
-  color: var(--lightgrey);
+  font-size: var(--text-base);
+  color: var(--text-muted);
 `;
 
 /**

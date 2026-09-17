@@ -33,6 +33,27 @@
   /* One radius scale. Controls all share --radius-control so a button, a field
      and a dropdown panel line up when they sit next to each other; --radius-pill
      is only for chips, which are meant to read as a different shape. */
+  /* Type scale. Every size in the app comes from here, so a heading in one
+     place cannot be a hair different from the same heading elsewhere. */
+  --text-xs: 0.78rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+  /* Two sizes that are not part of the reading scale: the landing hero, and
+     the countdown, which is read across a classroom. */
+  --text-hero: 3rem;
+  --text-display: 3rem;
+
+  /* Text colours, named by role rather than by shade. */
+  --text-heading: #171e19;
+  --text-body: #313131;
+  --text-muted: #6f6f6f;
+  --text-faint: #8a918a;
+  --text-label: #5a625a;
+
   --radius-control: 12px;
   --radius-card: 18px;
   --radius-pill: 999px;
@@ -150,26 +171,42 @@ h6 {
 /* Explicit sizes for every heading level, because the Tailwind preflight that
    arrives with @neondatabase/auth-ui resets them all to inherit. */
 h1 {
-  font-size: 2rem;
+  font-size: var(--text-3xl);
   font-weight: 600;
   margin: 0 0 0.5rem 0;
 }
 
 h2 {
-  font-size: 24px;
+  font-size: var(--text-2xl);
   font-weight: 600;
-  margin: 1rem;
+  margin: 0 0 0.5rem 0;
 }
 
 h3 {
-  font-size: 1.15rem;
+  font-size: var(--text-xl);
   font-weight: 600;
+  margin: 0 0 0.35rem 0;
+}
+
+h4 {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  margin: 0 0 0.3rem 0;
 }
 
 p,
 li {
   margin: 0;
-  font-size: 18px;
+  font-size: var(--text-base);
+  line-height: 1.55;
+  color: var(--text-body);
+}
+
+/* Secondary text: captions, hints, meta lines. */
+small {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  line-height: 1.5;
 }
 
 a {
@@ -313,8 +350,12 @@ a:active {
 }
 
 @media only screen and (max-width: 600px) {
+  h1 {
+    font-size: var(--text-2xl);
+  }
+
   h2 {
-    font-size: 1.6rem;
+    font-size: var(--text-xl);
   }
 
   button {
@@ -339,12 +380,8 @@ a:active {
     font-size: 1rem;
   }
 
-  h2 {
-    font-size: 1.4rem;
-  }
-
   button {
     padding: 0.6rem;
-    font-size: 0.8rem;
+    font-size: var(--text-sm);
   }
 }

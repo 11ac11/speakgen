@@ -8,16 +8,16 @@ const Container = styled.div`
   flex-direction: column;
   align-items: flex-start;
   max-width: 800px;
-  color: var(--lightgrey);
-  font-size: 18px;
+  color: var(--text-muted);
+  font-size: var(--text-lg);
 
   h2 {
     margin: 0 0 1rem 0;
-    color: var(--slategrey);
+    color: var(--text-body);
   }
 
   p {
-    font-size: 18px;
+    font-size: var(--text-lg);
     margin: 0 0 2rem 0;
   }
 
@@ -33,8 +33,9 @@ const Section = styled.div`
 export default function AboutContent() {
   return (
     <Container className={"container"}>
+      <h1>About Speakgen</h1>
       <Section>
-        <h2>{`👋 About Speakgen`}</h2>
+        <h2>{`Why this exists`}</h2>
         <p>
           {`Hi! I’m the creator of `}
           <span style={{ fontWeight: "600" }}>{`Speakgen`}</span>

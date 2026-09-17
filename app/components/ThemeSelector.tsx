@@ -39,8 +39,8 @@ const NoThemesSelectedWrap = styled.div`
   margin-bottom: 30px;
 
   & > p {
-    font-size: 0.85rem;
-    color: var(--lightgrey);
+    font-size: var(--text-sm);
+    color: var(--text-muted);
   }
 `;
 

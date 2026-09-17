@@ -23,13 +23,13 @@ const DropdownWrap = styled.div<{
       input {
         background-color: var(--verylightgrey);
         border-color: var(--verylightgrey);
-        color: grey;
+        color: var(--text-muted);
       }
       input:hover {
         border: 1px solid var(--verylightgrey);
       }
       svg {
-        color: grey;
+        color: var(--text-muted);
       }
       * {
         cursor: not-allowed !important;
@@ -40,16 +40,16 @@ const DropdownWrap = styled.div<{
 const Label = styled.label`
   display: block;
   margin-bottom: 6px;
-  font-size: 0.82rem;
+  font-size: var(--text-xs);
   font-weight: 500;
-  color: #5a625a;
+  color: var(--text-label);
 `;
 
 const DropdownOptions = styled.div`
   border: 1.5px solid var(--field-edge);
   border-radius: var(--radius-control);
   background-color: white;
-  color: var(--slategrey);
+  color: var(--text-body);
   box-shadow: 0 10px 24px -12px rgba(23, 30, 25, 0.35);
   overflow: hidden;
   display: flex;
@@ -73,7 +73,7 @@ const DropdownOptions = styled.div`
       padding: 0.7rem 0.9rem;
       cursor: pointer;
       border-bottom: 1px solid #eef0ec;
-      font-size: 0.95rem;
+      font-size: var(--text-base);
       min-height: 44px;
       text-align: center;
       display: flex;

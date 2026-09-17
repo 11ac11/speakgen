@@ -38,22 +38,22 @@ const Prompts = styled.div`
 `;
 
 const Prompt = styled.span`
-  font-size: 0.78rem;
+  font-size: var(--text-xs);
   padding: 0.2rem 0.5rem;
   border-radius: 0.35rem;
   background: #f1f5ef;
   border: 1px solid var(--verylightgrey);
-  color: var(--slategrey);
+  color: var(--text-body);
 `;
 
 const Aside = styled.div`
   margin-top: 0.6rem;
-  font-size: 0.8rem;
-  color: var(--lightgrey);
+  font-size: var(--text-xs);
+  color: var(--text-muted);
   line-height: 1.45;
 
   strong {
-    color: var(--slategrey);
+    color: var(--text-body);
     font-weight: 500;
   }
 `;

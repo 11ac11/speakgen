@@ -9,7 +9,7 @@ const Card = styled.div`
   max-width: 460px;
   padding: 2rem;
   border-radius: 1rem;
-  color: var(--slategrey);
+  color: var(--text-body);
 `;
 
 const Banner = styled.div`
@@ -17,7 +17,7 @@ const Banner = styled.div`
   border-radius: 0.6rem;
   border: 1px solid #f0c98a;
   background: #fff8ec;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   margin-bottom: 1.5rem;
 `;
 
@@ -51,14 +51,16 @@ export default function DummyPortal({ returnUrl }: { returnUrl: string }) {
       </Banner>
 
       <h1 style={{ fontSize: "1.3rem", marginTop: 0 }}>Manage your plan</h1>
-      <p style={{ fontSize: "0.95rem" }}>
+      <p style={{ fontSize: "var(--text-base)" }}>
         Cancelling returns you to the free plan immediately. Your questions are
         kept; exams beyond the free limit stay saved but you will not be able to
         create more until you are under it.
       </p>
 
       {error ? (
-        <p style={{ color: "#b3261e", fontSize: "0.9rem" }}>{error}</p>
+        <p style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>
+          {error}
+        </p>
       ) : null}
 
       <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem" }}>

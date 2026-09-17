@@ -10,7 +10,7 @@ const Card = styled.div`
   max-width: 460px;
   padding: 2rem;
   border-radius: 1rem;
-  color: var(--slategrey);
+  color: var(--text-body);
 `;
 
 const Banner = styled.div`
@@ -18,9 +18,9 @@ const Banner = styled.div`
   border-radius: 0.6rem;
   border: 1px solid #f0c98a;
   background: #fff8ec;
-  font-size: 0.85rem;
+  font-size: var(--text-sm);
   margin-bottom: 1.5rem;
-  color: var(--slategrey);
+  color: var(--text-body);
 `;
 
 const Line = styled.div`
@@ -32,7 +32,7 @@ const Line = styled.div`
   &:last-of-type {
     border-bottom: none;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: var(--text-lg);
   }
 `;
 
@@ -98,7 +98,9 @@ export default function DummyCheckout({
       </Line>
 
       {error ? (
-        <p style={{ color: "#b3261e", fontSize: "0.9rem" }}>{error}</p>
+        <p style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>
+          {error}
+        </p>
       ) : null}
 
       <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.5rem" }}>

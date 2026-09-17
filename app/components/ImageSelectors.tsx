@@ -48,7 +48,7 @@ const EmptyImageContainer = styled.div`
   width: 45%;
   height: 150px;
   background-color: #f1f1f1;
-  color: #a1a1a1;
+  color: var(--text-faint);
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
   border: 1px dotted #a1a1a1;
