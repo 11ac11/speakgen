@@ -35,7 +35,7 @@ export default function JoinSchool({
         return;
       }
       // A full navigation, so server components re-read the new membership.
-      window.location.href = "/dashboard?tab=settings";
+      window.location.href = "/settings";
     } catch {
       setError("Could not join the school");
     } finally {

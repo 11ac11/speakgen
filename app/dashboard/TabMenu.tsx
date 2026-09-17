@@ -16,7 +16,7 @@ const TabContainer = styled.div`
 export default function TabMenu({
   activeTab
 }: {
-  activeTab: "questions" | "exams" | "settings";
+  activeTab: "questions" | "exams";
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -29,17 +29,11 @@ export default function TabMenu({
 
   return (
     <TabContainer>
-      {["questions", "exams", "settings"].map((tab) => (
+      {["questions", "exams"].map((tab) => (
         <Tab
           key={tab}
           onClick={() => handleTabChange(tab)}
-          text={
-            tab === "questions"
-              ? "My Questions"
-              : tab === "exams"
-                ? "My Exams"
-                : "Settings"
-          }
+          text={tab === "questions" ? "My Questions" : "My Exams"}
           isActive={tab === activeTab}
         />
       ))}

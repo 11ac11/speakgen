@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import styled from "styled-components";
@@ -101,6 +101,14 @@ const NavLink = styled(Link)`
 
 const MenuButton = styled.button`
   ${triggerStyles}
+
+  &[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  &[aria-expanded="true"] svg {
+    transform: rotate(180deg);
+  }
 `;
 
 const Chevron = styled.svg`
@@ -109,12 +117,14 @@ const Chevron = styled.svg`
   transition: transform 0.15s ease;
 `;
 
-/* Opens on hover and on keyboard focus. focus-within is what makes it
-   reachable by Tab: without it the menu would be mouse-only. */
-const Menu = styled.ul`
+/* Open state is held in React rather than in :hover/:focus-within, because CSS
+   has no way to express "only one at a time": a click leaves a menu latched
+   open through focus-within, and hovering the next one then opens a second
+   panel over the top of it. */
+const Menu = styled.ul<{ $open: boolean; $align: "start" | "end" }>`
   position: absolute;
   top: 100%;
-  left: 0;
+  ${({ $align }) => ($align === "end" ? "right: 0;" : "left: 0;")}
   z-index: 40;
   margin: 0;
   padding: 0.35rem;
@@ -125,25 +135,13 @@ const Menu = styled.ul`
   border-radius: var(--radius-control);
   box-shadow: 0 12px 28px -14px rgba(23, 30, 25, 0.45);
 
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-4px);
+  opacity: ${({ $open }) => ($open ? 1 : 0)};
+  visibility: ${({ $open }) => ($open ? "visible" : "hidden")};
+  transform: translateY(${({ $open }) => ($open ? "0" : "-4px")});
   transition:
     opacity 0.12s ease,
     transform 0.12s ease,
     visibility 0.12s;
-`;
-
-const Dropdown = styled(NavItem)`
-  &:hover ${Menu}, &:focus-within ${Menu} {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-  }
-
-  &:hover ${Chevron}, &:focus-within ${Chevron} {
-    transform: rotate(180deg);
-  }
 `;
 
 const MenuLink = styled(Link)`
@@ -233,9 +231,88 @@ function ChevronIcon() {
   );
 }
 
+function Dropdown({
+  label,
+  open,
+  align = "start",
+  onOpen,
+  onClose,
+  children
+}: {
+  label: string;
+  open: boolean;
+  align?: "start" | "end";
+  onOpen: () => void;
+  onClose: () => void;
+  children: React.ReactNode;
+}) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  return (
+    <NavItem
+      /* pointerType is checked so a tap does not open on enter and then close
+         again on the click that follows it. */
+      onPointerEnter={(e) => {
+        if (e.pointerType === "mouse") onOpen();
+      }}
+      onPointerLeave={(e) => {
+        if (e.pointerType === "mouse") onClose();
+      }}
+      onFocus={onOpen}
+      onBlur={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null))
+          onClose();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Escape" && open) {
+          onClose();
+          buttonRef.current?.focus();
+        }
+      }}
+    >
+      <MenuButton
+        ref={buttonRef}
+        type="button"
+        aria-haspopup="true"
+        aria-expanded={open}
+        onClick={() => (open ? onClose() : onOpen())}
+      >
+        {label}
+        <ChevronIcon />
+      </MenuButton>
+      {/* Following a link inside leaves the menu open across a client-side
+          navigation unless it is dismissed here. */}
+      <Menu $open={open} $align={align} onClick={onClose}>
+        {children}
+      </Menu>
+    </NavItem>
+  );
+}
+
 export default function Nav() {
   const { data: session } = authClient.useSession();
   const isAuthenticated = !!session?.user;
+
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  const close = useCallback(
+    (key: string) =>
+      setOpenMenu((current) => (current === key ? null : current)),
+    []
+  );
+
+  // Touch has no pointerleave, so a tap elsewhere is what dismisses an open menu.
+  useEffect(() => {
+    if (!openMenu) return;
+
+    const dismiss = (event: PointerEvent) => {
+      if (!listRef.current?.contains(event.target as Node)) setOpenMenu(null);
+    };
+
+    document.addEventListener("pointerdown", dismiss);
+    return () => document.removeEventListener("pointerdown", dismiss);
+  }, [openMenu]);
 
   return (
     <Navbar aria-label="Main">
@@ -244,89 +321,87 @@ export default function Nav() {
           <Link href="/">Speakgen</Link>
         </Title>
 
-        <NavList>
+        <NavList ref={listRef}>
           {/* Deliberately first, and present whether or not you are signed in:
               the free content is what brings people in, and a paying teacher
               still uses it every lesson. */}
-          <Dropdown>
-            <MenuButton type="button" aria-haspopup="true">
-              Free
-              <ChevronIcon />
-            </MenuButton>
-            <Menu>
-              <MenuHeading>Full practice exams</MenuHeading>
-              {SUPPORTED_LEVELS.map((level) => (
-                <li key={`exams-${level}`}>
-                  <MenuLink href={`/${level.toLowerCase()}/exams`}>
-                    <strong>{`${level} exams`}</strong>
-                    <small>Run a complete speaking test</small>
-                  </MenuLink>
-                </li>
-              ))}
-              <MenuHeading>Single questions</MenuHeading>
-              {SUPPORTED_LEVELS.map((level) => (
-                <li key={`random-${level}`}>
-                  <MenuLink href={`/${level.toLowerCase()}/questions/random/1`}>
-                    <strong>{`${level} question practice`}</strong>
-                    <small>A random question to work through</small>
-                  </MenuLink>
-                </li>
-              ))}
-            </Menu>
+          <Dropdown
+            label="Free"
+            open={openMenu === "free"}
+            onOpen={() => setOpenMenu("free")}
+            onClose={() => close("free")}
+          >
+            <MenuHeading>Full practice exams</MenuHeading>
+            {SUPPORTED_LEVELS.map((level) => (
+              <li key={`exams-${level}`}>
+                <MenuLink href={`/${level.toLowerCase()}/exams`}>
+                  <strong>{`${level} exams`}</strong>
+                  <small>Run a complete speaking test</small>
+                </MenuLink>
+              </li>
+            ))}
+            <MenuHeading>Single questions</MenuHeading>
+            {SUPPORTED_LEVELS.map((level) => (
+              <li key={`random-${level}`}>
+                <MenuLink href={`/${level.toLowerCase()}/questions/random/1`}>
+                  <strong>{`${level} question practice`}</strong>
+                  <small>A random question to work through</small>
+                </MenuLink>
+              </li>
+            ))}
           </Dropdown>
 
           {isAuthenticated ? (
             <>
-              <Dropdown>
-                <MenuButton type="button" aria-haspopup="true">
-                  My work
-                  <ChevronIcon />
-                </MenuButton>
-                <Menu>
-                  <li>
-                    <MenuLink href="/dashboard?tab=questions">
-                      <strong>My questions</strong>
-                      <small>Write and edit your own</small>
-                    </MenuLink>
-                  </li>
-                  <li>
-                    <MenuLink href="/dashboard?tab=exams">
-                      <strong>My exams</strong>
-                      <small>Exams you have built</small>
-                    </MenuLink>
-                  </li>
-                  <li>
-                    <MenuLink href="/questions/new">
-                      <strong>New question</strong>
-                      <small>Add one to your bank</small>
-                    </MenuLink>
-                  </li>
-                </Menu>
+              <Dropdown
+                label="My work"
+                open={openMenu === "work"}
+                onOpen={() => setOpenMenu("work")}
+                onClose={() => close("work")}
+              >
+                <li>
+                  <MenuLink href="/dashboard?tab=questions">
+                    <strong>My questions</strong>
+                    <small>Write and edit your own</small>
+                  </MenuLink>
+                </li>
+                <li>
+                  <MenuLink href="/dashboard?tab=exams">
+                    <strong>My exams</strong>
+                    <small>Exams you have built</small>
+                  </MenuLink>
+                </li>
+                <li>
+                  <MenuLink href="/questions/new">
+                    <strong>New question</strong>
+                    <small>Add one to your bank</small>
+                  </MenuLink>
+                </li>
               </Dropdown>
 
-              <Dropdown>
-                <MenuButton type="button" aria-haspopup="true">
-                  Account
-                  <ChevronIcon />
-                </MenuButton>
-                <Menu>
-                  <li>
-                    <MenuLink href="/dashboard?tab=settings">
-                      <strong>Plan and school</strong>
-                      <small>Usage, billing and teachers</small>
-                    </MenuLink>
-                  </li>
-                  <li>
-                    <MenuLink href="/pricing">
-                      <strong>Compare plans</strong>
-                    </MenuLink>
-                  </li>
-                  <li>
-                    <MenuLink href="/" onClick={() => authClient.signOut()}>
-                      <strong>Sign out</strong>
-                    </MenuLink>
-                  </li>
-                </Menu>
+              <Dropdown
+                label="Account"
+                align="end"
+                open={openMenu === "account"}
+                onOpen={() => setOpenMenu("account")}
+                onClose={() => close("account")}
+              >
+                <li>
+                  <MenuLink href="/settings">
+                    <strong>Settings</strong>
+                    <small>Plan, billing and your school</small>
+                  </MenuLink>
+                </li>
+                <li>
+                  <MenuLink href="/pricing">
+                    <strong>Compare plans</strong>
+                  </MenuLink>
+                </li>
+                <li>
+                  <MenuLink href="/" onClick={() => authClient.signOut()}>
+                    <strong>Sign out</strong>
+                  </MenuLink>
+                </li>
               </Dropdown>
             </>
           ) : (
@@ -335,24 +410,23 @@ export default function Nav() {
                 <NavLink href="/pricing">Plans</NavLink>
               </NavItem>
 
-              <Dropdown>
-                <MenuButton type="button" aria-haspopup="true">
-                  About
-                  <ChevronIcon />
-                </MenuButton>
-                <Menu>
-                  <li>
-                    <MenuLink href="/about">
-                      <strong>About Speakgen</strong>
-                      <small>Why it exists</small>
-                    </MenuLink>
-                  </li>
-                  <li>
-                    <MenuLink href="/faqs">
-                      <strong>FAQs</strong>
-                    </MenuLink>
-                  </li>
-                </Menu>
+              <Dropdown
+                label="About"
+                open={openMenu === "about"}
+                onOpen={() => setOpenMenu("about")}
+                onClose={() => close("about")}
+              >
+                <li>
+                  <MenuLink href="/about">
+                    <strong>About Speakgen</strong>
+                    <small>Why it exists</small>
+                  </MenuLink>
+                </li>
+                <li>
+                  <MenuLink href="/faqs">
+                    <strong>FAQs</strong>
+                  </MenuLink>
+                </li>
               </Dropdown>
 
               <NavItem>

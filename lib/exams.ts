@@ -22,7 +22,7 @@ export type Exam = ExamSummary & { questions: ExamQuestion[] };
 
 export async function listExams(
   viewer: Viewer,
-  options: { level?: string } = {}
+  options: { level?: string; houseOnly?: boolean } = {}
 ): Promise<ExamSummary[]> {
   const params: unknown[] = [];
   let where = "";
@@ -30,6 +30,13 @@ export async function listExams(
   if (options.level) {
     params.push(options.level);
     where = `e.level = $${params.length} AND `;
+  }
+
+  // The free listing is a shop window, not a library of everything you can
+  // reach: a teacher's own exams belong under My exams, not mixed in with the
+  // house ones under a heading that says free.
+  if (options.houseOnly) {
+    where += "e.owner_id IS NULL AND ";
   }
 
   const access = examReadPredicate(viewer, params.length + 1);

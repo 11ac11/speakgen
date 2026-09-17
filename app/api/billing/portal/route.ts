@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     const { url } = await getBillingProvider().createPortalSession({
       providerCustomerId: customerId,
-      returnUrl: `${new URL(req.url).origin}/dashboard`
+      returnUrl: `${new URL(req.url).origin}/settings`
     });
 
     return NextResponse.json({ url });

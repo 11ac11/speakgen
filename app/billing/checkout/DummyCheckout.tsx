@@ -66,7 +66,7 @@ export default function DummyCheckout({
         return;
       }
       // A full navigation, so the server components re-read the new plan.
-      window.location.href = body.redirect ?? "/dashboard?tab=settings";
+      window.location.href = body.redirect ?? "/settings";
     } catch {
       setError("Simulated payment failed");
     } finally {

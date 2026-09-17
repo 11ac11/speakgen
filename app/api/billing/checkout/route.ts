@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       plan,
       interval,
       seats,
-      successUrl: `${origin}/dashboard?checkout=success`,
+      successUrl: `${origin}/settings?checkout=success`,
       cancelUrl: `${origin}/pricing?checkout=cancelled`
     });
 

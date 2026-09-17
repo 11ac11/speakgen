@@ -12,7 +12,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 340px;
+  max-width: 420px;
   margin: 4rem auto 0;
   padding: 0 1rem;
 `;
@@ -194,7 +194,7 @@ const LoginForm = () => {
           onBlur={validateEmail}
           required
           minLength={3}
-          maxLength={20}
+          maxLength={254}
           placeholder="Enter your email"
           error={emailError}
           name="email"
@@ -206,7 +206,7 @@ const LoginForm = () => {
           onChange={handlePasswordChange}
           required
           minLength={3}
-          maxLength={20}
+          maxLength={128}
           placeholder=""
           name="password"
         />
@@ -217,7 +217,7 @@ const LoginForm = () => {
           onChange={handlePasswordConfirmChange}
           required
           minLength={3}
-          maxLength={20}
+          maxLength={128}
           placeholder=""
           error={passwordError}
           name="password2"

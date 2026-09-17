@@ -6,8 +6,6 @@ import styled from "styled-components";
 import { Dropdown } from "@/app/components/ui";
 import { SUPPORTED_LEVELS } from "@/constants";
 import DashboardTable from "./DashboardTable";
-import PlanPanel, { type PlanPanelProps } from "@/app/components/PlanPanel";
-import SchoolPanel, { type SchoolMember } from "@/app/components/SchoolPanel";
 
 const Container = styled.div`
   width: 100%;
@@ -96,26 +94,12 @@ export type DashboardExam = {
 
 export default function TabContainer({
   activeTab,
-  plan,
   usage,
-  billing,
-  exams,
-  school,
-  members,
-  seats,
-  canAdmin,
-  origin
+  exams
 }: {
-  activeTab: "questions" | "exams" | "settings";
-  plan: string;
-  usage: PlanPanelProps["usage"];
-  billing: PlanPanelProps["billing"];
+  activeTab: "questions" | "exams";
+  usage: { exams: { used: number; limit: number | null } };
   exams: DashboardExam[];
-  school: { id: string; name: string } | null;
-  members: SchoolMember[];
-  seats: { used: number; seats: number; pending: number };
-  canAdmin: boolean;
-  origin: string;
 }) {
   const router = useRouter();
 
@@ -187,19 +171,6 @@ export default function TabContainer({
               ))}
             </ExamList>
           )}
-        </>
-      )}
-
-      {activeTab === "settings" && (
-        <>
-          <PlanPanel plan={plan} usage={usage} billing={billing} />
-          <SchoolPanel
-            school={school}
-            members={members}
-            seats={seats}
-            canAdmin={canAdmin}
-            origin={origin}
-          />
         </>
       )}
     </Container>

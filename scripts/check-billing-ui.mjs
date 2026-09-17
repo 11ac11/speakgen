@@ -44,17 +44,17 @@ console.log("PAGES");
 pass("pricing renders signed out", (await page("/pricing", "")).status === 200);
 pass("pricing renders signed in", (await page("/pricing")).status === 200);
 pass(
-  "dashboard settings tab",
-  (await page("/dashboard?tab=settings")).status === 200
+  "settings page",
+  (await page("/settings")).status === 200
 );
 pass(
   "dashboard exams tab",
   (await page("/dashboard?tab=exams")).status === 200
 );
 pass(
-  "dashboard redirects when signed out",
+  "settings redirects when signed out",
   [307, 302].includes(
-    (await fetch(`${BASE}/dashboard?tab=settings`, { redirect: "manual" }))
+    (await fetch(`${BASE}/settings`, { redirect: "manual" }))
       .status
   )
 );

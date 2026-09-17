@@ -25,7 +25,7 @@ export default async function LevelExamsPage({
   if (!level) notFound();
 
   const viewer = await getViewer();
-  const exams = await listExams(viewer, { level: level.code });
+  const exams = await listExams(viewer, { level: level.code, houseOnly: true });
 
   const userId = await getAuthenticatedUserId();
   const usage = userId ? await getUsage(userId) : null;
@@ -39,7 +39,7 @@ export default async function LevelExamsPage({
       <div style={{ maxWidth: 900, width: "100%" }}>
         <h1>{level.label} practice exams</h1>
         <p style={{ marginBottom: "2rem" }}>
-          {`Full ${level.label} speaking tests, about ${level.minutes} minutes for a pair of candidates. Free ones need no account.`}
+          {`Free ${level.label} speaking tests, about ${level.minutes} minutes for a pair of candidates. No account needed.`}
         </p>
 
         {usage ? (
@@ -57,13 +57,11 @@ export default async function LevelExamsPage({
               style={{ color: "var(--text-muted)", fontSize: "var(--text-sm)" }}
             >
               {usage.exams.limit === null
-                ? `${usage.exams.used} of your own exams`
-                : `${usage.exams.used} of ${usage.exams.limit} exams used on the ${usage.plan} plan`}
+                ? `You have built ${usage.exams.used} of your own`
+                : `You have built ${usage.exams.used} of ${usage.exams.limit} on the ${usage.plan} plan`}
             </span>
-            {/* A signed-in teacher browsing the free exams wants their own,
-                which live on the dashboard. Building a new one starts there
-                too, so this is a route through rather than a second builder
-                entrance. */}
+            {/* This page is the free ones only, so a signed-in teacher needs a
+                way across to their own rather than finding them mixed in. */}
             <ExamsLink href={atLimit ? "/pricing" : "/dashboard?tab=exams"}>
               {atLimit ? "Upgrade for more exams" : "My exams"}
             </ExamsLink>
@@ -71,7 +69,7 @@ export default async function LevelExamsPage({
         ) : null}
 
         {exams.length === 0 ? (
-          <p>{`No ${level.label} exams yet.`}</p>
+          <p>{`No free ${level.label} exams yet.`}</p>
         ) : (
           <ExamList>
             {exams.map((exam) => (
@@ -82,8 +80,7 @@ export default async function LevelExamsPage({
                 >
                   <ExamTitle>{exam.title}</ExamTitle>
                   <ExamMeta>
-                    {`${exam.question_count} questions · ~${level.minutes} min`}
-                    {exam.is_house ? " · Free" : ""}
+                    {`${exam.question_count} questions · ~${level.minutes} min · Free`}
                   </ExamMeta>
                 </ExamCard>
               </li>

@@ -13,7 +13,7 @@ const Container = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 340px;
+  max-width: 420px;
   margin: 4rem auto 0;
   padding: 0 1rem;
 `;
@@ -160,7 +160,7 @@ const LoginForm = () => {
           onChange={handleEmailChange}
           required
           minLength={3}
-          maxLength={20}
+          maxLength={254}
           placeholder="Enter your Email"
         />
         <Input
@@ -171,7 +171,7 @@ const LoginForm = () => {
           onChange={handlePasswordChange}
           required
           minLength={3}
-          maxLength={20}
+          maxLength={128}
           placeholder=""
         />
         <Button

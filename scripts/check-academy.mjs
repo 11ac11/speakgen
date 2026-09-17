@@ -79,7 +79,7 @@ await sql(
 console.log("\nPLAN INHERITED FROM THE SCHOOL");
 const usageOf = async (cookie) => {
   const html = await (
-    await fetch(`${BASE}/dashboard?tab=settings`, {
+    await fetch(`${BASE}/settings`, {
       headers: { Cookie: cookie }
     })
   ).text();

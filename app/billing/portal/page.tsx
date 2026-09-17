@@ -17,7 +17,7 @@ export default async function DummyPortalPage({
   const safeReturn =
     returnUrl && returnUrl.startsWith("/")
       ? returnUrl
-      : "/dashboard?tab=settings";
+      : "/settings";
 
   return (
     <div className="container" style={{ paddingTop: "4rem" }}>
