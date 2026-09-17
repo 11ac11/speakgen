@@ -20,7 +20,7 @@ const RemoveBox = styled.div`
 const StyledPill = styled.div<{ $showHoverEffect: boolean; $shadow: string }>`
   display: inline-flex;
   align-items: center;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 13px;
   font-weight: 500;
   text-transform: capitalize;

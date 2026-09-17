@@ -48,3 +48,41 @@ export const BackLink = styled(Link)`
     color: var(--slategrey);
   }
 `;
+
+/**
+ * A link styled as a secondary button. A real <a>, not a <button>, because it
+ * navigates — but it carries the same shape, depth and lift so it does not
+ * read as a stray box beside the designed controls.
+ */
+export const ExamsLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.6rem 1.2rem;
+  border-radius: var(--radius-control);
+  border: 1.5px solid var(--green-edge);
+  background: #fff;
+  color: var(--green-600);
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 3px 0 0 #e4ebe2;
+  transition:
+    transform 0.12s var(--lift),
+    box-shadow 0.12s ease,
+    background-color 0.12s ease,
+    border-color 0.12s ease;
+
+  &:hover {
+    color: var(--green-600);
+    background: var(--green-tint);
+    border-color: var(--leafgreen);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 0 0 #e4ebe2;
+  }
+
+  &:active {
+    color: var(--green-600);
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 0 #e4ebe2;
+  }
+`;

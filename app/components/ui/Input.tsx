@@ -14,7 +14,7 @@ const StyledInput = styled.input<{ error: string | undefined }>`
   color: var(--slategrey);
   background: #fff;
   border: 1.5px solid var(--field-edge);
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   outline: none;
   padding: 0.75rem 0.9rem;
   min-height: 48px;
@@ -58,7 +58,7 @@ const StyledInput = styled.input<{ error: string | undefined }>`
 `;
 
 const StyledTextArea = styled.textarea<{ error: string | undefined }>`
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   border: 1.5px solid var(--field-edge);
   outline: none;
   padding: 0.75rem 0.9rem;

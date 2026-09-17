@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { Input, Button } from "@/app/components/ui/index";
+import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import GoogleIcon from "@/public/google-icon.svg";
 import { authClient } from "@/lib/auth-client";
@@ -11,37 +12,89 @@ const Container = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 100px;
+  width: 100%;
+  max-width: 340px;
+  margin: 4rem auto 0;
+  padding: 0 1rem;
+`;
+
+const Heading = styled.h1`
+  font-size: 1.9rem;
+  margin: 0 0 0.4rem;
+  align-self: flex-start;
+`;
+
+const Sub = styled.p`
+  font-size: 0.95rem;
+  color: var(--lightgrey);
+  margin: 0 0 1.75rem;
+  align-self: flex-start;
+`;
+
+const Alt = styled.p`
+  font-size: 0.9rem;
+  color: var(--lightgrey);
+  margin: 1.75rem 0 0;
+
+  a {
+    color: var(--green-600);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+`;
+
+const FormError = styled.p`
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin: 0;
 `;
 
 const OrContainer = styled.div`
   display: flex;
   align-items: center;
   width: 100%;
-  gap: 1rem;
-  padding: 2rem;
+  gap: 0.9rem;
+  /* Was 2rem of padding on every side, which pushed the divider away from the
+     two things it divides. */
+  padding: 1.35rem 0;
+  color: var(--lightgrey);
+  font-size: 0.85rem;
 `;
 
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  width: 300px;
+  gap: 1.15rem;
+  width: 100%;
 `;
 
 const Divider = styled.div`
   height: 1px;
-  border-bottom: 1px solid grey;
-  width: 100%;
+  background: var(--verylightgrey);
+  flex: 1;
 `;
 
 const GoogleButton = styled(Button)`
   width: 100%;
+
   button {
-    background: var(--slategrey);
-    color: white;
+    /* Same shape and depth as every other button; only the colour says
+       "third party". */
+    background: var(--ink);
+    color: #fff;
     width: 100%;
-    border-width: 0;
+    border-color: transparent;
+    box-shadow: 0 3px 0 0 #000;
+  }
+
+  button:hover {
+    background: #222c25;
+    box-shadow: 0 5px 0 0 #000;
+  }
+
+  button:active {
+    box-shadow: 0 1px 0 0 #000;
   }
 `;
 
@@ -80,6 +133,8 @@ const LoginForm = () => {
 
   return (
     <Container>
+      <Heading>Log in</Heading>
+      <Sub>Welcome back.</Sub>
       <GoogleButton
         onClick={async () => {
           await authClient.signIn.social({
@@ -120,17 +175,19 @@ const LoginForm = () => {
           placeholder=""
         />
         <Button
-          onClick={() => console.log("button click")}
+          onClick={() => undefined}
           text={"Log In"}
           isAsync={false}
+          type="submit"
+          width="100%"
         />
         <input type="hidden" name="redirectTo" value={callbackUrl} />
-        {error && (
-          <>
-            <p>{error}</p>
-          </>
-        )}
+        {error && <FormError role="alert">{error}</FormError>}
       </StyledForm>
+      <Alt>
+        {"New here? "}
+        <Link href="/signup">Create an account</Link>
+      </Alt>
     </Container>
   );
 };

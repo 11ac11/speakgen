@@ -38,13 +38,16 @@ const DropdownWrap = styled.div<{
 `;
 
 const Label = styled.label`
-  margin-bottom: 10px;
-  font-size: 18px;
+  display: block;
+  margin-bottom: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: #5a625a;
 `;
 
 const DropdownOptions = styled.div`
   border: 1.5px solid var(--field-edge);
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   background-color: white;
   color: var(--slategrey);
   box-shadow: 0 10px 24px -12px rgba(23, 30, 25, 0.35);

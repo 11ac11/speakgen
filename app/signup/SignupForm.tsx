@@ -1,16 +1,60 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { Input, Button } from "@/app/components/ui/index";
 import { authClient } from "@/lib/auth-client";
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 340px;
+  margin: 4rem auto 0;
+  padding: 0 1rem;
+`;
+
+const Heading = styled.h1`
+  font-size: 1.9rem;
+  margin: 0 0 0.4rem;
+  align-self: flex-start;
+`;
+
+const Sub = styled.p`
+  font-size: 0.95rem;
+  color: var(--lightgrey);
+  margin: 0 0 1.75rem;
+  align-self: flex-start;
+`;
+
+const Alt = styled.p`
+  font-size: 0.9rem;
+  color: var(--lightgrey);
+  margin: 1.75rem 0 0;
+
+  a {
+    color: var(--green-600);
+    font-weight: 500;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+`;
+
+const FormError = styled.p`
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin: 0;
+`;
+
+/* Same measurements as the login form, so the two pages do not drift. */
 const StyledForm = styled.form`
   display: flex;
   flex-direction: column;
-  gap: 15px;
-  width: 300px;
+  gap: 1.15rem;
+  width: 100%;
 `;
 
 const LoginForm = () => {
@@ -121,71 +165,83 @@ const LoginForm = () => {
   };
 
   return (
-    <StyledForm
-      method="post"
-      onSubmit={(event) => {
-        event.preventDefault();
-        void handleSignup();
-      }}
-    >
-      <Input
-        label="Username"
-        type="text"
-        value={username}
-        onChange={handleUsernameChange}
-        required
-        minLength={3}
-        maxLength={20}
-        placeholder="Enter your username"
-        name="username"
-      />
-      <Input
-        label="Email"
-        type="email"
-        value={email}
-        onChange={handleEmailChange}
-        onBlur={validateEmail}
-        required
-        minLength={3}
-        maxLength={20}
-        placeholder="Enter your email"
-        error={emailError}
-        name="email"
-      />
-      <Input
-        label="Password"
-        type="password"
-        value={password}
-        onChange={handlePasswordChange}
-        required
-        minLength={3}
-        maxLength={20}
-        placeholder=""
-        name="password"
-      />
-      <Input
-        label="Confirm Password"
-        type="password"
-        value={confirmPassword}
-        onChange={handlePasswordConfirmChange}
-        required
-        minLength={3}
-        maxLength={20}
-        placeholder=""
-        error={passwordError}
-        name="password2"
-      />
-      <Button
-        onClick={() => undefined}
-        text={"Sign up"}
-        isAsync={false}
-        type="submit"
-        disabled={
-          isSubmitting || !allFieldsCompleted || !!passwordError || !!emailError
-        }
-      />
-      {formError && <p role="alert">{formError}</p>}
-    </StyledForm>
+    <Container>
+      <Heading>Create an account</Heading>
+      <Sub>Free, and you keep every question you write.</Sub>
+      <StyledForm
+        method="post"
+        onSubmit={(event) => {
+          event.preventDefault();
+          void handleSignup();
+        }}
+      >
+        <Input
+          label="Username"
+          type="text"
+          value={username}
+          onChange={handleUsernameChange}
+          required
+          minLength={3}
+          maxLength={20}
+          placeholder="Enter your username"
+          name="username"
+        />
+        <Input
+          label="Email"
+          type="email"
+          value={email}
+          onChange={handleEmailChange}
+          onBlur={validateEmail}
+          required
+          minLength={3}
+          maxLength={20}
+          placeholder="Enter your email"
+          error={emailError}
+          name="email"
+        />
+        <Input
+          label="Password"
+          type="password"
+          value={password}
+          onChange={handlePasswordChange}
+          required
+          minLength={3}
+          maxLength={20}
+          placeholder=""
+          name="password"
+        />
+        <Input
+          label="Confirm Password"
+          type="password"
+          value={confirmPassword}
+          onChange={handlePasswordConfirmChange}
+          required
+          minLength={3}
+          maxLength={20}
+          placeholder=""
+          error={passwordError}
+          name="password2"
+        />
+        <Button
+          onClick={() => undefined}
+          text={"Sign up"}
+          isAsync={false}
+          type="submit"
+          width="100%"
+          disabled={
+            isSubmitting ||
+            !allFieldsCompleted ||
+            !!passwordError ||
+            !!emailError
+          }
+        />
+        {formError && <FormError role="alert">{formError}</FormError>}
+      </StyledForm>
+      <Alt>
+        {"Already have an account? "}
+        <Link href="/login">Log in</Link>
+      </Alt>
+    </Container>
   );
 };
 

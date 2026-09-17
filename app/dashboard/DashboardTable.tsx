@@ -21,25 +21,17 @@ const LeftSide = styled.div`
   gap: 10px;
 `;
 
-const RightSide = styled(LeftSide)``;
+// Centre, not flex-end: the two controls have different intrinsic heights
+// (one carries a chevron), so bottom-aligning them left them visibly offset.
+const RightSide = styled(LeftSide)`
+  align-items: center;
+`;
 
+// No local button styling: it used to re-declare radius, padding and border on
+// top of the shared button, which is why Create and Quick Start disagreed.
 const Dashboardbutton = styled(Button)`
   display: flex;
-  align-items: flex-end;
-
-  & button {
-    display: flex;
-    border-radius: 8px;
-    border-style: solid;
-    border-width: 1px;
-    outline: none;
-    padding: 0.5rem 1rem;
-    font-size: 16px;
-    font-weight: 500;
-    transition:
-      border-color 0.3s,
-      box-shadow 0.3s;
-  }
+  align-items: center;
 `;
 
 export default function DashboardTable() {

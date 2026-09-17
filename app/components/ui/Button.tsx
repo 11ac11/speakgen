@@ -20,7 +20,7 @@ const StyledButton = styled.button<StyledButtonProps>`
   font-weight: 500;
   min-height: 48px;
   padding: 0.8rem 1.4rem;
-  border-radius: 12px;
+  border-radius: var(--radius-control);
   border: 1.5px solid transparent;
   display: flex;
   justify-content: center;
@@ -83,7 +83,6 @@ const StyledButton = styled.button<StyledButtonProps>`
     font-size: 1.05rem;
     font-weight: 600;
     padding: 0.9rem 1.9rem;
-    border-radius: 999px;
   `}
 
   ${({ $isDashboardButton }) =>

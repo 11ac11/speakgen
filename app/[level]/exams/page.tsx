@@ -9,6 +9,7 @@ import {
   ExamCard,
   ExamList,
   ExamMeta,
+  ExamsLink,
   ExamTitle
 } from "@/app/components/ExamCards";
 
@@ -57,19 +58,13 @@ export default async function LevelExamsPage({
                 ? `${usage.exams.used} of your own exams`
                 : `${usage.exams.used} of ${usage.exams.limit} exams used on the ${usage.plan} plan`}
             </span>
-            <Link
-              href={atLimit ? "/pricing" : `/${level.code}/exams/new`}
-              className="glass"
-              style={{
-                padding: "0.5rem 1rem",
-                borderRadius: "0.6rem",
-                color: "var(--slategrey)",
-                fontWeight: 500,
-                fontSize: "0.9rem"
-              }}
-            >
-              {atLimit ? "Upgrade for more exams" : "New exam"}
-            </Link>
+            {/* A signed-in teacher browsing the free exams wants their own,
+                which live on the dashboard. Building a new one starts there
+                too, so this is a route through rather than a second builder
+                entrance. */}
+            <ExamsLink href={atLimit ? "/pricing" : "/dashboard?tab=exams"}>
+              {atLimit ? "Upgrade for more exams" : "My exams"}
+            </ExamsLink>
           </div>
         ) : null}
 

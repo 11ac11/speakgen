@@ -32,6 +32,13 @@
 
   --lift: cubic-bezier(0.2, 0.8, 0.3, 1);
 
+  /* One radius scale. Controls all share --radius-control so a button, a field
+     and a dropdown panel line up when they sit next to each other; --radius-pill
+     is only for chips, which are meant to read as a different shape. */
+  --radius-control: 12px;
+  --radius-card: 18px;
+  --radius-pill: 999px;
+
   /* Neon Auth UI theme hooks.
      @neondatabase/auth-ui is imported after this file in layout.tsx and its
      stylesheet sets `body { color: var(--neon-foreground) }`. next-themes
