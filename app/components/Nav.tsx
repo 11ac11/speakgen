@@ -322,11 +322,12 @@ export default function Nav() {
         </Title>
 
         <NavList ref={listRef}>
-          {/* Deliberately first, and present whether or not you are signed in:
-              the free content is what brings people in, and a paying teacher
-              still uses it every lesson. */}
+          {/* Present whether or not you are signed in, because the house
+              content is what a teacher opens in the lesson itself. The label
+              is not: "Free" is aimed at someone deciding whether to sign up,
+              and reads as an advert once they have. */}
           <Dropdown
-            label="Free"
+            label={isAuthenticated ? "Practise" : "Free"}
             open={openMenu === "free"}
             onOpen={() => setOpenMenu("free")}
             onClose={() => close("free")}
