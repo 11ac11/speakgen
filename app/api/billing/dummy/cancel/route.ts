@@ -2,6 +2,7 @@ import { signDummyBody } from "@/lib/billing/dummy";
 import { isBillingSimulated } from "@/lib/billing/provider";
 import { getSubscriptionForUser } from "@/lib/billing/reconcile";
 import { getAuthenticatedUserId } from "@/lib/session";
+import { processWebhook } from "@/lib/billing/webhook";
 import { NextRequest, NextResponse } from "next/server";
 
 /** The cancellation a provider's portal would report back. */
@@ -40,19 +41,18 @@ export async function POST(req: NextRequest) {
     }
   });
 
-  const webhook = await fetch(
-    `${new URL(req.url).origin}/api/billing/webhook`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-dummy-signature": signDummyBody(body)
-      },
-      body
-    }
-  );
+  // Called directly rather than posted to our own URL: same verification, same
+  // reconciliation, without the server making a request to itself while it is
+  // already handling one.
+  const webhook = await processWebhook({
+    rawBody: body,
+    headers: new Headers({
+      "Content-Type": "application/json",
+      "x-dummy-signature": signDummyBody(body)
+    })
+  });
 
-  if (!webhook.ok) {
+  if (webhook.status !== 200) {
     return NextResponse.json({ error: "Cancel failed" }, { status: 502 });
   }
 

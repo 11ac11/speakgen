@@ -4,6 +4,7 @@
 import { config } from "dotenv";
 config();
 import { neon } from "@neondatabase/serverless";
+import { signUpTestUser } from "./lib/testAuth.mjs";
 
 const BASE = "http://localhost:3001";
 const sql = neon(process.env.DATABASE_URL);
@@ -13,20 +14,7 @@ const pass = (n, ok, d = "") => {
   if (!ok) failed++;
 };
 
-const signup = await fetch(`${BASE}/api/auth/sign-up/email`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    email: `billtest+${Date.now()}@example.com`,
-    password: "TestPassw0rd!23",
-    name: "Bill Test"
-  })
-});
-const cookie = signup.headers
-  .getSetCookie()
-  .map((c) => c.split(";")[0])
-  .join("; ");
-const me = (await signup.json()).user.id;
+const { userId: me, cookie } = await signUpTestUser(BASE, "billtest");
 const json = { "Content-Type": "application/json" };
 
 // The routes behave differently depending on whether a provider is wired, and

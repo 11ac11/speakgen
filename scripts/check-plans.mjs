@@ -151,11 +151,16 @@ await sql(
   `DELETE FROM content.ai_credit_events WHERE user_id=$1 AND reason IN ('purchase','generation')`,
   [me.id]
 );
-const [left] = await sql(`SELECT
-  (SELECT count(*)::int FROM content.subscriptions) subs,
-  (SELECT count(*)::int FROM content.ai_credit_events) events`);
+// Scoped to the row this run touched. Counting whole tables makes the check
+// fail whenever another suite is mid-flight, for reasons unrelated to it.
+const [left] = await sql(
+  `SELECT
+     (SELECT count(*)::int FROM content.subscriptions WHERE user_id = $1) subs,
+     (SELECT count(*)::int FROM content.ai_credit_events WHERE user_id = $1) events`,
+  [me.id]
+);
 pass(
-  "test rows removed",
+  "this run's rows removed",
   left.subs === 0 && left.events === 0,
   JSON.stringify(left)
 );

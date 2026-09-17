@@ -3,6 +3,7 @@
 import { config } from "dotenv";
 config();
 import { neon } from "@neondatabase/serverless";
+import { signUpTestUser } from "./lib/testAuth.mjs";
 
 const BASE = "http://localhost:3001";
 const sql = neon(process.env.DATABASE_URL);
@@ -12,20 +13,7 @@ const pass = (n, ok, d = "") => {
   if (!ok) failed++;
 };
 
-const signup = await fetch(`${BASE}/api/auth/sign-up/email`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    email: `uitest+${Date.now()}@example.com`,
-    password: "TestPassw0rd!23",
-    name: "UI Test"
-  })
-});
-const cookie = signup.headers
-  .getSetCookie()
-  .map((c) => c.split(";")[0])
-  .join("; ");
-const me = (await signup.json()).user.id;
+const { userId: me, cookie } = await signUpTestUser(BASE, "uitest");
 const H = { "Content-Type": "application/json", Cookie: cookie };
 
 const planOf = async () => {
@@ -35,6 +23,20 @@ const planOf = async () => {
   );
   return r[0]?.plan ?? "(none)";
 };
+/**
+ * Reads a response body without throwing. Calling .json() directly kills the
+ * run with no output when a response is not JSON, which reports nothing rather
+ * than a failed check.
+ */
+const readJson = async (res) => {
+  const text = await res.text();
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { error: text.slice(0, 200) };
+  }
+};
+
 const page = async (path, c = cookie) =>
   fetch(BASE + path, { headers: c ? { Cookie: c } : {} });
 
@@ -78,6 +80,9 @@ pass(
 console.log("\nPAYING GOES THROUGH THE REAL WEBHOOK");
 pass("still free before paying", (await planOf()) === "free");
 const intent = decodeURIComponent(url.split("intent=")[1]);
+// Through the same helper as everything else. Reading the body with .json()
+// directly throws when a response is not JSON, which kills the run with no
+// output rather than reporting a failed check.
 const paid = await fetch(`${BASE}/api/billing/dummy/pay`, {
   method: "POST",
   headers: H,
@@ -86,7 +91,7 @@ const paid = await fetch(`${BASE}/api/billing/dummy/pay`, {
 pass(
   "payment accepted",
   paid.status === 200,
-  JSON.stringify(await paid.clone().json())
+  JSON.stringify(await readJson(paid))
 );
 pass("plan applied by reconciliation", (await planOf()) === "pro");
 

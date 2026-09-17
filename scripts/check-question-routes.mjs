@@ -1,9 +1,10 @@
 // Exercises the question routes end to end against the running dev server,
 // as a real signed-in user.
+import { signUpTestUser } from "./lib/testAuth.mjs";
+
 const BASE = "http://localhost:3001";
 
 const email = `routetest+${Date.now()}@example.com`;
-let cookie = "";
 
 function pass(name, ok, detail = "") {
   console.log(
@@ -32,20 +33,7 @@ async function api(path, init = {}) {
 }
 
 // sign up and capture the session cookies
-const signup = await fetch(`${BASE}/api/auth/sign-up/email`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    email,
-    password: "TestPassw0rd!23",
-    name: "Route Test"
-  })
-});
-cookie = signup.headers
-  .getSetCookie()
-  .map((c) => c.split(";")[0])
-  .join("; ");
-const me = (await signup.json()).user.id;
+const { userId: me, cookie } = await signUpTestUser(BASE, "routetest");
 console.log(`signed in as ${me}\n`);
 
 console.log("CREATE");

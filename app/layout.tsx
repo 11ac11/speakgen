@@ -1,10 +1,11 @@
-"use client";
-
+// Not a client component: it reads server-only configuration, and every child
+// that needs interactivity is already a client component in its own right.
 import React from "react";
 import "../styles/globals.css";
 import StyledComponentsRegistry from "../lib/registry";
 import Navbar from "@/app/components/Nav";
 import Providers from "./providers";
+import ConsentBanner from "@/app/components/ads/ConsentBanner";
 import "@neondatabase/auth-ui/css";
 
 export default function RootLayout({
@@ -21,6 +22,7 @@ export default function RootLayout({
           <StyledComponentsRegistry>
             <Navbar />
             <main>{children}</main>
+            <ConsentBanner />
             {/* <BackgroundToggle /> */}
           </StyledComponentsRegistry>
         </Providers>

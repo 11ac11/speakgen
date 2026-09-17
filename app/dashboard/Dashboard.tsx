@@ -9,6 +9,7 @@ import { isBillingEnabled, isBillingSimulated } from "@/lib/billing/provider";
 import { getSubscriptionForUser } from "@/lib/billing/reconcile";
 import { listExams } from "@/lib/exams";
 import { getViewer } from "@/lib/questionAccess";
+import AdSlot from "@/app/components/ads/AdSlot";
 
 const validTabs = ["questions", "exams", "settings"] as const;
 type Tab = (typeof validTabs)[number];
@@ -69,6 +70,7 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
           exams={myExams}
         />
       </Suspense>
+      <AdSlot placement="dashboard" />
     </>
   );
 }

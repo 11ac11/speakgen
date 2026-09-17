@@ -1,7 +1,8 @@
 // Drives the exam write path as a real signed-in user and proves the free plan
 // limit actually bites.
+import { signUpTestUser } from "./lib/testAuth.mjs";
+
 const BASE = "http://localhost:3001";
-let cookie = "";
 let failed = 0;
 const pass = (n, ok, d = "") => {
   console.log(`${ok ? "  ok  " : "  FAIL"} ${n}${d ? "  " + d : ""}`);
@@ -27,20 +28,7 @@ async function api(path, init = {}) {
   return { status: res.status, body };
 }
 
-const signup = await fetch(`${BASE}/api/auth/sign-up/email`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    email: `plantest+${Date.now()}@example.com`,
-    password: "TestPassw0rd!23",
-    name: "Plan Test"
-  })
-});
-cookie = signup.headers
-  .getSetCookie()
-  .map((c) => c.split(";")[0])
-  .join("; ");
-const me = (await signup.json()).user.id;
+const { userId: me, cookie } = await signUpTestUser(BASE, "plantest");
 console.log(`signed in as ${me}\n`);
 
 // house questions to build from
