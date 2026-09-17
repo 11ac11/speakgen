@@ -1,27 +1,39 @@
+import { getUserOrganizationIds } from "@/lib/organizations";
 import { getAuthenticatedUserId } from "@/lib/session";
 
 /**
- * Who is asking. Share links (migration 011) add a third kind here, at which
- * point a student following a teacher's link can read the private questions
- * inside that exam or practice and nothing else.
+ * Who is asking, and which schools they belong to.
+ *
+ * Share links (a later migration) add a third kind here, at which point a
+ * student following a teacher's link can read the private questions inside
+ * that exam or practice and nothing else.
  */
-export type Viewer = { kind: "user"; userId: string } | { kind: "anonymous" };
+export type Viewer =
+  | { kind: "user"; userId: string; organizationIds: string[] }
+  | { kind: "anonymous" };
 
 export async function getViewer(): Promise<Viewer> {
   const userId = await getAuthenticatedUserId();
-  return userId ? { kind: "user", userId } : { kind: "anonymous" };
+  if (!userId) return { kind: "anonymous" };
+
+  return {
+    kind: "user",
+    userId,
+    organizationIds: await getUserOrganizationIds(userId)
+  };
 }
 
 /**
  * The single place that decides which questions a viewer may read.
  *
  * Every read path goes through this rather than inlining its own
- * `visibility = 'public' OR owner_id = $1`. When shares arrive, extending this
- * one function covers the whole application; scattered copies of the predicate
- * would have to be found individually, and one of them would be missed.
+ * `visibility = 'public' OR owner_id = $1`. Extending this one function covers
+ * the whole application; scattered copies would have to be found individually,
+ * and one of them would be missed.
  *
- * House content (owner_id IS NULL) is always visibility = 'public', enforced by
- * the questions_house_is_public constraint, so it needs no special case.
+ * Three ways to reach a question: it is public, you wrote it, or your school
+ * owns it. House content (owner_id IS NULL) is always public, enforced by the
+ * questions_house_is_public constraint, so it needs no special case.
  *
  * Returns a SQL fragment plus the parameters it consumes, starting at
  * $<nextParamIndex>. The caller appends the params in the same order.
@@ -30,20 +42,28 @@ export function questionReadPredicate(
   viewer: Viewer,
   nextParamIndex: number
 ): { clause: string; params: unknown[] } {
-  if (viewer.kind === "user") {
-    return {
-      clause: `(q.visibility = 'public' OR q.owner_id = $${nextParamIndex})`,
-      params: [viewer.userId]
-    };
+  if (viewer.kind !== "user") {
+    return { clause: `q.visibility = 'public'`, params: [] };
   }
 
-  return { clause: `q.visibility = 'public'`, params: [] };
+  const clauses = [
+    `q.visibility = 'public'`,
+    `q.owner_id = $${nextParamIndex}`
+  ];
+  const params: unknown[] = [viewer.userId];
+
+  if (viewer.organizationIds.length > 0) {
+    params.push(viewer.organizationIds);
+    clauses.push(`q.organization_id = ANY($${nextParamIndex + 1}::uuid[])`);
+  }
+
+  return { clause: `(${clauses.join(" OR ")})`, params };
 }
 
 /**
  * Which exams a viewer may read. An exam with no owner is house content, free
- * and visible to logged-out visitors. A user's own exam is visible only to
- * them; there is no exam sharing between users.
+ * and visible to logged-out visitors. Otherwise it is the author's, or their
+ * school's.
  *
  * Access to the questions inside an exam comes from access to the exam itself,
  * not from each question's own visibility. That is what will let a student
@@ -54,12 +74,17 @@ export function examReadPredicate(
   viewer: Viewer,
   nextParamIndex: number
 ): { clause: string; params: unknown[] } {
-  if (viewer.kind === "user") {
-    return {
-      clause: `(e.owner_id IS NULL OR e.owner_id = $${nextParamIndex})`,
-      params: [viewer.userId]
-    };
+  if (viewer.kind !== "user") {
+    return { clause: `e.owner_id IS NULL`, params: [] };
   }
 
-  return { clause: `e.owner_id IS NULL`, params: [] };
+  const clauses = [`e.owner_id IS NULL`, `e.owner_id = $${nextParamIndex}`];
+  const params: unknown[] = [viewer.userId];
+
+  if (viewer.organizationIds.length > 0) {
+    params.push(viewer.organizationIds);
+    clauses.push(`e.organization_id = ANY($${nextParamIndex + 1}::uuid[])`);
+  }
+
+  return { clause: `(${clauses.join(" OR ")})`, params };
 }

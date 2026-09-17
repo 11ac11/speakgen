@@ -47,14 +47,42 @@ export async function getProfile(userId: string): Promise<Profile | null> {
   return rows[0] ?? null;
 }
 
+const PLAN_RANK: Record<Plan, number> = { free: 0, pro: 1, academy: 2 };
+
+/**
+ * A user's effective plan: the best of their own and any school they belong to.
+ *
+ * Resolved on read rather than copied onto the profile. A school's subscription
+ * covers everyone in it, and membership changes independently of billing, so
+ * propagating a plan to members would need updating on both and would be wrong
+ * in between. One indexed lookup is cheaper than that class of bug.
+ */
+export async function getEffectivePlan(userId: string): Promise<Plan> {
+  const profile = await ensureProfile(userId);
+
+  const rows = (await sql(
+    `SELECT s.plan
+       FROM content.subscriptions s
+       JOIN neon_auth.member m ON m."organizationId" = s.organization_id
+      WHERE m."userId" = $1
+        AND s.status IN ('trialing', 'active', 'past_due')`,
+    [userId]
+  )) as unknown as { plan: Plan }[];
+
+  return rows.reduce<Plan>(
+    (best, row) => (PLAN_RANK[row.plan] > PLAN_RANK[best] ? row.plan : best),
+    profile.plan
+  );
+}
+
 /** A user's effective plan and what it allows. Falls back to free. */
 export async function getEntitlements(
   userId: string | null
 ): Promise<Entitlements & { plan: Plan }> {
   if (!userId) return { plan: "free", ...entitlementsFor("free") };
 
-  const profile = await ensureProfile(userId);
-  return { plan: profile.plan, ...entitlementsFor(profile.plan) };
+  const plan = await getEffectivePlan(userId);
+  return { plan, ...entitlementsFor(plan) };
 }
 
 export async function getAiCreditBalance(userId: string): Promise<number> {

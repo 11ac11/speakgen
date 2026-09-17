@@ -1,5 +1,9 @@
 import { sql } from "@/lib/db";
 import { parseId } from "@/lib/ids";
+import {
+  getOwningOrganizationId,
+  getUserOrganizationIds
+} from "@/lib/organizations";
 import { questionReadPredicate, type Viewer } from "@/lib/questionAccess";
 import type { QuestionPayload } from "@/lib/questionRules";
 
@@ -147,6 +151,10 @@ export async function createQuestion(
   const partNumber = parseId(part);
   if (partNumber === null) return null;
 
+  // Content written inside a school belongs to the school as well as its
+  // author, so it stays when the author leaves.
+  const organizationId = await getOwningOrganizationId(ownerId);
+
   // The insert is gated on content.levels.enabled, so a disabled level yields
   // zero rows rather than a question nobody can reach. The (level, part)
   // foreign key rejects a part the level does not have, e.g. a C2 Part 4.
@@ -157,8 +165,9 @@ export async function createQuestion(
     `WITH inserted AS (
        INSERT INTO content.questions
          (level, part, owner_id, visibility, statement, statement_two,
-          follow_up, decision, prompts, image_ids, instructions)
-       SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11
+          follow_up, decision, prompts, image_ids, instructions,
+          organization_id)
+       SELECT $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $13
          FROM content.levels l
         WHERE l.code = $1 AND l.enabled
        RETURNING *
@@ -185,7 +194,8 @@ export async function createQuestion(
       payload.prompts ?? [],
       payload.image_ids ?? [],
       payload.instructions ?? [],
-      payload.themes
+      payload.themes,
+      organizationId
     ]
   );
   return rows[0] ?? null;
@@ -199,8 +209,9 @@ export async function updateQuestion(
   const questionId = parseId(id);
   if (questionId === null) return null;
 
+  const scope = await writeScope(ownerId, 2);
   const sets: string[] = [];
-  const params: unknown[] = [questionId, ownerId];
+  const params: unknown[] = [questionId, ...scope.params];
 
   const assign = (column: string, value: unknown) => {
     params.push(value);
@@ -235,7 +246,7 @@ export async function updateQuestion(
     `WITH updated AS (
        UPDATE content.questions
           SET ${sets.join(", ")}
-        WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL
+        WHERE id = $1 AND ${scope.clause} AND deleted_at IS NULL
         RETURNING *
      )${
        syncThemes
@@ -266,6 +277,23 @@ export async function updateQuestion(
 }
 
 /**
+ * Who may change a question: its author, or a colleague at the school that owns
+ * it. A shared bank that only its author can edit is not shared.
+ */
+async function writeScope(userId: string, firstParamIndex: number) {
+  const organizationIds = await getUserOrganizationIds(userId);
+
+  if (organizationIds.length === 0) {
+    return { clause: `owner_id = $${firstParamIndex}`, params: [userId] };
+  }
+
+  return {
+    clause: `(owner_id = $${firstParamIndex} OR organization_id = ANY($${firstParamIndex + 1}::uuid[]))`,
+    params: [userId, organizationIds]
+  };
+}
+
+/**
  * Soft delete. A question may already sit in somebody's exam or practice, and
  * removing the row underneath them would gut it.
  */
@@ -273,12 +301,14 @@ export async function deleteQuestion(ownerId: string, id: string) {
   const questionId = parseId(id);
   if (questionId === null) return null;
 
+  const scope = await writeScope(ownerId, 2);
+
   const rows = (await sql(
     `UPDATE content.questions
         SET deleted_at = now()
-      WHERE id = $1 AND owner_id = $2 AND deleted_at IS NULL
+      WHERE id = $1 AND ${scope.clause} AND deleted_at IS NULL
       RETURNING id::int AS id`,
-    [questionId, ownerId]
+    [questionId, ...scope.params]
   )) as unknown as { id: number }[];
   return rows[0] ?? null;
 }

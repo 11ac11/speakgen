@@ -10,11 +10,12 @@ export async function signUpTestUser(base, prefix, attempts = 3) {
   let lastBody = "";
 
   for (let attempt = 1; attempt <= attempts; attempt++) {
+    const email = `${prefix}+${Date.now()}_${attempt}@example.com`;
     const res = await fetch(`${base}/api/auth/sign-up/email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: `${prefix}+${Date.now()}_${attempt}@example.com`,
+        email,
         password: "TestPassw0rd!23",
         name: "Test User"
       })
@@ -32,6 +33,8 @@ export async function signUpTestUser(base, prefix, attempts = 3) {
     if (res.ok && parsed?.user?.id) {
       return {
         userId: parsed.user.id,
+        // An invitation is tied to an address, so callers need the real one.
+        email,
         cookie: res.headers
           .getSetCookie()
           .map((c) => c.split(";")[0])

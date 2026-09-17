@@ -12,7 +12,8 @@ const SUITES = [
   "check-billing-ui",
   "check-plan-limits",
   "check-question-routes",
-  "check-ads"
+  "check-ads",
+  "check-academy"
 ];
 
 const PAUSE_MS = 1500;

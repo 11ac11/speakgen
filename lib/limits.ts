@@ -1,6 +1,6 @@
 import { sql } from "@/lib/db";
 import { entitlementsFor, withinLimit, type Plan } from "@/lib/entitlements";
-import { ensureProfile } from "@/lib/profile";
+import { ensureProfile, getEffectivePlan } from "@/lib/profile";
 
 export type LimitedResource = "exams" | "practices";
 
@@ -44,24 +44,26 @@ export async function assertWithinPlan(
   ownerId: string,
   resource: LimitedResource
 ) {
-  const profile = await ensureProfile(ownerId);
-  const limit = entitlementsFor(profile.plan)[resource];
+  // The effective plan, so a teacher in a paying school is not held to the free
+  // limits because they have no subscription of their own.
+  const plan = await getEffectivePlan(ownerId);
+  const limit = entitlementsFor(plan)[resource];
 
   if (limit === null) return;
 
   const current = await countOwned(resource, ownerId);
   if (!withinLimit(limit, current)) {
-    throw new PlanLimitError(resource, limit, profile.plan);
+    throw new PlanLimitError(resource, limit, plan);
   }
 }
 
 /** For the UI: what the viewer has used and what they are allowed. */
 export async function getUsage(ownerId: string) {
-  const profile = await ensureProfile(ownerId);
-  const entitlements = entitlementsFor(profile.plan);
+  const plan = await getEffectivePlan(ownerId);
+  const entitlements = entitlementsFor(plan);
 
   return {
-    plan: profile.plan,
+    plan,
     exams: {
       used: await countOwned("exams", ownerId),
       limit: entitlements.exams

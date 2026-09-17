@@ -1,5 +1,9 @@
 import { sql } from "@/lib/db";
 import { parseId } from "@/lib/ids";
+import {
+  getOwningOrganizationId,
+  getUserOrganizationIds
+} from "@/lib/organizations";
 import { examReadPredicate, type Viewer } from "@/lib/questionAccess";
 import type { QuestionRow } from "@/lib/questions";
 
@@ -126,10 +130,13 @@ export async function createExam(
   title: string,
   slots: ExamSlotInput[]
 ): Promise<{ id: number } | null> {
+  // Belongs to the school as well as its author, when there is one.
+  const organizationId = await getOwningOrganizationId(ownerId);
+
   const rows = (await sql(
     `WITH new_exam AS (
-       INSERT INTO content.exams (owner_id, level, title)
-       SELECT $1, $2, $3
+       INSERT INTO content.exams (owner_id, level, title, organization_id)
+       SELECT $1, $2, $3, $7
          FROM content.levels l
         WHERE l.code = $2 AND l.enabled
        RETURNING id, level
@@ -149,7 +156,8 @@ export async function createExam(
       title,
       slots.map((s) => Number(s.part)),
       slots.map((s) => s.candidate),
-      slots.map((s) => s.question_id)
+      slots.map((s) => s.question_id),
+      organizationId
     ]
   )) as unknown as { id: number }[];
 
@@ -164,11 +172,22 @@ export async function deleteExam(ownerId: string, id: string) {
   const examId = parseId(id);
   if (examId === null) return null;
 
+  // Its author or a colleague at the school that owns it. House exams have no
+  // owner and no organisation, so neither branch reaches them.
+  const organizationIds = await getUserOrganizationIds(ownerId);
+  const scope =
+    organizationIds.length === 0
+      ? { clause: `owner_id = $2`, params: [ownerId] }
+      : {
+          clause: `(owner_id = $2 OR organization_id = ANY($3::uuid[]))`,
+          params: [ownerId, organizationIds]
+        };
+
   const rows = (await sql(
     `DELETE FROM content.exams
-      WHERE id = $1 AND owner_id = $2
+      WHERE id = $1 AND ${scope.clause}
       RETURNING id::int AS id`,
-    [examId, ownerId]
+    [examId, ...scope.params]
   )) as unknown as { id: number }[];
 
   return rows[0] ?? null;

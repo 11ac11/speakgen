@@ -4,6 +4,7 @@ import Link from "next/link";
 import styled from "styled-components";
 import DashboardTable from "./DashboardTable";
 import PlanPanel, { type PlanPanelProps } from "@/app/components/PlanPanel";
+import SchoolPanel, { type SchoolMember } from "@/app/components/SchoolPanel";
 
 const Container = styled.div`
   width: 100%;
@@ -55,13 +56,23 @@ export default function TabContainer({
   plan,
   usage,
   billing,
-  exams
+  exams,
+  school,
+  members,
+  seats,
+  canAdmin,
+  origin
 }: {
   activeTab: "questions" | "exams" | "settings";
   plan: string;
   usage: PlanPanelProps["usage"];
   billing: PlanPanelProps["billing"];
   exams: DashboardExam[];
+  school: { id: string; name: string } | null;
+  members: SchoolMember[];
+  seats: { used: number; seats: number; pending: number };
+  canAdmin: boolean;
+  origin: string;
 }) {
   return (
     <Container>
@@ -93,7 +104,16 @@ export default function TabContainer({
         ))}
 
       {activeTab === "settings" && (
-        <PlanPanel plan={plan} usage={usage} billing={billing} />
+        <>
+          <PlanPanel plan={plan} usage={usage} billing={billing} />
+          <SchoolPanel
+            school={school}
+            members={members}
+            seats={seats}
+            canAdmin={canAdmin}
+            origin={origin}
+          />
+        </>
       )}
     </Container>
   );

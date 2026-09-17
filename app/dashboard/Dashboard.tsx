@@ -10,6 +10,12 @@ import { getSubscriptionForUser } from "@/lib/billing/reconcile";
 import { listExams } from "@/lib/exams";
 import { getViewer } from "@/lib/questionAccess";
 import AdSlot from "@/app/components/ads/AdSlot";
+import {
+  getMembers,
+  getSeatUsage,
+  getUserOrganizations
+} from "@/lib/organizations";
+import { headers } from "next/headers";
 
 const validTabs = ["questions", "exams", "settings"] as const;
 type Tab = (typeof validTabs)[number];
@@ -45,6 +51,15 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
       question_count: exam.question_count
     }));
 
+  const organizations = await getUserOrganizations(userId);
+  const school = organizations[0] ?? null;
+  const [members, seats] = school
+    ? await Promise.all([getMembers(school.id), getSeatUsage(school.id)])
+    : [[], { members: 0, pending: 0, seats: 0, used: 0 }];
+
+  const host = (await headers()).get("host") ?? "localhost:3001";
+  const origin = `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
+
   const renewsAt = subscription?.current_period_end
     ? new Date(String(subscription.current_period_end)).toLocaleDateString(
         "en-GB",
@@ -68,6 +83,20 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
             cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end)
           }}
           exams={myExams}
+          school={school ? { id: school.id, name: school.name } : null}
+          members={members.map((m) => ({
+            user_id: m.user_id,
+            name: m.name,
+            email: m.email,
+            role: m.role
+          }))}
+          seats={{
+            used: seats.used,
+            seats: seats.seats,
+            pending: seats.pending
+          }}
+          canAdmin={["owner", "admin"].includes(school?.role ?? "")}
+          origin={origin}
         />
       </Suspense>
       <AdSlot placement="dashboard" />
