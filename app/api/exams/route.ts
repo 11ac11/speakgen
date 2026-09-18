@@ -6,19 +6,48 @@ import { assertWithinPlan, PlanLimitError } from "@/lib/limits";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
+export const examSlotsSchema = z
+  .array(
+    z.object({
+      part: z.string().trim().regex(/^\d$/),
+      candidate: z.enum(["A", "B", "-"]),
+      question_id: z.number().int().positive()
+    })
+  )
+  .min(1);
+
 const examCreateSchema = z.object({
   level: z.string().trim().min(1).max(8),
   title: z.string().trim().min(1).max(120),
-  slots: z
-    .array(
-      z.object({
-        part: z.string().trim().regex(/^\d$/),
-        candidate: z.enum(["A", "B", "-"]),
-        question_id: z.number().int().positive()
-      })
-    )
-    .min(1)
+  slots: examSlotsSchema
 });
+
+/**
+ * The database enforces that each question matches its slot's level and part.
+ * Completeness is the half it cannot express, so it is checked here against the
+ * blueprint: an exam missing a part is not an exam.
+ *
+ * Shared with the update route, so an exam cannot be edited into a shape it
+ * could not have been created in.
+ */
+export function missingSlots(
+  level: string,
+  slots: { part: string; candidate: string }[]
+) {
+  const required = getRequiredSlots(level);
+  if (required.length === 0) return null;
+
+  const given = new Set(slots.map((s) => `${s.part}${s.candidate}`));
+  const missing = required.filter(
+    (slot) => !given.has(`${slot.part}${slot.candidate}`)
+  );
+
+  if (missing.length === 0 && slots.length === required.length) return [];
+
+  return missing.map((s) =>
+    s.candidate === "-" ? `Part ${s.part}` : `Part ${s.part} (${s.candidate})`
+  );
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -50,28 +79,13 @@ export async function POST(req: NextRequest) {
 
     const { level, title, slots } = parsed.data;
 
-    // The database enforces that each question matches its slot's level and
-    // part. Completeness is the half it cannot express, so it is checked here
-    // against the blueprint: an exam missing a part is not an exam.
-    const required = getRequiredSlots(level);
-    if (required.length === 0) {
+    const missing = missingSlots(level, slots);
+    if (missing === null) {
       return NextResponse.json({ error: "Unknown level" }, { status: 400 });
     }
-
-    const given = new Set(slots.map((s) => `${s.part}${s.candidate}`));
-    const missing = required.filter(
-      (slot) => !given.has(`${slot.part}${slot.candidate}`)
-    );
-    if (missing.length > 0 || slots.length !== required.length) {
+    if (missing.length > 0) {
       return NextResponse.json(
-        {
-          error: "Exam is incomplete",
-          missing: missing.map((s) =>
-            s.candidate === "-"
-              ? `Part ${s.part}`
-              : `Part ${s.part} (${s.candidate})`
-          )
-        },
+        { error: "Exam is incomplete", missing },
         { status: 400 }
       );
     }

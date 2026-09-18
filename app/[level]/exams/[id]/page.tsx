@@ -2,7 +2,8 @@ import { notFound, redirect } from "next/navigation";
 import { getExam } from "@/lib/exams";
 import { getLevel } from "@/lib/levels";
 import { getViewer } from "@/lib/questionAccess";
-import { BackLink } from "@/app/components/ExamCards";
+import { BackLink, ExamsLink } from "@/app/components/ExamCards";
+import { getAuthenticatedUserId } from "@/lib/session";
 import ExamRunner from "@/app/components/ExamRunner";
 
 export const dynamic = "force-dynamic";
@@ -26,13 +27,33 @@ export default async function LevelExamPage({
   // URL instead of showing a B2 exam under /c1.
   if (exam.level !== level.code) redirect(`/${exam.level}/exams/${exam.id}`);
 
+  /* Reading an exam and being able to change it are different things: a house
+     exam is readable by everyone and belongs to nobody. */
+  const userId = await getAuthenticatedUserId();
+  const canEdit = !!userId && !exam.is_house;
+
   return (
     <div className="page page-wide" style={{ paddingTop: "3rem" }}>
       <div style={{ marginBottom: "1rem" }}>
         <BackLink href={`/${level.code}/exams`}>
           {`← All ${level.label} exams`}
         </BackLink>
-        <h1 style={{ marginBottom: "0.25rem" }}>{exam.title}</h1>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "1rem",
+            flexWrap: "wrap"
+          }}
+        >
+          <h1 style={{ marginBottom: "0.25rem" }}>{exam.title}</h1>
+          {canEdit ? (
+            <ExamsLink href={`/${level.code}/exams/${exam.id}/edit`}>
+              Edit exam
+            </ExamsLink>
+          ) : null}
+        </div>
       </div>
       <ExamRunner exam={exam} />
     </div>

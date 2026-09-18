@@ -248,16 +248,26 @@ export default function ExamBuilder({
   level,
   levelLabel,
   slots,
-  questions
+  questions,
+  exam
 }: {
   level: string;
   levelLabel: string;
   slots: ExamSlot[];
   questions: PickerQuestion[];
+  /** Present when an exam already exists: the same builder, editing it. */
+  exam?: {
+    id: number;
+    title: string;
+    picked: Record<string, number>;
+  };
 }) {
   const router = useRouter();
-  const [title, setTitle] = useState("");
-  const [picked, setPicked] = useState<Record<string, number>>({});
+  const isEdit = !!exam;
+  const [title, setTitle] = useState(exam?.title ?? "");
+  const [picked, setPicked] = useState<Record<string, number>>(
+    exam?.picked ?? {}
+  );
   const [search, setSearch] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
   const [limitReached, setLimitReached] = useState(false);
@@ -334,11 +344,12 @@ export default function ExamBuilder({
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch("/api/exams", {
-        method: "POST",
+      const res = await fetch(isEdit ? `/api/exams/${exam.id}` : "/api/exams", {
+        method: isEdit ? "PATCH" : "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          level,
+          // The level of an exam that exists is its own and is not editable.
+          ...(isEdit ? {} : { level }),
           title: title.trim(),
           slots: slots.map((s) => ({
             part: s.part,
@@ -359,8 +370,9 @@ export default function ExamBuilder({
         return;
       }
 
-      const exam = await res.json();
-      router.push(`/${level}/exams/${exam.id}`);
+      const saved = await res.json();
+      router.push(`/${level}/exams/${saved.id}`);
+      router.refresh();
     } catch {
       setError("Could not save the exam");
     } finally {
@@ -368,7 +380,7 @@ export default function ExamBuilder({
     }
   };
 
-  if (limitReached) {
+  if (limitReached && !isEdit) {
     return (
       <Wrap>
         <Notice>
@@ -556,14 +568,18 @@ export default function ExamBuilder({
 
       <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>
         <Button
-          text={saving ? "Saving…" : "Save exam"}
+          text={saving ? "Saving…" : isEdit ? "Save changes" : "Save exam"}
           disabled={!complete || saving}
           onClick={save}
         />
         <Button
           text="Cancel"
           secondary
-          onClick={() => router.push(`/${level}/exams`)}
+          onClick={() =>
+            router.push(
+              isEdit ? `/${level}/exams/${exam.id}` : `/${level}/exams`
+            )
+          }
         />
       </div>
     </Wrap>

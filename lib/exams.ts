@@ -185,6 +185,84 @@ export async function createExam(
 }
 
 /**
+ * Retitles an exam and replaces the questions in its slots.
+ *
+ * One statement, so an exam cannot be left half retitled or half re-slotted.
+ * The slots are upserted on their primary key rather than deleted and
+ * reinserted: a DELETE and an INSERT of the same rows in one statement work
+ * from the same snapshot, so the INSERT would collide with rows the DELETE has
+ * not yet removed as far as it can see. The removal step only takes slots the
+ * new set does not mention, which is a no-op while every level's shape is
+ * fixed, and correct if one ever changes.
+ *
+ * Returns null when the exam is not the caller's to edit, so a wrong id and
+ * somebody else's exam are indistinguishable from outside.
+ */
+export async function updateExam(
+  ownerId: string,
+  id: string,
+  title: string,
+  slots: ExamSlotInput[]
+): Promise<{ id: number } | null> {
+  const examId = parseId(id);
+  if (examId === null) return null;
+
+  // Its author or a colleague at the school that owns it, exactly as deleting.
+  const organizationIds = await getUserOrganizationIds(ownerId);
+  const scope =
+    organizationIds.length === 0
+      ? { clause: `owner_id = $3`, params: [ownerId] as unknown[] }
+      : {
+          clause: `(owner_id = $3 OR organization_id = ANY($4::uuid[]))`,
+          params: [ownerId, organizationIds] as unknown[]
+        };
+
+  // $1 and $2 are the id and the title; the scope takes what follows, and the
+  // three slot arrays come after that.
+  const base = 2 + scope.params.length;
+
+  const rows = (await sql(
+    `WITH target AS (
+       UPDATE content.exams
+          SET title = $2
+        WHERE id = $1 AND ${scope.clause}
+        RETURNING id, level
+     ), slot AS (
+       SELECT * FROM unnest($${base + 1}::int[], $${base + 2}::text[], $${base + 3}::bigint[])
+         AS s(part, candidate, question_id)
+     ), upserted AS (
+       INSERT INTO content.exam_questions
+         (exam_id, level, part, candidate, question_id)
+       SELECT t.id, t.level, s.part, s.candidate, s.question_id
+         FROM target t, slot s
+       ON CONFLICT (exam_id, part, candidate)
+         DO UPDATE SET question_id = EXCLUDED.question_id
+       RETURNING 1
+     ), removed AS (
+       DELETE FROM content.exam_questions eq
+        USING target t
+        WHERE eq.exam_id = t.id
+          AND NOT EXISTS (
+            SELECT 1 FROM slot s
+             WHERE s.part = eq.part AND s.candidate = eq.candidate
+          )
+       RETURNING 1
+     )
+     SELECT id::int AS id FROM target`,
+    [
+      examId,
+      title,
+      ...scope.params,
+      slots.map((s) => Number(s.part)),
+      slots.map((s) => s.candidate),
+      slots.map((s) => s.question_id)
+    ]
+  )) as unknown as { id: number }[];
+
+  return rows[0] ?? null;
+}
+
+/**
  * Hard delete, unlike questions. An exam is a container rather than content:
  * nothing else references it, and its rows cascade.
  */
