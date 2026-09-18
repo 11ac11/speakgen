@@ -1,4 +1,5 @@
 import {
+  ConstraintViolationError,
   deleteQuestion,
   getQuestionById,
   InvalidReferenceError,
@@ -73,7 +74,10 @@ export async function PATCH(
 
     return NextResponse.json(question);
   } catch (error) {
-    if (error instanceof InvalidReferenceError) {
+    if (
+      error instanceof InvalidReferenceError ||
+      error instanceof ConstraintViolationError
+    ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error("Database update failed:", error);

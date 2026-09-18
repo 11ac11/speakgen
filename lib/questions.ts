@@ -69,7 +69,29 @@ function isForeignKeyViolation(error: unknown) {
   return (error as { code?: string })?.code === "23503";
 }
 
+function isCheckViolation(error: unknown) {
+  return (error as { code?: string })?.code === "23514";
+}
+
 export class InvalidReferenceError extends Error {}
+
+/**
+ * A CHECK constraint refused the row: a Part 2 without its photographs, a Part
+ * 3 without its prompts, house content marked private.
+ *
+ * Only reached when something got past the request schema, which mirrors those
+ * rules — an update that strips a field, or a caller that is not the app. It
+ * exists so that case is a 400 rather than a 500: the request is wrong, not
+ * the server.
+ */
+export class ConstraintViolationError extends Error {}
+
+/** Names the constraint in words, so a caller is not handed Postgres internals. */
+const CONSTRAINT_MESSAGES: Record<string, string> = {
+  questions_p2_images: "A Part 2 question needs between 2 and 5 photographs",
+  questions_p3_prompts: "A Part 3 question needs between 3 and 5 prompts",
+  questions_house_is_public: "House content has to be public"
+};
 
 async function run(query: string, params: unknown[]) {
   try {
@@ -78,6 +100,14 @@ async function run(query: string, params: unknown[]) {
     if (isForeignKeyViolation(error)) {
       throw new InvalidReferenceError("Unknown theme, level or part");
     }
+
+    if (isCheckViolation(error)) {
+      const name = (error as { constraint?: string }).constraint ?? "";
+      throw new ConstraintViolationError(
+        CONSTRAINT_MESSAGES[name] ?? "That question is not a valid shape"
+      );
+    }
+
     throw error;
   }
 }

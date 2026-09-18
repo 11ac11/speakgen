@@ -1,4 +1,5 @@
 import {
+  ConstraintViolationError,
   createQuestion,
   InvalidReferenceError,
   listQuestions
@@ -69,8 +70,12 @@ export async function POST(req: NextRequest) {
 
     const parsed = questionCreateSchema.safeParse(await req.json());
     if (!parsed.success) {
+      // Only our own rules are quoted back. Zod's built-in messages describe
+      // the schema ("String must contain at least 1 character(s)") rather than
+      // the mistake, so they stay behind the generic line.
+      const named = parsed.error.issues.find((i) => i.code === "custom");
       return NextResponse.json(
-        { error: "Invalid question payload" },
+        { error: named?.message ?? "Invalid question payload" },
         { status: 400 }
       );
     }
@@ -100,7 +105,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(question, { status: 201 });
   } catch (error) {
-    if (error instanceof InvalidReferenceError) {
+    if (
+      error instanceof InvalidReferenceError ||
+      error instanceof ConstraintViolationError
+    ) {
       return NextResponse.json({ error: error.message }, { status: 400 });
     }
     console.error("Database insertion failed:", error);

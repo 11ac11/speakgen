@@ -254,6 +254,61 @@ for (const [from, to, status] of [
   );
 }
 
+console.log("\nMALFORMED PARTS ARE REFUSED, NOT SWALLOWED");
+// These used to hit the CHECK constraints and come back as a 500, which the
+// form treated as success and navigated away from, losing the question.
+{
+  const noPrompts = await api("/api/questions", {
+    method: "POST",
+    body: JSON.stringify({
+      level: "b2",
+      part: "3",
+      statement: "Route test: part 3 with no prompts.",
+      themes: ["daily_life"],
+      public: true
+    })
+  });
+  pass(
+    "part 3 without prompts is a named 400",
+    noPrompts.status === 400 && /prompts/i.test(noPrompts.body?.error ?? ""),
+    `${noPrompts.status} ${noPrompts.body?.error}`
+  );
+
+  const oneImage = await api("/api/questions", {
+    method: "POST",
+    body: JSON.stringify({
+      level: "b2",
+      part: "2",
+      statement: "Route test: part 2 with one photograph.",
+      themes: ["nature"],
+      public: true,
+      image_ids: [2325447]
+    })
+  });
+  pass(
+    "part 2 with one photograph is a named 400",
+    oneImage.status === 400 && /photograph/i.test(oneImage.body?.error ?? ""),
+    `${oneImage.status} ${oneImage.body?.error}`
+  );
+
+  // The update route carries no part, so its schema cannot check this. The
+  // constraint handler in lib/questions is what keeps it off 500.
+  const stripped = await api(`/api/questions/${p3.body.id}`, {
+    method: "PATCH",
+    body: JSON.stringify({
+      statement: "Route test: talk about these options together.",
+      themes: ["daily_life"],
+      public: true,
+      prompts: ["only one"]
+    })
+  });
+  pass(
+    "patching a part 3 down to one prompt is a named 400",
+    stripped.status === 400 && /prompts/i.test(stripped.body?.error ?? ""),
+    `${stripped.status} ${stripped.body?.error}`
+  );
+}
+
 console.log("\nWRONG LEVEL IN PATH");
 {
   const res = await fetch(`${BASE}/c1/questions/${p2.body.id}`, {

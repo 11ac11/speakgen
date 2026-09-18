@@ -9,6 +9,7 @@ import { createQuestion, updateQuestion } from "@/services/questionService";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ImageSelectors from "./ImageSelectors";
 import { getQuestionPartOptions, SUPPORTED_LEVELS } from "@/constants";
+import { checkPartShape } from "@/lib/questionRules";
 
 const StyledForm = styled.form`
   display: flex;
@@ -17,6 +18,18 @@ const StyledForm = styled.form`
   width: 100%;
   max-width: 600px;
   margin-bottom: 60px;
+`;
+
+const Hint = styled.p`
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+`;
+
+const FormError = styled.p`
+  margin: 0;
+  font-size: var(--text-sm);
+  color: var(--danger);
 `;
 
 const FormRow = styled.div`
@@ -57,11 +70,20 @@ const QuestionForm = ({
   const [isPublic, setIsPublic] = useState(question?.public ?? true);
   const [loading, setLoading] = useState(false);
   const [createAnother, setCreateAnother] = useState(false);
+  const [formError, setFormError] = useState<string | null>(null);
+
+  /* Part 2 needs its photographs and Part 3 its prompts — the same rule the
+     database enforces. Without this the form let you save a Part 3 with one
+     prompt, the insert broke a CHECK constraint, and the question was lost. */
+  let partShapeError: string | null = null;
+  checkPartShape(part, { image_ids: imageIds, prompts }, (_path, message) => {
+    partShapeError = partShapeError ?? message;
+  });
 
   // Level is required too. /questions/new starts with none chosen, and
   // submitting without one used to build a request with an empty level.
   const allFieldsCompleted =
-    !!level && !!part && !!statement && themes.length > 0;
+    !!level && !!part && !!statement && themes.length > 0 && !partShapeError;
 
   const generatePlaceholderByPart = (isSecondStatement?: boolean) => {
     switch (part) {
@@ -115,6 +137,7 @@ interest.`;
     if (!allFieldsCompleted) return;
 
     setLoading(true);
+    setFormError(null);
     const requestData = {
       statement: statement,
       statement_two: statementTwo,
@@ -129,6 +152,9 @@ interest.`;
       })
     };
 
+    /* The redirect used to live in a finally block, so it ran whether the save
+       succeeded or threw. A failed save looked exactly like a successful one,
+       and the question was gone. Leaving is part of succeeding now. */
     try {
       if (isEdit) {
         await updateQuestion(question.id, requestData);
@@ -136,20 +162,25 @@ interest.`;
         await createQuestion(level, part, requestData);
       }
     } catch (error) {
-      console.error("Error submitting question:", error);
-    } finally {
+      setFormError(
+        error instanceof Error ? error.message : "Could not save the question"
+      );
       setLoading(false);
-      if (createAnother) {
-        setStatement("");
-        setStatementTwo("");
-        setInstructionOne("");
-        setInstructionTwo("");
-        setPrompts([]);
-        setThemes([]);
-        setImageIds([]);
-      } else {
-        router.push("/dashboard");
-      }
+      return;
+    }
+
+    setLoading(false);
+
+    if (createAnother) {
+      setStatement("");
+      setStatementTwo("");
+      setInstructionOne("");
+      setInstructionTwo("");
+      setPrompts([]);
+      setThemes([]);
+      setImageIds([]);
+    } else {
+      router.push("/dashboard");
     }
   };
 
@@ -259,6 +290,10 @@ interest.`;
           )}
         </>
       )}
+      {/* A disabled Save with no explanation is worse than the error it is
+          preventing, so the rule that is holding it back is named. */}
+      {partShapeError ? <Hint>{partShapeError}</Hint> : null}
+      {formError ? <FormError role="alert">{formError}</FormError> : null}
       <Button
         onClick={() =>
           handleSubmit(new Event("submit") as unknown as React.FormEvent)

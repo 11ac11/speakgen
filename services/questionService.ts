@@ -1,6 +1,21 @@
 // getPartOneQuestions was removed: it fetched "api/questions/partone/", a route
 // that has never existed, and nothing called it.
 
+/**
+ * The API answers a refusal with { error: "..." } saying what is wrong. Using
+ * statusText instead threw that away and left the form with "Bad Request",
+ * which tells a teacher nothing about which field to fix.
+ */
+async function messageFor(response: Response, fallback: string) {
+  try {
+    const body = await response.json();
+    if (typeof body?.error === "string" && body.error) return body.error;
+  } catch {
+    // No JSON body: fall through to the generic message.
+  }
+  return fallback;
+}
+
 /** A random question for a level and part. */
 export async function getRandomQuestion(level: string, part: string) {
   try {
@@ -34,7 +49,9 @@ export async function createQuestion(
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to create question: ${response.statusText}`);
+      throw new Error(
+        await messageFor(response, "Could not save the question")
+      );
     }
 
     return await response.json();
@@ -56,7 +73,9 @@ export async function updateQuestion(id: string | number, payload: any) {
     });
 
     if (!response.ok) {
-      throw new Error(`Failed to update question: ${response.statusText}`);
+      throw new Error(
+        await messageFor(response, "Could not save the question")
+      );
     }
 
     return await response.json();
