@@ -35,9 +35,15 @@ export default async function LevelExamPage({
   return (
     <div className="page page-wide" style={{ paddingTop: "3rem" }}>
       <div style={{ marginBottom: "1rem" }}>
-        <BackLink href={`/${level.code}/exams`}>
-          {`← All ${level.label} exams`}
-        </BackLink>
+        {/* An exam of your own was reached from My exams; a house one from the
+            free listing. Back should go where you actually came from. */}
+        {canEdit ? (
+          <BackLink href="/dashboard?tab=exams">← My exams</BackLink>
+        ) : (
+          <BackLink href={`/${level.code}/exams`}>
+            {`← All ${level.label} exams`}
+          </BackLink>
+        )}
         <div
           style={{
             display: "flex",

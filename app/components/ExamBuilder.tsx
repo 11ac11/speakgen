@@ -392,9 +392,9 @@ export default function ExamBuilder({
         <div style={{ display: "flex", gap: "0.75rem" }}>
           <Button text="See plans" onClick={() => router.push("/pricing")} />
           <Button
-            text="Back to exams"
+            text="Back to my exams"
             secondary
-            onClick={() => router.push(`/${level}/exams`)}
+            onClick={() => router.push("/dashboard?tab=exams")}
           />
         </div>
       </Wrap>
@@ -577,7 +577,7 @@ export default function ExamBuilder({
           secondary
           onClick={() =>
             router.push(
-              isEdit ? `/${level}/exams/${exam.id}` : `/${level}/exams`
+              isEdit ? `/${level}/exams/${exam.id}` : "/dashboard?tab=exams"
             )
           }
         />

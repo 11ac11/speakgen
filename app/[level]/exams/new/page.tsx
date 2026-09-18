@@ -47,9 +47,9 @@ export default async function NewExamPage({
   return (
     <div className="page" style={{ paddingTop: "3rem" }}>
       <div style={{ marginBottom: "1rem" }}>
-        <BackLink href={`/${level.code}/exams`}>
-          {`← All ${level.label} exams`}
-        </BackLink>
+        {/* My exams, not the free listing: building one starts there, and the
+            free listing is house content you cannot have come from. */}
+        <BackLink href="/dashboard?tab=exams">← My exams</BackLink>
         <h1 style={{ marginBottom: "0.25rem" }}>{`New ${level.label} exam`}</h1>
         <p style={{ color: "var(--text-muted)", marginTop: 0 }}>
           Pick one question for each part. Part 2 runs twice, once per
