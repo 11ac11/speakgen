@@ -35,6 +35,10 @@ const StyledCheckbox = styled.input<{ error?: string }>`
   background-color: white;
   cursor: pointer;
   transition: all 0.2s;
+  /* Both marks are placed from the centre rather than pushed into position
+     with margins, which is what left the tick sitting low and left of the
+     middle of the box. */
+  position: relative;
 
   &:checked {
     background-color: var(--leafgreen);
@@ -43,13 +47,17 @@ const StyledCheckbox = styled.input<{ error?: string }>`
 
   &:checked::after {
     content: "";
-    display: block;
-    width: 5px;
-    height: 10px;
-    border: solid white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 8px;
+    border: solid #fff;
     border-width: 0 2px 2px 0;
-    transform: rotate(45deg);
-    margin: 0 3px;
+    /* The tick is two sides of a square turned 45 degrees, so its ink hangs in
+       the lower half of the box it is drawn in. Centring the box alone leaves
+       the mark looking low; -58% puts the ink on the middle. */
+    transform: translate(-50%, -58%) rotate(45deg);
   }
 
   &:indeterminate {
@@ -59,12 +67,14 @@ const StyledCheckbox = styled.input<{ error?: string }>`
 
   &:indeterminate::after {
     content: "";
-    display: block;
-    width: 9px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 8px;
     height: 2px;
     background: #fff;
     border-radius: 1px;
-    margin: 6px auto;
+    transform: translate(-50%, -50%);
   }
 
   &:focus-visible {
