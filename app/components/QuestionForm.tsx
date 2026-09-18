@@ -159,7 +159,16 @@ interest.`;
       public: isPublic,
       ...(part === "2" && {
         image_ids: filledImageIds(imageIds),
-        instructions: [instructionOne, instructionTwo]
+        /* Instructions are a C2 idea: only that level shows the two boxes, and
+           every B2 and C1 Part 2 in the database has none. Sending them
+           regardless meant B2 and C1 posted an empty first instruction, which
+           the schema rejects element by element — so no Part 2 question could
+           be created through this form at either level. */
+        ...(level === "c2" && {
+          instructions: [instructionOne, instructionTwo]
+            .map((text) => text.trim())
+            .filter(Boolean)
+        })
       }),
       ...(part === "3" && {
         prompts: filledPrompts(prompts)
