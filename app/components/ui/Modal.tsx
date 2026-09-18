@@ -3,42 +3,40 @@
 import React, { useEffect } from "react";
 import styled from "styled-components";
 
+/* Fixed, not absolute: absolute positioning is relative to the document, so
+   on a scrolled page the backdrop began below the viewport and the panel was
+   placed against a top the reader had long since passed. */
 const ModalShading = styled.div`
-  height: 200vh;
-  width: 200vw;
-  position: absolute;
-  left: 0;
-  top: 0;
+  position: fixed;
+  inset: 0;
   background-color: #00000055;
-  z-index: 5;
+  z-index: 50;
 `;
 
 const ModalWrap = styled.div`
+  position: fixed;
+  inset: 0;
+  z-index: 51;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  width: 100vw;
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 10;
+  padding: 1.5rem;
 `;
 
 const Modal = styled.div`
-  position: absolute;
+  position: relative;
   display: flex;
   flex-direction: column;
-  min-width: 600px;
-  min-height: 400px;
-  max-width: 75%;
-  max-height: 75%;
-  position: absolute;
-  background-color: white;
-  z-index: 10;
-  justify-content: center;
-  align-items: center;
-  border-radius: 5px;
+  align-items: stretch;
+  /* Narrow screens had a 600px floor to fit into and could not. */
+  width: min(680px, 100%);
+  max-height: min(86vh, 100%);
+  /* The panel scrolls rather than the page behind it, so a form taller than
+     the screen is still reachable. */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background-color: #fff;
+  border-radius: var(--radius-card);
   padding: 2rem;
 `;
 
@@ -47,14 +45,22 @@ const XIcon = styled.svg`
   right: 15px;
   top: 15px;
   cursor: pointer;
+  color: var(--text-muted);
+
+  &:hover {
+    color: var(--text-heading);
+  }
 `;
 
 const ImageSearchModal = ({
   children,
-  closeModal
+  closeModal,
+  label
 }: {
-  children: any;
+  children: React.ReactNode;
   closeModal: () => void;
+  /** Names the dialog for anyone not looking at it. */
+  label?: string;
 }) => {
   useEffect(() => {
     // disable scrolling when modal is open
@@ -66,11 +72,26 @@ const ImageSearchModal = ({
     };
   }, []);
 
+  // Escape is the way out of a dialog, and it was not one.
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") closeModal();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [closeModal]);
+
   return (
     <>
-      <ModalShading />
-      <ModalWrap>
-        <Modal>
+      <ModalShading onClick={closeModal} />
+      <ModalWrap
+        onMouseDown={(event) => {
+          // Only the backdrop itself, so a drag that ends outside the panel
+          // does not dismiss what is being filled in.
+          if (event.target === event.currentTarget) closeModal();
+        }}
+      >
+        <Modal role="dialog" aria-modal="true" aria-label={label}>
           <XIcon
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"

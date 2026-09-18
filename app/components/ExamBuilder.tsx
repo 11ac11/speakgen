@@ -3,6 +3,9 @@
 import React, { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
+import Modal from "@/app/components/ui/Modal";
+import QuestionForm from "@/app/components/QuestionForm";
+import type { QuestionRow } from "@/lib/questions";
 import Button from "@/app/components/ui/Button";
 import QuestionPreview, { ThemePills } from "@/app/components/QuestionPreview";
 import type { ExamSlot } from "@/lib/cambridgeBlueprints";
@@ -60,6 +63,43 @@ const BeforeNamed = styled.div`
     font-size: var(--text-sm);
     color: var(--text-muted);
   }
+`;
+
+/* Sits under the list rather than beside the picker: writing a question is
+   the way out when nothing here fits, not the first thing to reach for. */
+const WriteNew = styled.button`
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
+  cursor: pointer;
+  font-family: var(--font-body), sans-serif;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--green-600);
+  text-align: left;
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--green-600);
+    outline-offset: 2px;
+  }
+`;
+
+const ModalHeading = styled.h2`
+  margin: 0 0 0.25rem;
+  font-size: var(--text-xl);
+`;
+
+const ModalSub = styled.p`
+  margin: 0 0 1.5rem;
+  font-size: var(--text-sm);
+  color: var(--text-muted);
 `;
 
 const TopBar = styled.div`
@@ -222,19 +262,44 @@ export default function ExamBuilder({
   const [error, setError] = useState<string | null>(null);
   const [limitReached, setLimitReached] = useState(false);
   const [saving, setSaving] = useState(false);
+  /* The server sent the pool for this page, so a question written without
+     leaving has to be added to it here. */
+  const [allQuestions, setAllQuestions] = useState<PickerQuestion[]>(questions);
+  const [writingFor, setWritingFor] = useState<ExamSlot | null>(null);
 
   const byPart = useMemo(() => {
     const map: Record<string, PickerQuestion[]> = {};
-    for (const question of questions) {
+    for (const question of allQuestions) {
       (map[question.part] ??= []).push(question);
     }
     return map;
-  }, [questions]);
+  }, [allQuestions]);
 
   const byId = useMemo(
-    () => new Map(questions.map((q) => [q.id, q])),
-    [questions]
+    () => new Map(allQuestions.map((q) => [q.id, q])),
+    [allQuestions]
   );
+
+  /* Written from inside a slot, so it goes into the pool and straight into the
+     slot that asked for it — otherwise a teacher would have to go and find the
+     question they had just written in the list they were trying to skip. */
+  const handleCreated = (slot: ExamSlot, created: QuestionRow) => {
+    const question: PickerQuestion = {
+      id: created.id,
+      part: created.part,
+      statement: created.statement,
+      statement_two: created.statement_two,
+      follow_up: created.follow_up,
+      decision: created.decision,
+      themes: created.themes ?? [],
+      image_ids: created.image_ids ?? [],
+      prompts: created.prompts ?? []
+    };
+
+    setAllQuestions((current) => [question, ...current]);
+    setPicked((p) => ({ ...p, [slotKey(slot)]: question.id }));
+    setWritingFor(null);
+  };
 
   const named = title.trim().length > 0;
   const complete = named && slots.every((s) => picked[slotKey(s)]);
@@ -401,14 +466,19 @@ export default function ExamBuilder({
                     <QuestionPreview question={chosen} />
                   </>
                 ) : pool.length === 0 ? (
-                  <span
-                    style={{
-                      color: "var(--text-muted)",
-                      fontSize: "var(--text-sm)"
-                    }}
-                  >
-                    {`No ${levelLabel} Part ${slot.part} questions available yet.`}
-                  </span>
+                  <>
+                    <span
+                      style={{
+                        color: "var(--text-muted)",
+                        fontSize: "var(--text-sm)"
+                      }}
+                    >
+                      {`No ${levelLabel} Part ${slot.part} questions available yet.`}
+                    </span>
+                    <WriteNew type="button" onClick={() => setWritingFor(slot)}>
+                      {`+ Write a ${levelLabel} Part ${slot.part} question`}
+                    </WriteNew>
+                  </>
                 ) : (
                   <>
                     {pool.length > 8 ? (
@@ -446,6 +516,9 @@ export default function ExamBuilder({
                         </Row>
                       ) : null}
                     </List>
+                    <WriteNew type="button" onClick={() => setWritingFor(slot)}>
+                      {`+ Write a ${levelLabel} Part ${slot.part} question`}
+                    </WriteNew>
                   </>
                 )}
               </Slot>
@@ -458,6 +531,27 @@ export default function ExamBuilder({
         <p style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>
           {error}
         </p>
+      ) : null}
+
+      {writingFor ? (
+        <Modal
+          closeModal={() => setWritingFor(null)}
+          label={`Write a ${levelLabel} Part ${writingFor.part} question`}
+        >
+          <ModalHeading>{`New ${levelLabel} Part ${writingFor.part} question`}</ModalHeading>
+          <ModalSub>
+            It is saved to your question bank as well, and goes straight into
+            this part of the exam.
+          </ModalSub>
+          {/* The level and part are the slot's, so they are not up for
+              changing here. */}
+          <QuestionForm
+            levelParam={level.toUpperCase()}
+            partParam={writingFor.part}
+            lockLevelAndPart
+            onCreated={(created) => handleCreated(writingFor, created)}
+          />
+        </Modal>
       ) : null}
 
       <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>

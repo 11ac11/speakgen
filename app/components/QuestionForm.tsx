@@ -48,16 +48,24 @@ const FormRow = styled.div`
 const QuestionForm = ({
   question,
   partParam,
-  levelParam
+  levelParam,
+  lockLevelAndPart,
+  onCreated
 }: {
   /* Exactly what the edit page hands over: the row getQuestionById returns.
      There is no separate form shape to keep in step with it. */
   question?: QuestionRow;
   partParam?: string | undefined;
   levelParam?: string | undefined;
+  /** For a caller that opened the form to fill one particular slot. */
+  lockLevelAndPart?: boolean;
+  /** Hands the new question back instead of leaving for the dashboard, so the
+      form can be used inside something that wants to keep the page. */
+  onCreated?: (created: QuestionRow) => void;
 }) => {
   const router = useRouter();
   const isEdit = !!question;
+  const fixed = isEdit || !!lockLevelAndPart;
 
   const [level, setLevel] = useState(levelParam?.toLowerCase() || "");
   const [part, setPart] = useState(partParam || "");
@@ -186,7 +194,13 @@ interest.`;
       if (isEdit) {
         await updateQuestion(question.id, requestData);
       } else {
-        await createQuestion(level, part, requestData);
+        const created = await createQuestion(level, part, requestData);
+
+        if (onCreated) {
+          setLoading(false);
+          onCreated(created);
+          return;
+        }
       }
     } catch (error) {
       setFormError(
@@ -236,7 +250,7 @@ interest.`;
           }}
           placeholder="-"
           width="100px"
-          disabled={isEdit}
+          disabled={fixed}
         />
         <Dropdown
           label="Part"
@@ -245,7 +259,7 @@ interest.`;
           onChange={setPart}
           placeholder="-"
           width="100px"
-          disabled={isEdit}
+          disabled={fixed}
         />
       </FormRow>
       {isEdit ? (
@@ -329,7 +343,9 @@ interest.`;
             onChange={setIsPublic}
             label="Public question"
           />
-          {!isEdit && (
+          {/* Meaningless when a caller is waiting for one question back: the
+              form closes the moment it is saved. */}
+          {!isEdit && !onCreated && (
             <>
               <Checkbox
                 checked={createAnother}
