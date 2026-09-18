@@ -25,23 +25,48 @@ export type QuestionPayload = z.infer<typeof questionPayloadSchema>;
  * one comes back as a 400 naming the field, rather than as a constraint
  * violation the caller has to guess at.
  */
+export function filledPrompts(prompts: unknown): string[] {
+  if (!Array.isArray(prompts)) return [];
+  return prompts
+    .filter((p): p is string => typeof p === "string" && p.trim().length > 0)
+    .map((p) => p.trim());
+}
+
+export function filledImageIds(imageIds: unknown): number[] {
+  if (!Array.isArray(imageIds)) return [];
+  return imageIds
+    .map((id) => Number(id))
+    .filter((id) => Number.isInteger(id) && id > 0);
+}
+
+/**
+ * Mirrors the two CHECK constraints on content.questions, questions_p2_images
+ * and questions_p3_prompts.
+ *
+ * Counts what is actually filled in rather than the length of the array. Both
+ * editors write to a fixed set of slots by index — Prompts does
+ * `newTags[index] = value`, ImageSelectors maps empty slots to null — so
+ * typing into the third prompt box of an empty form produces an array of
+ * length three holding one prompt. Trusting the length would let that through.
+ *
+ * The database is still the authority. This exists so a request that breaks a
+ * constraint comes back as a 400 naming the field, rather than as a violation
+ * the caller has to guess at.
+ */
 export function checkPartShape(
   part: string,
-  payload: {
-    image_ids?: number[];
-    prompts?: string[];
-  },
+  payload: { image_ids?: unknown; prompts?: unknown },
   fail: (path: "image_ids" | "prompts", message: string) => void
 ) {
   if (part === "2") {
-    const images = payload.image_ids?.length ?? 0;
+    const images = filledImageIds(payload.image_ids).length;
     if (images < 2 || images > 5) {
       fail("image_ids", "A Part 2 question needs between 2 and 5 photographs");
     }
   }
 
   if (part === "3") {
-    const prompts = payload.prompts?.length ?? 0;
+    const prompts = filledPrompts(payload.prompts).length;
     if (prompts < 3 || prompts > 5) {
       fail("prompts", "A Part 3 question needs between 3 and 5 prompts");
     }

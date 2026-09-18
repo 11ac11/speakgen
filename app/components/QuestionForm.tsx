@@ -9,7 +9,11 @@ import { createQuestion, updateQuestion } from "@/services/questionService";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ImageSelectors from "./ImageSelectors";
 import { getQuestionPartOptions, SUPPORTED_LEVELS } from "@/constants";
-import { checkPartShape } from "@/lib/questionRules";
+import {
+  checkPartShape,
+  filledImageIds,
+  filledPrompts
+} from "@/lib/questionRules";
 
 const StyledForm = styled.form`
   display: flex;
@@ -75,10 +79,13 @@ const QuestionForm = ({
   /* Part 2 needs its photographs and Part 3 its prompts — the same rule the
      database enforces. Without this the form let you save a Part 3 with one
      prompt, the insert broke a CHECK constraint, and the question was lost. */
-  let partShapeError: string | null = null;
-  checkPartShape(part, { image_ids: imageIds, prompts }, (_path, message) => {
-    partShapeError = partShapeError ?? message;
-  });
+  const partShapeError = (() => {
+    let message: string | null = null;
+    checkPartShape(part, { image_ids: imageIds, prompts }, (_path, text) => {
+      message = message ?? text;
+    });
+    return message as string | null;
+  })();
 
   // Level is required too. /questions/new starts with none chosen, and
   // submitting without one used to build a request with an empty level.
@@ -144,11 +151,11 @@ interest.`;
       themes: themes,
       public: isPublic,
       ...(part === "2" && {
-        image_ids: imageIds,
+        image_ids: filledImageIds(imageIds),
         instructions: [instructionOne, instructionTwo]
       }),
       ...(part === "3" && {
-        prompts: prompts
+        prompts: filledPrompts(prompts)
       })
     };
 
