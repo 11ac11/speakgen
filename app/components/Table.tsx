@@ -196,12 +196,12 @@ export default function Table({
             );
           }
         },
-        size: 12
+        size: 10
       },
       {
         header: "Question",
         accessorKey: "statement",
-        size: 38
+        size: 48
       },
       {
         header: "Themes",
@@ -229,7 +229,7 @@ export default function Table({
       {
         header: "Public",
         accessorKey: "public",
-        size: 10,
+        size: 8,
         cell: ({ row }) => {
           if (row.original.public) {
             return (
@@ -250,7 +250,8 @@ export default function Table({
       {
         header: "",
         accessorKey: "actions",
-        size: 12,
+        // Just wide enough for the kebab and the cell's own padding.
+        size: 6,
         cell: ({ row }) => {
           // console.log("filters:", filters);
           return (
@@ -272,6 +273,12 @@ export default function Table({
   const table = useReactTable({
     columns,
     data,
+    /* The sizes above are percentages of the table, not pixels. Without this
+       they were silently clamped to TanStack's default minSize of 20, so every
+       column asking for less came out the same width — which is why Part,
+       Public and the actions column were all identical however they were
+       declared. */
+    defaultColumn: { minSize: 0, maxSize: 100 },
     // debugTable: true,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
