@@ -1,8 +1,8 @@
 "use client";
 
-import React, { Dispatch, SetStateAction, useState, useEffect } from "react";
+import React, { Dispatch, SetStateAction } from "react";
 import styled from "styled-components";
-import { THEME_VALUES_FOR_PILLS } from "@/constants";
+import { THEME_VALUES_FOR_PILLS, type PillOption } from "@/constants";
 import { Pill, Label } from "@/app/components/ui/index";
 
 const Wrap = styled.div`
@@ -53,14 +53,12 @@ export default function ThemeSelector({
   themes: string[];
   setThemes: Dispatch<SetStateAction<string[]>>;
 }) {
-  const [availableTags, setAvailableTags] = useState<any[]>([]); // TODO: fix any
-
-  useEffect(() => {
-    const filteredTags = THEME_VALUES_FOR_PILLS.filter(
-      (theme) => !themes.includes(theme.value)
-    );
-    setAvailableTags(filteredTags);
-  }, [themes]);
+  /* Derived, not state. It was a useState kept in step by a useEffect, which
+     meant the first render always drew an empty list and the real one arrived
+     a frame later. It is a filter of a constant — there is nothing to store. */
+  const availableTags: PillOption[] = THEME_VALUES_FOR_PILLS.filter(
+    (theme) => !themes.includes(theme.value)
+  );
 
   const handleOnClickAdd = (newTheme: string) => {
     if (themes.includes(newTheme)) {

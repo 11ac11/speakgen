@@ -1,8 +1,15 @@
-export const THEME_VALUES_FOR_PILLS: {
+/**
+ * A tag as the interface draws it: the stored slug, the words shown to a
+ * teacher, and the two colours its pill uses. Exported because several
+ * components hold lists of these and were each describing them as `any`.
+ */
+export type PillOption = {
   value: string;
   label: string;
   colors: { bg: string; text: string };
-}[] = [
+};
+
+export const THEME_VALUES_FOR_PILLS: PillOption[] = [
   {
     value: "work_education",
     label: "Work/education",
@@ -95,11 +102,7 @@ export const THEME_VALUES_FOR_PILLS: {
   }
 ];
 
-export const PART_VALUES_FOR_PILLS: {
-  value: string;
-  label: string;
-  colors: { bg: string; text: string };
-}[] = [
+export const PART_VALUES_FOR_PILLS: PillOption[] = [
   {
     value: "part1",
     label: "Part 1",

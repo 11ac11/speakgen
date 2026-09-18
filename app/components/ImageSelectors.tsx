@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import styled from "styled-components";
+import type { Photo } from "pexels";
 import ImageSearchModal from "./ImageSearchModal";
 import { Label } from "./ui";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
@@ -59,9 +60,11 @@ const EmptyImageContainer = styled.div`
 `;
 
 interface ImageSelectorProps {
-  image: any; // TODO: Replace `any` with a proper type
-  setImage: (image: any) => void;
-  openModal: (setImage: (image: any) => void) => void;
+  image: Photo | null;
+  /* Only ever called with null, by the X that clears the slot. Choosing a
+     photograph goes through the modal, which the parent wires up itself. */
+  setImage: (image: Photo | null) => void;
+  openModal: () => void;
   loading: boolean;
 }
 
@@ -99,9 +102,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
       <LoadingSpinner />
     </div>
   ) : (
-    <EmptyImageContainer onClick={() => openModal(setImage)}>
-      Select image
-    </EmptyImageContainer>
+    <EmptyImageContainer onClick={openModal}>Select image</EmptyImageContainer>
   );
 };
 
@@ -110,15 +111,18 @@ const ImageSelectors = ({
   setImageIds,
   level
 }: {
-  imageIds: (string | null)[];
-  setImageIds: any;
+  /* A slot a teacher has not filled yet is a null in place, so the array keeps
+     its shape while it is being edited. Ids arrive from the database as
+     numbers and from the picker as whatever Photo.id is, hence both. */
+  imageIds: (number | string | null)[];
+  setImageIds: (ids: (number | null)[]) => void;
   level: string;
 }) => {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [selectedImageSetter, setSelectedImageSetter] = useState<
-    ((image: any) => void) | null
+    ((image: Photo) => void) | null
   >(null);
-  const [images, setImages] = useState<any[]>([]);
+  const [images, setImages] = useState<(Photo | null)[]>([]);
   const [loading, setLoading] = useState<boolean>(!!imageIds?.length);
 
   const minimumAmountOfImages = (() => {
@@ -139,7 +143,7 @@ const ImageSelectors = ({
   useDisableScroll(showModal);
 
   const openModal = (index: number) => {
-    setSelectedImageSetter(() => (image: any) => {
+    setSelectedImageSetter(() => (image: Photo) => {
       const updated = [...images];
       updated[index] = image;
       setImages(updated);
@@ -148,7 +152,7 @@ const ImageSelectors = ({
   };
 
   useEffect(() => {
-    const fetchImage = async (id: string | null) => {
+    const fetchImage = async (id: number | string | null) => {
       if (!id) return null;
       const numId = Number(id);
       if (isNaN(numId)) return null;
@@ -175,15 +179,19 @@ const ImageSelectors = ({
   }, [imageIds]);
 
   useEffect(() => {
-    const updatedIds = images.map((img) => img?.id || null);
+    const updatedIds = images.map((img) => img?.id ?? null);
     if (JSON.stringify(updatedIds) !== JSON.stringify(imageIds)) {
       setImageIds(updatedIds);
     }
   }, [images]);
 
-  const handleSetImageId = (id: string, index: number) => {
-    const newImageIds = [...imageIds];
-    newImageIds[index] = id;
+  /* Takes the photograph rather than an id, because the only caller is the
+     clear button handing back null. Typing it as a string hid that. */
+  const handleSetImageId = (image: Photo | null, index: number) => {
+    const newImageIds = imageIds.map((id) =>
+      id === null || id === undefined ? null : Number(id)
+    );
+    newImageIds[index] = image ? image.id : null;
     setImageIds(newImageIds);
   };
 

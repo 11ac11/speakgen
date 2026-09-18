@@ -14,6 +14,7 @@ import {
   filledImageIds,
   filledPrompts
 } from "@/lib/questionRules";
+import type { QuestionRow } from "@/lib/questions";
 
 const StyledForm = styled.form`
   display: flex;
@@ -49,7 +50,9 @@ const QuestionForm = ({
   partParam,
   levelParam
 }: {
-  question?: any; // TODO: change any type
+  /* Exactly what the edit page hands over: the row getQuestionById returns.
+     There is no separate form shape to keep in step with it. */
+  question?: QuestionRow;
   partParam?: string | undefined;
   levelParam?: string | undefined;
 }) => {
@@ -60,17 +63,21 @@ const QuestionForm = ({
   const [part, setPart] = useState(partParam || "");
   const [statement, setStatement] = useState(question?.statement || "");
   const [statementTwo, setStatementTwo] = useState(
-    question?.statement_two || ""
+    question?.statement_two ?? ""
   );
+  /* Optional index, not question?.instructions[0]: a question created before
+     instructions existed has an empty array, and the old form of this threw. */
   const [instructionOne, setInstructionOne] = useState(
-    question?.instructions[0]
+    question?.instructions?.[0] ?? ""
   );
   const [instructionTwo, setInstructionTwo] = useState(
-    question?.instructions[1] || "Now look at all the photos."
+    question?.instructions?.[1] || "Now look at all the photos."
   );
-  const [prompts, setPrompts] = useState<string[]>(question?.prompts || []);
-  const [themes, setThemes] = useState<string[]>(question?.themes || []);
-  const [imageIds, setImageIds] = useState(question?.image_ids || []);
+  const [prompts, setPrompts] = useState<string[]>(question?.prompts ?? []);
+  const [themes, setThemes] = useState<string[]>(question?.themes ?? []);
+  const [imageIds, setImageIds] = useState<(number | null)[]>(
+    question?.image_ids ?? []
+  );
   const [isPublic, setIsPublic] = useState(question?.public ?? true);
   const [loading, setLoading] = useState(false);
   const [createAnother, setCreateAnother] = useState(false);

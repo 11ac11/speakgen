@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import styled from "styled-components";
+import type { Photo } from "pexels";
 import { Input, Modal } from "@/app/components/ui/index";
 import useDebounce from "../utils/hooks/useDebounce";
 
@@ -23,11 +24,13 @@ const ImageSearchModal = ({
   setImage,
   closeModal
 }: {
-  setImage: React.Dispatch<any>;
+  setImage: (image: Photo) => void;
   closeModal: () => void;
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [imageResults, setImageResults] = useState([]);
+  // Photo is the pexels package's own type, so the shape here is the shape the
+  // API actually returns rather than a guess restated as `any`.
+  const [imageResults, setImageResults] = useState<Photo[]>([]);
 
   const debouncedSearchTerm = useDebounce(searchQuery, 300); // 300ms delay
 
@@ -42,8 +45,7 @@ const ImageSearchModal = ({
     }
   }, [debouncedSearchTerm]);
 
-  const handleOnClick = (image: any) => {
-    // TODO: fix any type
+  const handleOnClick = (image: Photo) => {
     setImage(image);
     closeModal();
     setSearchQuery("");
@@ -60,8 +62,7 @@ const ImageSearchModal = ({
           onChange={(e) => setSearchQuery(e)}
         />
         <ImageGrid>
-          {imageResults.map((image: any, index) => {
-            // TODO: fix any type
+          {imageResults.map((image, index) => {
             if (image) {
               return (
                 <div
@@ -78,7 +79,7 @@ const ImageSearchModal = ({
                     }}
                     height={100}
                     width={100}
-                    alt={image.alt}
+                    alt={image.alt ?? "Search result"}
                   />
                 </div>
               );
