@@ -70,8 +70,12 @@ const QuestionForm = ({
   const [instructionOne, setInstructionOne] = useState(
     question?.instructions?.[0] ?? ""
   );
+  /* Named, because the reset after "Create another" used to blank it while the
+     initial state carried this text — so the second question of a sitting
+     started with an empty box that had never looked empty before. */
+  const SECOND_INSTRUCTION = "Now look at all the photos.";
   const [instructionTwo, setInstructionTwo] = useState(
-    question?.instructions?.[1] || "Now look at all the photos."
+    question?.instructions?.[1] || SECOND_INSTRUCTION
   );
   const [prompts, setPrompts] = useState<string[]>(question?.prompts ?? []);
   const [themes, setThemes] = useState<string[]>(question?.themes ?? []);
@@ -198,7 +202,7 @@ interest.`;
       setStatement("");
       setStatementTwo("");
       setInstructionOne("");
-      setInstructionTwo("");
+      setInstructionTwo(SECOND_INSTRUCTION);
       setPrompts([]);
       setThemes([]);
       setImageIds([]);
@@ -219,7 +223,17 @@ interest.`;
           label="Level"
           options={SUPPORTED_LEVELS}
           value={level.toUpperCase()}
-          onChange={(val) => setLevel(val.toLowerCase())}
+          onChange={(val) => {
+            const next = val.toLowerCase();
+            setLevel(next);
+            /* B2 and C1 both have four parts, so today nothing can go wrong.
+               C2 has three, and the moment it is offered here a Part 4 left
+               over from another level would be a combination that cannot be
+               saved. Clearing it costs nothing and removes the trap. */
+            if (part && !getQuestionPartOptions(next).includes(part)) {
+              setPart("");
+            }
+          }}
           placeholder="-"
           width="100px"
           disabled={isEdit}
