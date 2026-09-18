@@ -160,7 +160,11 @@ body {
    lie about what was on screen. The measure is now the page's own, declared
    with .page below. */
 main {
-  padding: 2rem 1.5rem 0;
+  /* The bottom padding is what keeps the last thing on a page off the footer's
+     top rule. It was 0, so anything ending flush — an ad unit, a card, a table
+     — touched the border. Set here rather than on each of those, because the
+     gap belongs to the page, not to whatever happens to be last in it. */
+  padding: 2rem 1.5rem 4rem;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
@@ -191,7 +195,7 @@ main {
 
 @media only screen and (max-width: 600px) {
   main {
-    padding: 1.5rem 1rem 0;
+    padding: 1.5rem 1rem 3rem;
   }
 }
 
