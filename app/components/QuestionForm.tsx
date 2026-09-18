@@ -308,12 +308,17 @@ interest.`;
           preventing, so the rule that is holding it back is named. */}
       {partShapeError ? <Hint>{partShapeError}</Hint> : null}
       {formError ? <FormError role="alert">{formError}</FormError> : null}
+      {/* Submitting is the form's job, not the button's. This used to call
+          handleSubmit from onClick while also being a submit button by
+          default, so a click ran it twice — two POSTs and two questions. When
+          a required field was empty the browser blocked the native submit and
+          the onClick fired anyway, saving a row that skipped validation. The
+          sign-in and sign-up forms already did it this way. */}
       <Button
-        onClick={() =>
-          handleSubmit(new Event("submit") as unknown as React.FormEvent)
-        }
+        onClick={() => undefined}
+        type="submit"
         text={loading ? "Saving..." : isEdit ? "Update" : "Save"}
-        isAsync={true}
+        isAsync={false}
         disabled={!allFieldsCompleted || loading}
       />
     </StyledForm>

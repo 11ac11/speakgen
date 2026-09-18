@@ -61,7 +61,10 @@ const Prompts = ({
                 return newTags;
               })
             }
-            required
+            /* Not required: a Part 3 takes three to five prompts, so two of
+               these five boxes are legitimately empty. Marking them all
+               required made the browser demand every one. The real rule is
+               checkPartShape, which counts the ones that are filled. */
             minLength={3}
             maxLength={30}
             placeholder={placeholders[index]}
