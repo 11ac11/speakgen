@@ -1,10 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 
 const Wrap = styled.div<{ width?: string }>`
   display: flex;
   flex-direction: column;
   width: ${({ width }) => width || "100%"};
+`;
+
+/* A box on its own, in a table cell or a toolbar, where the meaning comes from
+   the column it sits in rather than from words beside it. */
+const BareWrap = styled.div`
+  display: inline-flex;
 `;
 
 const CheckboxContainer = styled.label<{ disabled?: boolean }>`
@@ -40,6 +46,26 @@ const StyledCheckbox = styled.input<{ error?: string }>`
     margin: 0 3px;
   }
 
+  &:indeterminate {
+    background-color: var(--leafgreen);
+    border-color: var(--leafgreen);
+  }
+
+  &:indeterminate::after {
+    content: "";
+    display: block;
+    width: 9px;
+    height: 2px;
+    background: #fff;
+    border-radius: 1px;
+    margin: 6px auto;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--green-600);
+    outline-offset: 2px;
+  }
+
   &:disabled {
     background-color: #eee;
     cursor: not-allowed;
@@ -70,6 +96,10 @@ type CustomCheckboxProps = {
   error?: string;
   width?: string;
   disabled?: boolean;
+  /** Neither all nor none: some of what this box stands for is selected. */
+  indeterminate?: boolean;
+  /** For a box with no visible label, which still has to say what it does. */
+  ariaLabel?: string;
 };
 
 const Checkbox: React.FC<CustomCheckboxProps> = ({
@@ -83,28 +113,48 @@ const Checkbox: React.FC<CustomCheckboxProps> = ({
   required = false,
   error,
   width,
-  disabled
+  disabled,
+  indeterminate,
+  ariaLabel
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setInputError(error);
   }, [error]);
 
+  // Indeterminate has no attribute: it is only reachable as a DOM property.
+  useEffect(() => {
+    if (inputRef.current) inputRef.current.indeterminate = !!indeterminate;
+  }, [indeterminate]);
+
+  const box = (
+    <StyledCheckbox
+      ref={inputRef}
+      type="checkbox"
+      name={name}
+      checked={checked}
+      onChange={(e) => onChange(e.target.checked)}
+      onClick={onClick}
+      onBlur={onBlur}
+      required={required}
+      error={inputError}
+      disabled={disabled}
+      aria-label={ariaLabel}
+    />
+  );
+
+  // A label element around a box with nothing to say wraps empty space, which
+  // a pointer can then toggle from anywhere in the cell.
+  if (!label) {
+    return <BareWrap className={className}>{box}</BareWrap>;
+  }
+
   return (
     <Wrap className={className} width={width}>
       <CheckboxContainer disabled={disabled}>
-        <StyledCheckbox
-          type="checkbox"
-          name={name}
-          checked={checked}
-          onChange={(e) => onChange(e.target.checked)}
-          onClick={onClick}
-          onBlur={onBlur}
-          required={required}
-          error={inputError}
-          disabled={disabled}
-        />
+        {box}
         <span>{label}</span>
       </CheckboxContainer>
       {inputError && <ErrorMessage>{inputError}</ErrorMessage>}
