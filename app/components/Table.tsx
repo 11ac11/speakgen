@@ -82,6 +82,12 @@ const SortToggle = styled.div<{ $sortable: boolean }>`
   }
 `;
 
+const DeleteError = styled.p`
+  margin: 0 0 0.75rem;
+  font-size: var(--text-sm);
+  color: var(--danger);
+`;
+
 const TableData = styled.td`
   padding: 0.7rem 0.75rem;
   vertical-align: middle;
@@ -105,6 +111,7 @@ export default function Table({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [sorting, setSorting] = useState<SortingState>([]);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   async function fetchQuestions() {
     try {
@@ -146,23 +153,24 @@ export default function Table({
     }
   }, [filters, ownerId]);
 
+  /* No alert on success: the row disappearing is the confirmation, and a
+     native dialog in the middle of a designed page is a jolt. A failure does
+     need saying, so it is said in the page rather than in a browser box. */
   const handleDelete = async (id: number) => {
+    setDeleteError(null);
     try {
       const response = await fetch(`/api/questions/${id}`, {
         method: "DELETE"
       });
 
       if (response.ok) {
-        const result = await response.json();
-        alert(result.message); // Show a success message (can be customized)
         fetchQuestions();
       } else {
-        const error = await response.json();
-        alert(error.error); // Show an error message
+        const body = await response.json().catch(() => null);
+        setDeleteError(body?.error ?? "Could not delete that question.");
       }
-    } catch (error) {
-      console.error("Error deleting the question:", error);
-      alert("Failed to delete the question. Please try again.");
+    } catch {
+      setDeleteError("Could not delete that question. Please try again.");
     }
   };
 
@@ -279,6 +287,9 @@ export default function Table({
 
   return (
     <Scroller>
+      {deleteError ? (
+        <DeleteError role="alert">{deleteError}</DeleteError>
+      ) : null}
       <StyledTable>
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
