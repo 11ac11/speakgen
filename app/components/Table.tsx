@@ -53,7 +53,15 @@ const TableRow = styled.tr`
     background: var(--green-tint);
   }
 
-  &:hover .actions {
+  .actions {
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+  }
+
+  /* Held open while its menu is: otherwise moving the pointer towards the menu
+     leaves the row and takes the menu with it. */
+  &:hover .actions,
+  .actions[data-open="true"] {
     opacity: 1;
   }
 `;
@@ -562,8 +570,15 @@ export default function Table({
                       <TableData
                         key={cell.id}
                         style={{
+                          // The menu sits at the end of its row, the tick in
+                          // the middle of its column, everything else reads
+                          // from the left.
                           textAlign:
-                            cell.column.id === "public" ? "center" : "left"
+                            cell.column.id === "public"
+                              ? "center"
+                              : cell.column.id === "actions"
+                                ? "right"
+                                : "left"
                         }}
                       >
                         {flexRender(

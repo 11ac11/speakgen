@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import { Dropdown } from "@/app/components/ui";
 import { SUPPORTED_LEVELS } from "@/constants";
 import DashboardTable from "./DashboardTable";
 import { ExamThemes } from "@/app/components/ExamCards";
+import RowMenu from "@/app/components/ui/RowMenu";
 
 /* stretch, not center: the page sets the measure now, so everything inside
    lines up on the same left edge instead of each block centring itself at
@@ -68,30 +70,11 @@ const ExamCardWrap = styled.div`
   position: relative;
 `;
 
-const EditLink = styled(Link)`
+const CardMenu = styled(RowMenu)`
   position: absolute;
-  top: 0.9rem;
-  right: 1rem;
+  top: 0.8rem;
+  right: 0.9rem;
   z-index: 1;
-  padding: 0.3rem 0.7rem;
-  border-radius: var(--radius-control);
-  border: 1.5px solid var(--green-edge);
-  background: #fff;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--green-600);
-
-  &:hover,
-  &:focus-visible {
-    color: var(--green-600);
-    background: var(--green-tint);
-    border-color: var(--leafgreen);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--green-600);
-    outline-offset: 1px;
-  }
 `;
 
 const ExamCard = styled(Link)`
@@ -140,6 +123,24 @@ export default function TabContainer({
   exams: DashboardExam[];
 }) {
   const router = useRouter();
+  const [examError, setExamError] = useState<string | null>(null);
+
+  const handleDeleteExam = async (id: number) => {
+    setExamError(null);
+    try {
+      const res = await fetch(`/api/exams/${id}`, { method: "DELETE" });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setExamError(body?.error ?? "Could not delete that exam.");
+        return;
+      }
+      // The list came from the server, so it is the server that has to redraw
+      // it — and the exam count in the header along with it.
+      router.refresh();
+    } catch {
+      setExamError("Could not delete that exam. Please try again.");
+    }
+  };
 
   const atExamLimit =
     usage.exams.limit !== null && usage.exams.used >= usage.exams.limit;
@@ -187,6 +188,12 @@ export default function TabContainer({
             )}
           </ExamsHeader>
 
+          {examError ? (
+            <Empty role="alert" style={{ color: "var(--danger)" }}>
+              {examError}
+            </Empty>
+          ) : null}
+
           {exams.length === 0 ? (
             <Empty>
               You have not built an exam yet. Choose a level above to start one,
@@ -207,12 +214,24 @@ export default function TabContainer({
                       </span>
                       <ExamThemes themes={exam.themes} />
                     </ExamCard>
-                    <EditLink
-                      href={`/${exam.level}/exams/${exam.id}/edit`}
-                      aria-label={`Edit ${exam.title}`}
-                    >
-                      Edit
-                    </EditLink>
+                    <CardMenu
+                      ariaLabel={`Actions for ${exam.title}`}
+                      items={[
+                        {
+                          label: "Edit",
+                          href: `/${exam.level}/exams/${exam.id}/edit`
+                        },
+                        {
+                          label: "Delete",
+                          danger: true,
+                          /* Asked, unlike deleting a question: an exam is
+                             removed outright rather than soft-deleted, so
+                             there is nothing to put back. */
+                          confirm: `Delete "${exam.title}"?`,
+                          onSelect: () => handleDeleteExam(exam.id)
+                        }
+                      ]}
+                    />
                   </ExamCardWrap>
                 </li>
               ))}
