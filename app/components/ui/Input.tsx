@@ -8,7 +8,10 @@ const Wrap = styled.div<{ width: string | undefined }>`
   width: ${({ width }) => (width ? width : "100%")};
 `;
 
-const StyledInput = styled.input<{ error: string | undefined }>`
+const StyledInput = styled.input<{
+  error: string | undefined;
+  $invalid?: boolean;
+}>`
   font-family: var(--font-body), sans-serif;
   font-size: var(--text-base);
   color: var(--text-body);
@@ -49,15 +52,18 @@ const StyledInput = styled.input<{ error: string | undefined }>`
     border-color: var(--off-edge);
   }
 
-  ${({ error }) =>
-    !!error &&
+  ${({ error, $invalid }) =>
+    (!!error || $invalid) &&
     `
     border-color: var(--danger);
     box-shadow: 0 0 0 4px rgba(198, 64, 47, 0.14);
   `}
 `;
 
-const StyledTextArea = styled.textarea<{ error: string | undefined }>`
+const StyledTextArea = styled.textarea<{
+  error: string | undefined;
+  $invalid?: boolean;
+}>`
   border-radius: var(--radius-control);
   border: 1.5px solid var(--field-edge);
   outline: none;
@@ -86,8 +92,8 @@ const StyledTextArea = styled.textarea<{ error: string | undefined }>`
     cursor: not-allowed;
   }
 
-  ${({ error }) =>
-    !!error &&
+  ${({ error, $invalid }) =>
+    (!!error || $invalid) &&
     `
     border-color: var(--danger);
     box-shadow: 0 0 5px 2px rgba(255, 65, 80, 0.5);
@@ -115,7 +121,12 @@ type SecureInputProps = {
   placeholder?: string;
   minLength?: number;
   maxLength?: number;
+  /** This field's own problem: draws it red and prints the message beneath. */
   error?: string;
+  /** Part of a problem reported elsewhere: draws it red and prints nothing.
+      A sign-in refusal belongs to the pair of fields, not to either one, so
+      the message sits once under the form rather than twice under the boxes. */
+  invalid?: boolean;
   isDropdown?: boolean;
   width?: string;
   children?: any;
@@ -137,6 +148,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
   minLength,
   maxLength,
   error,
+  invalid,
   width,
   children,
   disabled,
@@ -196,6 +208,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
           minLength={minLength}
           maxLength={maxLength}
           error={inputError}
+          $invalid={invalid}
           className={`${className} shadow`}
           disabled={disabled}
         />
@@ -217,6 +230,7 @@ const SecureInput: React.FC<SecureInputProps> = ({
           minLength={minLength}
           maxLength={maxLength}
           error={inputError}
+          $invalid={invalid}
           className={`${className} shadow`}
           disabled={disabled}
         />

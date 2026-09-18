@@ -197,6 +197,9 @@ const LoginForm = () => {
           maxLength={254}
           placeholder="Enter your email"
           error={emailError}
+          /* A taken address is reported under the form, so the box it refers
+             to is marked without repeating the words. */
+          invalid={!emailError && /email|exist|user/i.test(formError)}
           name="email"
         />
         <Input
@@ -208,6 +211,7 @@ const LoginForm = () => {
           minLength={3}
           maxLength={128}
           placeholder=""
+          invalid={!!passwordError || /password/i.test(formError)}
           name="password"
         />
         <Input

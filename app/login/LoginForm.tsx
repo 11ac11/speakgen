@@ -189,12 +189,16 @@ const LoginForm = () => {
         <Divider />
       </OrContainer>
       <StyledForm onSubmit={handleSubmit}>
+        {/* Both fields are marked, not one: the server will not say which of
+            the two was wrong, and guessing here would be a worse lie than
+            colouring both. */}
         <Input
           label="Email"
           name="email"
           type="email"
           value={email}
           onChange={handleEmailChange}
+          invalid={!!error}
           required
           minLength={3}
           maxLength={254}
@@ -206,6 +210,7 @@ const LoginForm = () => {
           name="password"
           value={password}
           onChange={handlePasswordChange}
+          invalid={!!error}
           required
           minLength={3}
           maxLength={128}
