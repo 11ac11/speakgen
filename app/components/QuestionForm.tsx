@@ -209,6 +209,11 @@ interest.`;
 
   return (
     <StyledForm onSubmit={handleSubmit}>
+      {/* Fixed once a question exists. Neither travels in the update payload,
+          so these were editable controls that changed what the form drew and
+          then saved nothing: switch a Part 1 question to Part 3, add prompts,
+          and you got a Part 1 row carrying Part 3 prompts while believing you
+          had moved it. Read-only says what is actually true. */}
       <FormRow>
         <Dropdown
           label="Level"
@@ -217,6 +222,7 @@ interest.`;
           onChange={(val) => setLevel(val.toLowerCase())}
           placeholder="-"
           width="100px"
+          disabled={isEdit}
         />
         <Dropdown
           label="Part"
@@ -225,8 +231,15 @@ interest.`;
           onChange={setPart}
           placeholder="-"
           width="100px"
+          disabled={isEdit}
         />
       </FormRow>
+      {isEdit ? (
+        <Hint>
+          A question keeps the level and part it was written for. Write a new
+          one to cover a different part.
+        </Hint>
+      ) : null}
       {!!level && !!part && (
         <>
           {level === "c2" && part === "2" && (
