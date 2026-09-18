@@ -60,6 +60,40 @@ const ExamList = styled.ul`
   gap: 0.75rem;
 `;
 
+/* The card is one big link, so Edit cannot live inside it — an anchor inside
+   an anchor is not valid and browsers unpick it. It sits over the card as a
+   sibling instead, which also keeps the whole card clickable for running the
+   exam rather than shrinking the target to the title. */
+const ExamCardWrap = styled.div`
+  position: relative;
+`;
+
+const EditLink = styled(Link)`
+  position: absolute;
+  top: 0.9rem;
+  right: 1rem;
+  z-index: 1;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-control);
+  border: 1.5px solid var(--green-edge);
+  background: #fff;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--green-600);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--green-600);
+    background: var(--green-tint);
+    border-color: var(--leafgreen);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--green-600);
+    outline-offset: 1px;
+  }
+`;
+
 const ExamCard = styled(Link)`
   display: block;
   padding: 1rem 1.25rem;
@@ -71,6 +105,8 @@ const ExamCard = styled(Link)`
     font-size: var(--text-lg);
     color: var(--text-heading);
     margin: 0;
+    /* Clear of the Edit control sitting in the corner. */
+    padding-right: 4.5rem;
   }
 
   &:hover,
@@ -160,16 +196,24 @@ export default function TabContainer({
             <ExamList>
               {exams.map((exam) => (
                 <li key={exam.id}>
-                  <ExamCard
-                    href={`/${exam.level}/exams/${exam.id}`}
-                    className="glass"
-                  >
-                    <h3>{exam.title}</h3>
-                    <span>
-                      {`${exam.level.toUpperCase()} · ${exam.question_count} questions`}
-                    </span>
-                    <ExamThemes themes={exam.themes} />
-                  </ExamCard>
+                  <ExamCardWrap>
+                    <ExamCard
+                      href={`/${exam.level}/exams/${exam.id}`}
+                      className="glass"
+                    >
+                      <h3>{exam.title}</h3>
+                      <span>
+                        {`${exam.level.toUpperCase()} · ${exam.question_count} questions`}
+                      </span>
+                      <ExamThemes themes={exam.themes} />
+                    </ExamCard>
+                    <EditLink
+                      href={`/${exam.level}/exams/${exam.id}/edit`}
+                      aria-label={`Edit ${exam.title}`}
+                    >
+                      Edit
+                    </EditLink>
+                  </ExamCardWrap>
                 </li>
               ))}
             </ExamList>
