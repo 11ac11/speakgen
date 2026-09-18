@@ -61,6 +61,7 @@ const TableRow = styled.tr`
 const TableHeader = styled.th`
   text-align: left;
   padding: 0 0.75rem 0.6rem;
+  vertical-align: middle;
   font-size: var(--text-xs);
   font-weight: 600;
   letter-spacing: 0.07em;
@@ -70,11 +71,17 @@ const TableHeader = styled.th`
 
   &:first-child {
     padding-left: 0;
+    padding-right: 0;
   }
 `;
 
 const SortToggle = styled.div<{ $sortable: boolean }>`
-  display: inline-flex;
+  /* Full width rather than shrink-to-fit: a label still sits at the start of
+     the cell, the whole heading becomes the target for sorting rather than
+     just its words, and a header whose content centres itself — the select-all
+     box — can actually do so. */
+  display: flex;
+  width: 100%;
   align-items: center;
   gap: 0.3rem;
   cursor: ${({ $sortable }) => ($sortable ? "pointer" : "default")};
@@ -171,6 +178,7 @@ const TableData = styled.td`
 
   &:first-child {
     padding-left: 0;
+    padding-right: 0;
   }
 `;
 

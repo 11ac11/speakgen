@@ -8,9 +8,15 @@ const Wrap = styled.div<{ width?: string }>`
 `;
 
 /* A box on its own, in a table cell or a toolbar, where the meaning comes from
-   the column it sits in rather than from words beside it. */
+   the column it sits in rather than from words beside it.
+   Block-level flex rather than inline-flex: as an inline box it sat on the
+   text baseline, which left it a few pixels below the middle of a table row
+   and lower still on a row whose question wrapped to two lines. */
 const BareWrap = styled.div`
-  display: inline-flex;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
 `;
 
 const CheckboxContainer = styled.label<{ disabled?: boolean }>`
