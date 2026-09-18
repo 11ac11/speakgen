@@ -37,6 +37,31 @@ const Field = styled.label`
   }
 `;
 
+/* The same outline language as the empty theme box: transparent with a dashed
+   edge, so it reads as a space waiting to be filled rather than a control. */
+const BeforeNamed = styled.div`
+  background: transparent;
+  border: 1.5px dashed var(--field-edge);
+  border-radius: var(--radius-card);
+  padding: 2rem 1.5rem;
+  text-align: center;
+
+  strong {
+    display: block;
+    font-size: var(--text-lg);
+    color: var(--text-heading);
+    margin-bottom: 0.35rem;
+  }
+
+  span {
+    display: block;
+    max-width: 44ch;
+    margin: 0 auto;
+    font-size: var(--text-sm);
+    color: var(--text-muted);
+  }
+`;
+
 const TopBar = styled.div`
   display: flex;
   align-items: center;
@@ -211,8 +236,8 @@ export default function ExamBuilder({
     [questions]
   );
 
-  const complete =
-    title.trim().length > 0 && slots.every((s) => picked[slotKey(s)]);
+  const named = title.trim().length > 0;
+  const complete = named && slots.every((s) => picked[slotKey(s)]);
 
   /**
    * One random question per slot. The two Part 2 slots are filled from
@@ -308,113 +333,126 @@ export default function ExamBuilder({
           onChange={(e) => setTitle(e.target.value)}
           placeholder={`${levelLabel} — mock exam`}
           maxLength={120}
+          autoFocus
         />
       </Field>
 
-      <TopBar>
-        <p>Pick a question for each part, or start from a random set.</p>
-        <Button text="Randomise all parts" secondary onClick={randomise} />
-      </TopBar>
+      {/* The questions wait for a name. The title sat above a long list of
+          pickers, so it was easy to scroll past, choose five questions and
+          only then find out the exam could not be saved. */}
+      {!named ? (
+        <BeforeNamed>
+          <strong>Name this exam to start</strong>
+          <span>The questions for each part appear once it has a title.</span>
+        </BeforeNamed>
+      ) : (
+        <>
+          <TopBar>
+            <p>Pick a question for each part, or start from a random set.</p>
+            <Button text="Randomise all parts" secondary onClick={randomise} />
+          </TopBar>
 
-      {slots.map((slot) => {
-        const key = slotKey(slot);
-        const pool = byPart[slot.part] ?? [];
-        const chosenId = picked[key];
-        const chosen = chosenId ? byId.get(chosenId) : undefined;
-        const term = (search[key] ?? "").trim().toLowerCase();
-        const shown = term
-          ? pool.filter(
-              (q) =>
-                q.statement.toLowerCase().includes(term) ||
-                q.themes.some((t) => t.includes(term.replace(/\s+/g, "_")))
-            )
-          : pool;
+          {slots.map((slot) => {
+            const key = slotKey(slot);
+            const pool = byPart[slot.part] ?? [];
+            const chosenId = picked[key];
+            const chosen = chosenId ? byId.get(chosenId) : undefined;
+            const term = (search[key] ?? "").trim().toLowerCase();
+            const shown = term
+              ? pool.filter(
+                  (q) =>
+                    q.statement.toLowerCase().includes(term) ||
+                    q.themes.some((t) => t.includes(term.replace(/\s+/g, "_")))
+                )
+              : pool;
 
-        return (
-          <Slot key={key} className="glass">
-            <SlotHead>
-              <strong>{slotLabel(slot)}</strong>
-              {chosen ? (
-                <Button
-                  text="Change"
-                  secondary
-                  onClick={() =>
-                    setPicked((p) => {
-                      const next = { ...p };
-                      delete next[key];
-                      return next;
-                    })
-                  }
-                />
-              ) : (
-                <span
-                  style={{
-                    color: "var(--text-muted)",
-                    fontSize: "var(--text-xs)"
-                  }}
-                >
-                  {`${pool.length} available`}
-                </span>
-              )}
-            </SlotHead>
+            return (
+              <Slot key={key} className="glass">
+                <SlotHead>
+                  <strong>{slotLabel(slot)}</strong>
+                  {chosen ? (
+                    <Button
+                      text="Change"
+                      secondary
+                      onClick={() =>
+                        setPicked((p) => {
+                          const next = { ...p };
+                          delete next[key];
+                          return next;
+                        })
+                      }
+                    />
+                  ) : (
+                    <span
+                      style={{
+                        color: "var(--text-muted)",
+                        fontSize: "var(--text-xs)"
+                      }}
+                    >
+                      {`${pool.length} available`}
+                    </span>
+                  )}
+                </SlotHead>
 
-            {chosen ? (
-              <>
-                <Chosen>{chosen.statement}</Chosen>
-                <ThemePills themes={chosen.themes} />
-                <QuestionPreview question={chosen} />
-              </>
-            ) : pool.length === 0 ? (
-              <span
-                style={{
-                  color: "var(--text-muted)",
-                  fontSize: "var(--text-sm)"
-                }}
-              >
-                {`No ${levelLabel} Part ${slot.part} questions available yet.`}
-              </span>
-            ) : (
-              <>
-                {pool.length > 8 ? (
-                  <Search
-                    value={search[key] ?? ""}
-                    onChange={(e) =>
-                      setSearch((s) => ({ ...s, [key]: e.target.value }))
-                    }
-                    placeholder="Search these questions…"
-                  />
-                ) : null}
-                <List>
-                  {shown.map((question) => (
-                    <Row key={question.id}>
-                      <RowText>
-                        {question.statement}
-                        <ThemePills themes={question.themes} />
-                      </RowText>
-                      <AddButton
-                        type="button"
-                        aria-label={`Use "${question.statement.slice(0, 40)}"`}
-                        onClick={() =>
-                          setPicked((p) => ({ ...p, [key]: question.id }))
+                {chosen ? (
+                  <>
+                    <Chosen>{chosen.statement}</Chosen>
+                    <ThemePills themes={chosen.themes} />
+                    <QuestionPreview question={chosen} />
+                  </>
+                ) : pool.length === 0 ? (
+                  <span
+                    style={{
+                      color: "var(--text-muted)",
+                      fontSize: "var(--text-sm)"
+                    }}
+                  >
+                    {`No ${levelLabel} Part ${slot.part} questions available yet.`}
+                  </span>
+                ) : (
+                  <>
+                    {pool.length > 8 ? (
+                      <Search
+                        value={search[key] ?? ""}
+                        onChange={(e) =>
+                          setSearch((s) => ({ ...s, [key]: e.target.value }))
                         }
-                      >
-                        +
-                      </AddButton>
-                    </Row>
-                  ))}
-                  {shown.length === 0 ? (
-                    <Row>
-                      <RowText style={{ color: "var(--text-muted)" }}>
-                        Nothing matches that search.
-                      </RowText>
-                    </Row>
-                  ) : null}
-                </List>
-              </>
-            )}
-          </Slot>
-        );
-      })}
+                        placeholder="Search these questions…"
+                      />
+                    ) : null}
+                    <List>
+                      {shown.map((question) => (
+                        <Row key={question.id}>
+                          <RowText>
+                            {question.statement}
+                            <ThemePills themes={question.themes} />
+                          </RowText>
+                          <AddButton
+                            type="button"
+                            aria-label={`Use "${question.statement.slice(0, 40)}"`}
+                            onClick={() =>
+                              setPicked((p) => ({ ...p, [key]: question.id }))
+                            }
+                          >
+                            +
+                          </AddButton>
+                        </Row>
+                      ))}
+                      {shown.length === 0 ? (
+                        <Row>
+                          <RowText style={{ color: "var(--text-muted)" }}>
+                            Nothing matches that search.
+                          </RowText>
+                        </Row>
+                      ) : null}
+                    </List>
+                  </>
+                )}
+              </Slot>
+            );
+          })}
+        </>
+      )}
 
       {error ? (
         <p style={{ color: "var(--danger)", fontSize: "var(--text-sm)" }}>
