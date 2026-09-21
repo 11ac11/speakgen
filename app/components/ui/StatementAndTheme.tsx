@@ -18,18 +18,37 @@ const ThemesContainer = styled.div`
   display: flex;
 `;
 
+/* Quieter than the statement on purpose: it is what the interlocutor says to
+   set the task up, not the task itself. */
+const Instruction = styled.span`
+  margin: 0.5rem 1rem 0;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+`;
+
 export const StatementAndTheme = ({
   themes,
   statement,
   statementTwo,
+  instructions,
   smallFont = false
 }: {
   themes: string[];
   statement: string;
   statementTwo?: string;
+  /* C2 Part 2 runs in two phases over one set of photographs, and each phase
+     opens with its own line: "Look at photographs one and two", then "Now look
+     at all the photographs". They are indexed to match the statement being
+     shown, so the instruction changes with it. Every other part has none. */
+  instructions?: string[];
   smallFont?: boolean;
 }) => {
   const [statementToView, setStatementToView] = useState(statement);
+  const showingSecond = !!statementTwo && statementToView === statementTwo;
+  const instruction = instructions?.[showingSecond ? 1 : 0];
 
   useEffect(() => {
     setStatementToView(statement);
@@ -58,6 +77,7 @@ export const StatementAndTheme = ({
           <div key={index}>{renderPill(theme)}</div>
         ))}
       </ThemesContainer>
+      {!!instruction && <Instruction>{instruction}</Instruction>}
       <Statement $smallFont={smallFont}>{statementToView}</Statement>
       {!!statementTwo && statementToView !== statementTwo && (
         <Button

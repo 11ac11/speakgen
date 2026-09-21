@@ -135,7 +135,7 @@ const Part1or4 = ({ question }: { question: NewPart1QStructure }) => {
 };
 
 const Part2 = ({ question }: { question: Part2QStructure }) => {
-  const { image_ids, statement, statement_two } = question;
+  const { image_ids, statement, statement_two, instructions } = question;
 
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<any[]>([]);
@@ -172,6 +172,7 @@ const Part2 = ({ question }: { question: Part2QStructure }) => {
       <StatementAndTheme
         statement={statement}
         statementTwo={statement_two}
+        instructions={instructions}
         themes={question?.themes}
         smallFont
       />

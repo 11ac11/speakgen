@@ -81,7 +81,7 @@ const QuestionForm = ({
   /* Named, because the reset after "Create another" used to blank it while the
      initial state carried this text — so the second question of a sitting
      started with an empty box that had never looked empty before. */
-  const SECOND_INSTRUCTION = "Now look at all the photos.";
+  const SECOND_INSTRUCTION = "Now look at all the photographs.";
   const [instructionTwo, setInstructionTwo] = useState(
     question?.instructions?.[1] || SECOND_INSTRUCTION
   );
@@ -117,7 +117,12 @@ const QuestionForm = ({
         return "Tell me about where you live.";
       case "2":
         if (!isSecondStatement) {
-          return "Compare the two ways how people are enjoying listening to music";
+          /* C2's Part 2 is the collaborative task, not the long turn, so it
+             opens with a question the pair answer together about two of the
+             photographs rather than an instruction to compare. */
+          return level === "c2"
+            ? "Why might people choose to spend time in places like these?"
+            : "Compare the two ways how people are enjoying listening to music";
         } else {
           return `I'd like you to imagine that a television documentary is being produced on
 working in the food industry. These pictures show some of the issues that are
@@ -139,6 +144,16 @@ interest.`;
     }
   };
 
+  /* Which parts carry a second statement, and what it is, differs by level.
+     At C1 it is the second question above the photographs in Part 2 and the
+     "now decide..." phase of the Part 3 collaborative task. At C2 the
+     collaborative task is Part 2, so its second phase lives there — and Part 3
+     is the long turn, which has no second statement at all. Asking for one
+     there made the form demand a field nothing would ever read. */
+  const needsStatementTwo =
+    (level === "c1" && (part === "2" || part === "3")) ||
+    (level === "c2" && part === "2");
+
   const generatePromptPlaceholdersByLevel = () => {
     switch (level.toLowerCase()) {
       case "b2":
@@ -151,8 +166,14 @@ interest.`;
           "finding a job",
           "getting married"
         ];
+      /* The three ideas printed under the question on a C2 long-turn card.
+         Three, not five: the two empty boxes are legitimate, as at B2. */
       case "c2":
-        return [];
+        return [
+          "how attitudes form",
+          "the role of education",
+          "cost to society"
+        ];
       default:
         return [];
     }
@@ -280,7 +301,7 @@ interest.`;
               required
               minLength={1}
               maxLength={200}
-              placeholder={"Look at photo one"}
+              placeholder={"Look at photographs one and two."}
             />
           )}
           <Input
@@ -304,25 +325,24 @@ interest.`;
               required
               minLength={1}
               maxLength={200}
-              placeholder={"Now look at all the photos."}
+              placeholder={"Now look at all the photographs."}
               disabled={true}
             />
           )}
-          {(level === "c1" || level === "c2") &&
-            (part === "2" || part === "3") && (
-              <Input
-                name="statement-2"
-                label="Statement 2"
-                type="text"
-                value={statementTwo}
-                onChange={setStatementTwo}
-                required
-                minLength={1}
-                maxLength={500}
-                placeholder={generatePlaceholderByPart(true)}
-                isTextArea={true}
-              />
-            )}
+          {needsStatementTwo && (
+            <Input
+              name="statement-2"
+              label="Statement 2"
+              type="text"
+              value={statementTwo}
+              onChange={setStatementTwo}
+              required
+              minLength={1}
+              maxLength={500}
+              placeholder={generatePlaceholderByPart(true)}
+              isTextArea={true}
+            />
+          )}
           {part === "2" && (
             <ImageSelectors
               imageIds={imageIds}

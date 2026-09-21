@@ -49,6 +49,10 @@ export type Part2QStructure = {
   public: boolean;
   themes: string[];
   image_ids: number[];
+  /* C2 only, and optional because no B2 or C1 Part 2 has any: the line the
+     interlocutor reads before each phase of the collaborative task, "Look at
+     photographs one and two" and then "Now look at all the photographs". */
+  instructions?: string[];
 };
 
 export type Part3QStructure = {

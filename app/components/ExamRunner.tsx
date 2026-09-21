@@ -101,20 +101,23 @@ export default function ExamRunner({ exam }: { exam: Exam }) {
 
       {/*
         follow_up and decision are printed parts of the real task that the
-        Question component does not render: the 30-second question the other
-        candidate answers in Part 2, and the second-phase decision task in
-        Part 3. They are shown here as interlocutor notes.
+        Question component does not render: at B2 and C1, the 30-second question
+        the other candidate answers in Part 2 and the second-phase decision task
+        in Part 3; at C2, the minute-long response to a Part 3 long turn and the
+        discussion that closes the part. They are shown here as interlocutor
+        notes, under whatever heading the blueprint gives the task — the timings
+        differ by level, so the wording cannot live here.
       */}
-      {current.follow_up ? (
+      {current.follow_up && task?.followUpLabel ? (
         <Interlocutor className="glass">
-          <strong>Then ask the other candidate (about 30 seconds)</strong>
+          <strong>{task.followUpLabel}</strong>
           {current.follow_up}
         </Interlocutor>
       ) : null}
 
-      {current.decision ? (
+      {current.decision && task?.decisionLabel ? (
         <Interlocutor className="glass">
-          <strong>Then, after about two minutes (about one minute)</strong>
+          <strong>{task.decisionLabel}</strong>
           {current.decision}
         </Interlocutor>
       ) : null}

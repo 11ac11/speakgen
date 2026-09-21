@@ -223,7 +223,13 @@ for (const [name, path, expect] of [
   ["random runner part 3", "/b2/questions/random/3", 200],
   ["random runner, c1", "/c1/questions/random/2", 200],
   ["random runner, bad part", "/b2/questions/random/9", 404],
-  ["random runner, disabled level", "/c2/questions/random/1", 404],
+  ["random runner, c2", "/c2/questions/random/1", 200],
+  // C2 has three parts, so Part 4 is the level-shape guard rather than the
+  // whole level. This case used to assert that /c2/... 404s while C2 was
+  // disabled; 019 enabled it, and no level is disabled now, so the
+  // enabled = false branch of getLevel has no fixture left. "unknown level"
+  // below still covers the other way that guard rejects a URL.
+  ["random runner, c2 has no part 4", "/c2/questions/random/4", 404],
   ["edit page, missing id", "/b2/questions/99999", 404],
   ["edit page, non-numeric id", "/b2/questions/abc", 404],
   ["edit page, unknown level", "/nope/questions/1", 404]
