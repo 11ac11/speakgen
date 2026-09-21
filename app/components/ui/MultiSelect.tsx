@@ -45,7 +45,7 @@ const Control = styled.button<{ $active: boolean }>`
   text-align: center;
   color: ${(p) => (p.$active ? "var(--green-600)" : "var(--text-body)")};
   background: ${(p) => (p.$active ? "var(--green-tint)" : "#fff")};
-  border: 1px solid
+  border: 1.5px solid
     ${(p) => (p.$active ? "var(--green-edge)" : "var(--field-edge)")};
   border-radius: var(--radius-control);
 

@@ -65,6 +65,7 @@ export default function DashboardTable() {
         <LeftSide>
           <Dropdown
             label="Level"
+            compact
             width={"100px"}
             value={filters.level.toUpperCase()}
             options={SUPPORTED_LEVELS}
@@ -77,6 +78,7 @@ export default function DashboardTable() {
           />
           <Dropdown
             label="Part"
+            compact
             disabled={filters.level === "all"}
             width={"100px"}
             value={capitalizeFirstLetter(filters.part)}

@@ -181,7 +181,9 @@ const MenuLink = styled(Link)`
    six lines of repetition for two facts, in a menu whose only real job is
    letting a teacher pick their level. */
 const MenuNote = styled.li`
-  padding: 0 0.7rem 0.5rem;
+  padding: 0.45rem 0.7rem 0.6rem;
+  margin-bottom: 0.35rem;
+  border-bottom: 1px solid var(--verylightgrey);
   font-size: var(--text-xs);
   line-height: 1.45;
   color: var(--text-muted);
@@ -348,7 +350,7 @@ export default function Nav() {
             {SUPPORTED_LEVELS.map((level) => (
               <li key={`exams-${level}`}>
                 <MenuLink href={`/${level.toLowerCase()}/exams`}>
-                  {`${level} exams`}
+                  <strong>{`${level} exams`}</strong>
                 </MenuLink>
               </li>
             ))}
@@ -369,7 +371,7 @@ export default function Nav() {
             {SUPPORTED_LEVELS.map((level) => (
               <li key={`random-${level}`}>
                 <MenuLink href={`/${level.toLowerCase()}/questions/random/1`}>
-                  {`${level} random questions`}
+                  <strong>{`${level} random questions`}</strong>
                 </MenuLink>
               </li>
             ))}

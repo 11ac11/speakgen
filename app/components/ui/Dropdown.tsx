@@ -104,12 +104,26 @@ const InputWrapper = styled.div`
   align-items: center;
 `;
 
-const StyledInput = styled(Input)<{ disabled: boolean | undefined }>`
+const StyledInput = styled(Input)<{
+  disabled: boolean | undefined;
+  $compact?: boolean;
+}>`
   & input {
     text-align: center;
     caret-color: transparent;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    /* The toolbar height, not the form height. A dropdown in a form sits in a
+       column of 48px fields and matches them; in the dashboard toolbar it sits
+       beside 44px buttons and a 44px multi-select, and being the only 48px
+       thing there left its bottom edge proud of everything next to it. */
+    ${({ $compact }) =>
+      $compact &&
+      `
+        min-height: 44px;
+        padding: 0.6rem 0.9rem;
+      `}
   }
 
   ${({ disabled }) =>
@@ -146,6 +160,8 @@ interface DropdownProps {
   width?: string | undefined;
   inputAsButton?: boolean | undefined;
   isDashboardButton?: boolean | undefined;
+  /** Toolbar sizing: 44px to sit level with the buttons beside it. */
+  compact?: boolean | undefined;
   secondary?: boolean | undefined;
   disabled?: boolean | undefined;
 }
@@ -162,7 +178,8 @@ export const Dropdown = ({
   inputAsButton,
   isDashboardButton,
   secondary,
-  disabled
+  disabled,
+  compact
 }: DropdownProps) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -207,6 +224,7 @@ export const Dropdown = ({
               />
             ) : (
               <StyledInput
+                $compact={compact}
                 onClick={toggleDropdown}
                 value={value}
                 onChange={() => {}}
