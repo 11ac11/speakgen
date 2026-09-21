@@ -187,19 +187,36 @@ const COUNT_CHOICES = [5, 10, 15, 20];
 
 type Preset = "mix" | "theme" | "part";
 
+/** The practice being edited, when the form is opened on an existing one. */
+export type EditingPractice = {
+  id: number;
+  title: string;
+  part: number | null;
+  themes: string[];
+  question_count: number;
+};
+
 export default function PracticeBuilder({
   level,
-  levelLabel
+  levelLabel,
+  practice
 }: {
   level: string;
   levelLabel: string;
+  practice?: EditingPractice;
 }) {
   const router = useRouter();
+  const isEdit = !!practice;
 
-  const [title, setTitle] = useState("");
-  const [part, setPart] = useState<string | null>(null);
-  const [themes, setThemes] = useState<string[]>([]);
-  const [count, setCount] = useState(10);
+  /* The part is a string here because that is what the dropdown and the query
+     string deal in; the row stores a number, so it is widened on the way in and
+     narrowed again by the API's schema. */
+  const [title, setTitle] = useState(practice?.title ?? "");
+  const [part, setPart] = useState<string | null>(
+    practice?.part != null ? String(practice.part) : null
+  );
+  const [themes, setThemes] = useState<string[]>(practice?.themes ?? []);
+  const [count, setCount] = useState(practice?.question_count ?? 10);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -284,30 +301,40 @@ export default function PracticeBuilder({
     setSaving(true);
     setError(null);
 
+    /* The level is only sent on create. On an edit it is read from the row —
+       changing it would be a different practice, not an edit of this one. */
     try {
-      const res = await fetch("/api/practices", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          level,
-          title: title.trim(),
-          part,
-          themes,
-          question_count: count
-        })
-      });
+      const res = await fetch(
+        isEdit ? `/api/practices/${practice.id}` : "/api/practices",
+        {
+          method: isEdit ? "PATCH" : "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            ...(isEdit ? {} : { level }),
+            title: title.trim(),
+            part,
+            themes,
+            question_count: count
+          })
+        }
+      );
 
       if (!res.ok) {
         const body = await res.json().catch(() => null);
-        setError(body?.error ?? "Could not create the practice");
+        setError(
+          body?.error ?? `Could not ${isEdit ? "save" : "create"} the practice`
+        );
         setSaving(false);
         return;
       }
 
-      const created = await res.json();
-      router.push(`/${level}/practices/${created.id}`);
+      const saved = await res.json();
+      router.push(`/${level}/practices/${isEdit ? practice.id : saved.id}`);
+      // The run page draws a new set on every render, so it has to be re-run
+      // rather than served from the client cache this navigation would use.
+      router.refresh();
     } catch {
-      setError("Could not create the practice");
+      setError(`Could not ${isEdit ? "save" : "create"} the practice`);
       setSaving(false);
     }
   };
@@ -521,10 +548,24 @@ export default function PracticeBuilder({
         <Button
           text="Cancel"
           secondary
-          onClick={() => router.push("/dashboard?tab=practices")}
+          onClick={() =>
+            router.push(
+              isEdit
+                ? `/${level}/practices/${practice.id}`
+                : "/dashboard?tab=practices"
+            )
+          }
         />
         <Button
-          text={saving ? "Creating…" : "Create practice"}
+          text={
+            saving
+              ? isEdit
+                ? "Saving…"
+                : "Creating…"
+              : isEdit
+                ? "Save changes"
+                : "Create practice"
+          }
           disabled={!canSave || saving}
           onClick={save}
         />

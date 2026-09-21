@@ -347,6 +347,10 @@ export default function TabContainer({
                       ariaLabel={`Actions for ${practice.title}`}
                       items={[
                         {
+                          label: "Edit",
+                          href: `/${practice.level}/practices/${practice.id}/edit`
+                        },
+                        {
                           label: "Delete",
                           danger: true,
                           confirm: `Delete "${practice.title}"?`,

@@ -5,8 +5,12 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Table from "../components/Table";
-import { Button, Dropdown, QuickStart } from "../components/ui";
-import { getQuestionPartOptions, SUPPORTED_LEVELS } from "@/constants";
+import { Button, Dropdown, MultiSelect, QuickStart } from "../components/ui";
+import {
+  getQuestionPartOptions,
+  SUPPORTED_LEVELS,
+  THEME_VALUES_FOR_PILLS
+} from "@/constants";
 
 const FiltersRow = styled.div`
   display: flex;
@@ -35,7 +39,14 @@ const Dashboardbutton = styled(Button)`
 `;
 
 export default function DashboardTable() {
-  const [filters, setFilters] = useState({ part: "all", level: "b2" });
+  /* themes is a list because a question carries several and a teacher looking
+     for "technology or the future" wants both, the same OR the practice builder
+     uses. Empty means any, so the default filters nothing out. */
+  const [filters, setFilters] = useState<{
+    part: string;
+    level: string;
+    themes: string[];
+  }>({ part: "all", level: "b2", themes: [] });
   const router = useRouter();
   const { data: session } = authClient.useSession();
   const ownerId = session?.user?.id || "";
@@ -70,6 +81,15 @@ export default function DashboardTable() {
                 ...prevFilters,
                 part: value.toLowerCase()
               }))
+            }
+          />
+          <MultiSelect
+            label="Themes"
+            width={"150px"}
+            options={THEME_VALUES_FOR_PILLS}
+            selected={filters.themes}
+            onChange={(themes) =>
+              setFilters((prevFilters) => ({ ...prevFilters, themes }))
             }
           />
         </LeftSide>

@@ -240,11 +240,14 @@ export default function Table({
     }
   }
 
+  /* Level and part only: those two decide what is fetched, and themes are
+     applied to the rows that come back. Depending on the whole filters object
+     refetched the same questions every time a theme was ticked. */
   useEffect(() => {
     if (ownerId) {
       fetchQuestions();
     }
-  }, [filters, ownerId]);
+  }, [filters.level, filters.part, ownerId]);
 
   // A selection is a set of question ids, and the ids on screen change with
   // the filter, so keeping it would act on rows nobody can see.
@@ -426,9 +429,24 @@ export default function Table({
     [data]
   );
 
+  /* Themes are filtered here rather than in the request. A question carries
+     its themes in the row already, the table draws twenty rows of whatever it
+     has, and going back to the server for a subset of what is on screen would
+     make ticking a theme feel slower than it is.
+
+     ANY of the chosen themes, not all: the same OR the practice builder uses,
+     because a teacher ticking two is widening the net rather than asking for
+     questions tagged with both. */
+  const visible = useMemo(() => {
+    if (!filters.themes?.length) return data;
+    return data.filter((question) =>
+      question.themes?.some((theme: string) => filters.themes.includes(theme))
+    );
+  }, [data, filters.themes]);
+
   const table = useReactTable({
     columns,
-    data,
+    data: visible,
     /* The sizes above are percentages of the table, not pixels. Without this
        they were silently clamped to TanStack's default minSize of 20, so every
        column asking for less came out the same width — which is why Part,
@@ -452,7 +470,20 @@ export default function Table({
 
   if (loading) return <p>Loading questions...</p>;
   if (error) return <p>Error: {error}</p>;
+  /* Two different empty states. Nothing at this level and part is "write one";
+     nothing at these themes is "untick one", and saying "no questions found"
+     for both left a teacher with ninety B2 questions wondering where they had
+     gone. */
   if (data.length === 0) return <p>No questions found for this selection.</p>;
+  if (visible.length === 0) {
+    return (
+      <p>
+        {`None of your ${data.length} questions here carry ${
+          filters.themes.length === 1 ? "that theme" : "any of those themes"
+        }.`}
+      </p>
+    );
+  }
 
   const selectedIds = table
     .getSelectedRowModel()

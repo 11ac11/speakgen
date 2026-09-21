@@ -1,6 +1,9 @@
 import { sql } from "@/lib/db";
 import { parseId } from "@/lib/ids";
-import { getOwningOrganizationId } from "@/lib/organizations";
+import {
+  getOwningOrganizationId,
+  getUserOrganizationIds
+} from "@/lib/organizations";
 import {
   practiceReadPredicate,
   questionReadPredicate,
@@ -236,6 +239,74 @@ export async function createPractice(
       input.title,
       input.part,
       input.question_count,
+      input.themes
+    ]
+  )) as unknown as { id: number }[];
+
+  return rows[0] ?? null;
+}
+
+/**
+ * Everything about a practice is editable, because everything about it is the
+ * filter: the level is the only thing that is not, and changing that would be a
+ * different practice rather than an edit of this one.
+ *
+ * Scoped to the author or a colleague at the school that owns it, exactly as
+ * updateExam is. Reading a practice is not the same as being able to change it:
+ * a house practice is readable by everyone and editable by nobody, which falls
+ * out of owner_id IS NULL matching neither branch.
+ *
+ * Themes are synced rather than replaced, for the reason updateQuestion gives:
+ * a delete-then-insert in one statement collides, because data-modifying CTEs
+ * do not see each other's effects and a re-saved theme would be dropped.
+ */
+export async function updatePractice(
+  ownerId: string,
+  id: string,
+  input: Omit<PracticeInput, "level">
+): Promise<{ id: number } | null> {
+  const practiceId = parseId(id);
+  if (practiceId === null) return null;
+
+  const organizationIds = await getUserOrganizationIds(ownerId);
+  const scope =
+    organizationIds.length === 0
+      ? { clause: `owner_id = $5`, params: [ownerId] as unknown[] }
+      : {
+          clause: `(owner_id = $5 OR organization_id = ANY($6::uuid[]))`,
+          params: [ownerId, organizationIds] as unknown[]
+        };
+
+  // $1..$4 are the id, title, part and count; the scope takes what follows,
+  // and the theme array comes after that.
+  const themesParam = `$${4 + scope.params.length + 1}`;
+
+  const rows = (await sql(
+    `WITH target AS (
+       UPDATE content.practices
+          SET title = $2, part = $3, question_count = $4
+        WHERE id = $1 AND ${scope.clause}
+        RETURNING id
+     ), added AS (
+       INSERT INTO content.practice_themes (practice_id, theme_slug)
+       SELECT t.id, s.slug
+         FROM target t, unnest(${themesParam}::text[]) AS s(slug)
+       ON CONFLICT (practice_id, theme_slug) DO NOTHING
+       RETURNING 1
+     ), removed AS (
+       DELETE FROM content.practice_themes pt
+        USING target t
+        WHERE pt.practice_id = t.id
+          AND NOT (pt.theme_slug = ANY(${themesParam}::text[]))
+       RETURNING 1
+     )
+     SELECT id::int AS id FROM target`,
+    [
+      practiceId,
+      input.title,
+      input.part,
+      input.question_count,
+      ...scope.params,
       input.themes
     ]
   )) as unknown as { id: number }[];
