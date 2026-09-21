@@ -175,15 +175,6 @@ const MenuLink = styled(Link)`
   }
 `;
 
-const MenuHeading = styled.li`
-  padding: 0.45rem 0.7rem 0.25rem;
-  font-size: var(--text-xs);
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--text-faint);
-`;
-
 /* What the section gives you, said once under its heading.
    It used to hang off each level's link, so "Run a complete speaking test"
    appeared three times and "Drawn one at a time, nothing saved" three more —
@@ -194,42 +185,6 @@ const MenuNote = styled.li`
   font-size: var(--text-xs);
   line-height: 1.45;
   color: var(--text-muted);
-`;
-
-/* The levels themselves are a set of three, so they read as a row rather than
-   a stack: the choice is which level, and three words side by side is the
-   shortest way to ask it. */
-const LevelRow = styled.li`
-  display: flex;
-  gap: 0.4rem;
-  padding: 0 0.7rem 0.6rem;
-`;
-
-const LevelLink = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 44px;
-  flex: 1;
-  padding: 0.5rem 0.75rem;
-  border-radius: var(--radius-control);
-  border: 1px solid var(--field-edge);
-  background: #fff;
-  font-size: var(--text-sm);
-  font-weight: 500;
-  color: var(--text-heading);
-
-  &:hover,
-  &:focus-visible {
-    color: var(--green-600);
-    background: var(--green-tint);
-    border-color: var(--green-edge);
-  }
-
-  &:focus-visible {
-    outline: 2px solid var(--green-600);
-    outline-offset: -2px;
-  }
 `;
 
 /* The one call to action in the bar, so it is the only filled thing in it. */
@@ -370,46 +325,54 @@ export default function Nav() {
         </Title>
 
         <NavList ref={listRef}>
-          {/* Present whether or not you are signed in, because the house
-              content is what a teacher opens in the lesson itself. The label
-              is not: "Free" is aimed at someone deciding whether to sign up,
-              and reads as an advert once they have. */}
-          <Dropdown
-            label={isAuthenticated ? "Practise" : "Free"}
-            open={openMenu === "free"}
-            onOpen={() => setOpenMenu("free")}
-            onClose={() => close("free")}
-          >
-            <MenuHeading>Complete exams</MenuHeading>
-            <MenuNote>
-              All parts in order, about 15 minutes for a pair.
-            </MenuNote>
-            <LevelRow>
-              {SUPPORTED_LEVELS.map((level) => (
-                <LevelLink
-                  key={`exams-${level}`}
-                  href={`/${level.toLowerCase()}/exams`}
-                >
-                  {level}
-                </LevelLink>
-              ))}
-            </LevelRow>
+          {/* Two menus rather than one with two headings. Exams and single
+              questions are different enough to be different errands, and a tab
+              each means the list inside is just levels — which is what has to
+              scale when a fourth and fifth arrive.
 
-            {/* "question practice" until practices existed, which then read as
-                the saved thing under My work. The word belongs to that now, so
-                this says what it actually gives you. */}
-            <MenuHeading>Random questions</MenuHeading>
-            <MenuNote>One at a time, any part. Nothing is saved.</MenuNote>
-            <LevelRow>
-              {SUPPORTED_LEVELS.map((level) => (
-                <LevelLink
-                  key={`random-${level}`}
-                  href={`/${level.toLowerCase()}/questions/random/1`}
-                >
-                  {level}
-                </LevelLink>
-              ))}
-            </LevelRow>
+              Both are house content, so both are free; the labels say what they
+              are rather than that, because "Free" is aimed at someone deciding
+              whether to sign up and reads as an advert once they have. The note
+              inside carries it instead, where it answers a question rather than
+              making a claim. */}
+          <Dropdown
+            label="Exams"
+            open={openMenu === "exams"}
+            onOpen={() => setOpenMenu("exams")}
+            onClose={() => close("exams")}
+          >
+            <MenuNote>
+              A complete speaking test, all parts in order. Free, no account
+              needed.
+            </MenuNote>
+            {SUPPORTED_LEVELS.map((level) => (
+              <li key={`exams-${level}`}>
+                <MenuLink href={`/${level.toLowerCase()}/exams`}>
+                  {`${level} exams`}
+                </MenuLink>
+              </li>
+            ))}
+          </Dropdown>
+
+          {/* "question practice" until practices existed, which then read as
+              the saved thing under My work. The word belongs to that now, so
+              this says what it actually gives you. */}
+          <Dropdown
+            label="Practise"
+            open={openMenu === "practise"}
+            onOpen={() => setOpenMenu("practise")}
+            onClose={() => close("practise")}
+          >
+            <MenuNote>
+              One question at a time, any part. Nothing is saved.
+            </MenuNote>
+            {SUPPORTED_LEVELS.map((level) => (
+              <li key={`random-${level}`}>
+                <MenuLink href={`/${level.toLowerCase()}/questions/random/1`}>
+                  {`${level} random questions`}
+                </MenuLink>
+              </li>
+            ))}
           </Dropdown>
 
           {isAuthenticated ? (
