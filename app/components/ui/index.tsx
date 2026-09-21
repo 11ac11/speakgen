@@ -4,7 +4,7 @@ import { Dropdown } from "./Dropdown";
 import Pill from "./Pill";
 import Actions from "./Actions";
 import { Label } from "./Label";
-import QuickStart from "./QuickStart";
+import RandomQuestion from "./RandomQuestion";
 import Modal from "./Modal";
 import Checkbox from "./Checkbox";
 import { MultiSelect } from "./MultiSelect";
@@ -16,7 +16,7 @@ export {
   Pill,
   Actions,
   Label,
-  QuickStart,
+  RandomQuestion,
   Modal,
   Checkbox,
   MultiSelect

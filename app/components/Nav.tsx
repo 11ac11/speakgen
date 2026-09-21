@@ -332,7 +332,7 @@ export default function Nav() {
             onOpen={() => setOpenMenu("free")}
             onClose={() => close("free")}
           >
-            <MenuHeading>Full practice exams</MenuHeading>
+            <MenuHeading>Complete exams</MenuHeading>
             {SUPPORTED_LEVELS.map((level) => (
               <li key={`exams-${level}`}>
                 <MenuLink href={`/${level.toLowerCase()}/exams`}>
@@ -341,12 +341,15 @@ export default function Nav() {
                 </MenuLink>
               </li>
             ))}
-            <MenuHeading>Single questions</MenuHeading>
+            {/* "question practice" until practices existed, which then read as
+                the saved thing under My work. The word belongs to that now, so
+                this says what it actually gives you. */}
+            <MenuHeading>One question at a time</MenuHeading>
             {SUPPORTED_LEVELS.map((level) => (
               <li key={`random-${level}`}>
                 <MenuLink href={`/${level.toLowerCase()}/questions/random/1`}>
-                  <strong>{`${level} question practice`}</strong>
-                  <small>A random question to work through</small>
+                  <strong>{`${level} random question`}</strong>
+                  <small>Drawn one at a time, nothing saved</small>
                 </MenuLink>
               </li>
             ))}
@@ -370,6 +373,12 @@ export default function Nav() {
                   <MenuLink href="/dashboard?tab=exams">
                     <strong>My exams</strong>
                     <small>Exams you have built</small>
+                  </MenuLink>
+                </li>
+                <li>
+                  <MenuLink href="/dashboard?tab=practices">
+                    <strong>My practices</strong>
+                    <small>Saved rules that draw a new set each run</small>
                   </MenuLink>
                 </li>
                 <li>

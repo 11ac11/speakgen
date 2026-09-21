@@ -139,10 +139,13 @@ export default function Footer() {
                 </Link>
               </li>
             ))}
+            {/* "questions" was ambiguous once My questions and practices both
+                existed: this is the random draw, not a bank and not a saved
+                rule. */}
             {SUPPORTED_LEVELS.map((level) => (
               <li key={`random-${level}`}>
                 <Link href={`/${level.toLowerCase()}/questions/random/1`}>
-                  {`${level} questions`}
+                  {`${level} random questions`}
                 </Link>
               </li>
             ))}

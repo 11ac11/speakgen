@@ -5,7 +5,12 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Table from "../components/Table";
-import { Button, Dropdown, MultiSelect, QuickStart } from "../components/ui";
+import {
+  Button,
+  Dropdown,
+  MultiSelect,
+  RandomQuestion
+} from "../components/ui";
 import {
   getQuestionPartOptions,
   SUPPORTED_LEVELS,
@@ -99,7 +104,7 @@ export default function DashboardTable() {
             onClick={() => router.push("/questions/new")}
             isDashboardButton
           />
-          <QuickStart isDashboardButton />
+          <RandomQuestion isDashboardButton />
         </RightSide>
       </FiltersRow>
       <Table ownerId={ownerId} filters={filters} />

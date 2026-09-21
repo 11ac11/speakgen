@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { QuickStart } from "./components/ui";
+import { RandomQuestion } from "./components/ui";
 import Image from "next/image";
 import styled from "styled-components";
 
@@ -91,7 +91,7 @@ export default function LandingContent() {
           <SubTitle>
             Realistic English Speaking Exam Practice for Students and Teachers.
           </SubTitle>
-          <QuickStart />
+          <RandomQuestion />
         </LeftSide>
         <RightSide>
           <ImageContainer>
