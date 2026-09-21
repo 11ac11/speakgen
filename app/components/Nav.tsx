@@ -184,6 +184,54 @@ const MenuHeading = styled.li`
   color: var(--text-faint);
 `;
 
+/* What the section gives you, said once under its heading.
+   It used to hang off each level's link, so "Run a complete speaking test"
+   appeared three times and "Drawn one at a time, nothing saved" three more —
+   six lines of repetition for two facts, in a menu whose only real job is
+   letting a teacher pick their level. */
+const MenuNote = styled.li`
+  padding: 0 0.7rem 0.5rem;
+  font-size: var(--text-xs);
+  line-height: 1.45;
+  color: var(--text-muted);
+`;
+
+/* The levels themselves are a set of three, so they read as a row rather than
+   a stack: the choice is which level, and three words side by side is the
+   shortest way to ask it. */
+const LevelRow = styled.li`
+  display: flex;
+  gap: 0.4rem;
+  padding: 0 0.7rem 0.6rem;
+`;
+
+const LevelLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-control);
+  border: 1px solid var(--field-edge);
+  background: #fff;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-heading);
+
+  &:hover,
+  &:focus-visible {
+    color: var(--green-600);
+    background: var(--green-tint);
+    border-color: var(--green-edge);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--green-600);
+    outline-offset: -2px;
+  }
+`;
+
 /* The one call to action in the bar, so it is the only filled thing in it. */
 const SignUp = styled(Link)`
   display: inline-flex;
@@ -333,26 +381,35 @@ export default function Nav() {
             onClose={() => close("free")}
           >
             <MenuHeading>Complete exams</MenuHeading>
-            {SUPPORTED_LEVELS.map((level) => (
-              <li key={`exams-${level}`}>
-                <MenuLink href={`/${level.toLowerCase()}/exams`}>
-                  <strong>{`${level} exams`}</strong>
-                  <small>Run a complete speaking test</small>
-                </MenuLink>
-              </li>
-            ))}
+            <MenuNote>
+              All parts in order, about 15 minutes for a pair.
+            </MenuNote>
+            <LevelRow>
+              {SUPPORTED_LEVELS.map((level) => (
+                <LevelLink
+                  key={`exams-${level}`}
+                  href={`/${level.toLowerCase()}/exams`}
+                >
+                  {level}
+                </LevelLink>
+              ))}
+            </LevelRow>
+
             {/* "question practice" until practices existed, which then read as
                 the saved thing under My work. The word belongs to that now, so
                 this says what it actually gives you. */}
-            <MenuHeading>One question at a time</MenuHeading>
-            {SUPPORTED_LEVELS.map((level) => (
-              <li key={`random-${level}`}>
-                <MenuLink href={`/${level.toLowerCase()}/questions/random/1`}>
-                  <strong>{`${level} random question`}</strong>
-                  <small>Drawn one at a time, nothing saved</small>
-                </MenuLink>
-              </li>
-            ))}
+            <MenuHeading>Random questions</MenuHeading>
+            <MenuNote>One at a time, any part. Nothing is saved.</MenuNote>
+            <LevelRow>
+              {SUPPORTED_LEVELS.map((level) => (
+                <LevelLink
+                  key={`random-${level}`}
+                  href={`/${level.toLowerCase()}/questions/random/1`}
+                >
+                  {level}
+                </LevelLink>
+              ))}
+            </LevelRow>
           </Dropdown>
 
           {isAuthenticated ? (
