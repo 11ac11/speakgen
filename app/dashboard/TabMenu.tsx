@@ -16,10 +16,18 @@ const TabContainer = styled.div`
   border-bottom: 1px solid var(--field-edge);
 `;
 
+/* The order the work happens in: questions are written first, then gathered
+   into exams and practices. */
+const LABELS: [string, string][] = [
+  ["questions", "My Questions"],
+  ["exams", "My Exams"],
+  ["practices", "My Practices"]
+];
+
 export default function TabMenu({
   activeTab
 }: {
-  activeTab: "questions" | "exams";
+  activeTab: "questions" | "exams" | "practices";
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,11 +40,11 @@ export default function TabMenu({
 
   return (
     <TabContainer role="tablist">
-      {["questions", "exams"].map((tab) => (
+      {LABELS.map(([tab, label]) => (
         <Tab
           key={tab}
           onClick={() => handleTabChange(tab)}
-          text={tab === "questions" ? "My Questions" : "My Exams"}
+          text={label}
           isActive={tab === activeTab}
         />
       ))}

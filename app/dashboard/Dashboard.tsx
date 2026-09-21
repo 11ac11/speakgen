@@ -6,10 +6,11 @@ import * as React from "react";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { getUsage } from "@/lib/limits";
 import { listExams } from "@/lib/exams";
+import { listPractices } from "@/lib/practices";
 import { getViewer } from "@/lib/questionAccess";
 import AdSlot from "@/app/components/ads/AdSlot";
 
-const validTabs = ["questions", "exams"] as const;
+const validTabs = ["questions", "exams", "practices"] as const;
 type Tab = (typeof validTabs)[number];
 
 export default async function Dashboard({ tab }: { tab: string | undefined }) {
@@ -29,7 +30,11 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
   // chance of the client being told a limit it can edit.
   const [usage, viewer] = await Promise.all([getUsage(userId), getViewer()]);
 
-  const allExams = await listExams(viewer);
+  const [allExams, allPractices] = await Promise.all([
+    listExams(viewer),
+    listPractices(viewer)
+  ]);
+
   const myExams = allExams
     .filter((exam) => exam.owner_id === userId)
     .map((exam) => ({
@@ -40,14 +45,29 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
       themes: exam.themes
     }));
 
+  /* Filtered here rather than in the query for the same reason as exams: the
+     listing a teacher may read includes house content and their school's, and
+     this tab is the narrower "mine". */
+  const myPractices = allPractices
+    .filter((practice) => practice.owner_id === userId)
+    .map((practice) => ({
+      id: practice.id,
+      level: practice.level,
+      title: practice.title,
+      part: practice.part,
+      question_count: practice.question_count,
+      themes: practice.themes
+    }));
+
   return (
     <div className="page">
       <TabMenu activeTab={activeTab} />
       <Suspense fallback={<p>Loading content...</p>}>
         <TabContainer
           activeTab={activeTab}
-          usage={{ exams: usage.exams }}
+          usage={{ exams: usage.exams, practices: usage.practices }}
           exams={myExams}
+          practices={myPractices}
         />
       </Suspense>
       <AdSlot placement="dashboard" />

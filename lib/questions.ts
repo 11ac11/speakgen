@@ -16,7 +16,7 @@ import type { QuestionPayload } from "@/lib/questionRules";
  * `public` boolean, and id is cast to int. Only storage changed in this pass.
  */
 
-const QUESTION_FIELDS = `
+export const QUESTION_FIELDS = `
   q.id::int                  AS id,
   q.level,
   q.part::text               AS part,
@@ -32,7 +32,7 @@ const QUESTION_FIELDS = `
   (q.visibility = 'public')  AS public
 `;
 
-const THEMES_FROM_TABLE = `
+export const THEMES_FROM_TABLE = `
   COALESCE(
     (SELECT array_agg(qt.theme_slug ORDER BY qt.theme_slug)
        FROM content.question_themes qt

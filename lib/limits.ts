@@ -20,12 +20,13 @@ export class PlanLimitError extends Error {
 }
 
 async function countOwned(resource: LimitedResource, ownerId: string) {
-  // Practices do not exist yet. When they do, this gains a branch rather than
-  // the callers gaining a second code path.
-  if (resource === "practices") return 0;
+  // The table name is chosen here rather than interpolated from the resource,
+  // so the only two values it can take are the two written out.
+  const table =
+    resource === "practices" ? "content.practices" : "content.exams";
 
   const rows = (await sql(
-    `SELECT count(*)::int AS n FROM content.exams WHERE owner_id = $1`,
+    `SELECT count(*)::int AS n FROM ${table} WHERE owner_id = $1`,
     [ownerId]
   )) as unknown as { n: number }[];
 
@@ -68,6 +69,9 @@ export async function getUsage(ownerId: string) {
       used: await countOwned("exams", ownerId),
       limit: entitlements.exams
     },
-    practices: { used: 0, limit: entitlements.practices }
+    practices: {
+      used: await countOwned("practices", ownerId),
+      limit: entitlements.practices
+    }
   };
 }

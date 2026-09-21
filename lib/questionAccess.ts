@@ -88,3 +88,33 @@ export function examReadPredicate(
 
   return { clause: `(${clauses.join(" OR ")})`, params };
 }
+
+/**
+ * Which practices a viewer may read. The same three ways in as an exam: house
+ * content, your own, or your school's.
+ *
+ * Unlike an exam, reaching a practice does not decide which questions are in
+ * it. A practice draws from whatever the viewer running it may read, through
+ * questionReadPredicate, so the same practice run by its author and by a
+ * colleague in another school legitimately draws from different pools. That
+ * falls out of the design rather than being a rule imposed here: a practice
+ * stores a filter, and a filter is evaluated against the reader.
+ */
+export function practiceReadPredicate(
+  viewer: Viewer,
+  nextParamIndex: number
+): { clause: string; params: unknown[] } {
+  if (viewer.kind !== "user") {
+    return { clause: `p.owner_id IS NULL`, params: [] };
+  }
+
+  const clauses = [`p.owner_id IS NULL`, `p.owner_id = $${nextParamIndex}`];
+  const params: unknown[] = [viewer.userId];
+
+  if (viewer.organizationIds.length > 0) {
+    params.push(viewer.organizationIds);
+    clauses.push(`p.organization_id = ANY($${nextParamIndex + 1}::uuid[])`);
+  }
+
+  return { clause: `(${clauses.join(" OR ")})`, params };
+}
