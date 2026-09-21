@@ -438,10 +438,6 @@ export default function Nav() {
             </>
           ) : (
             <>
-              <NavItem>
-                <NavLink href="/pricing">Plans</NavLink>
-              </NavItem>
-
               <Dropdown
                 label="About"
                 open={openMenu === "about"}
@@ -460,6 +456,10 @@ export default function Nav() {
                   </MenuLink>
                 </li>
               </Dropdown>
+
+              <NavItem>
+                <NavLink href="/pricing">Plans</NavLink>
+              </NavItem>
 
               <NavItem>
                 <NavLink href="/login">Log in</NavLink>
