@@ -77,9 +77,24 @@ export const Prose = styled.div`
     margin: 0 0 1.25rem;
   }
 
+  /* The markers are put back deliberately. auth-ui ships Tailwind's preflight,
+     which sets list-style: none on every ul in the app — right for the nav and
+     footer, which are lists of links, wrong for a list inside a page of prose,
+     where the items were reading as loose indented sentences. */
   ul {
     margin: 0 0 1.25rem;
-    padding-left: 1.25rem;
+    padding-left: 1.4rem;
+    list-style: disc;
+  }
+
+  ol {
+    margin: 0 0 1.25rem;
+    padding-left: 1.4rem;
+    list-style: decimal;
+  }
+
+  li::marker {
+    color: var(--text-faint);
   }
 
   li {
@@ -91,9 +106,24 @@ export const Prose = styled.div`
     color: var(--text-heading);
   }
 
-  a {
+  /* globals.css gives a link inside a paragraph the inline treatment. A list
+     item in prose is running text too, so it gets the same — scoped here
+     rather than globally, because matching list items in globals would catch
+     every nav and footer link. */
+  li a {
     color: var(--green-600);
     font-weight: 500;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+    transition:
+      color 0.12s ease,
+      text-decoration-thickness 0.12s ease;
+  }
+
+  li a:hover {
+    color: var(--green-800);
+    text-decoration-thickness: 2px;
   }
 `;
 

@@ -260,6 +260,35 @@ a {
   text-decoration: none;
 }
 
+/* Inline links: the ones that are a word inside a sentence.
+   Most links in this app are not that — nav items, cards, footer columns and
+   buttons are all anchors, which is why the rule above strips decoration from
+   everything. This puts it back exactly where a link sits in running text, and
+   `p a` is the selector that says so: nav and footer links live in `li`, so
+   matching on that would underline the whole chrome.
+   Prose adds `li a` for its own lists, where a list item is running text too. */
+p a {
+  color: var(--green-600);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  transition:
+    color 0.12s ease,
+    text-decoration-thickness 0.12s ease;
+}
+
+p a:hover {
+  color: var(--green-800);
+  text-decoration-thickness: 2px;
+}
+
+p a:focus-visible {
+  outline: 2px solid var(--green-600);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
 a:hover {
   color: white;
 }
