@@ -2,52 +2,33 @@
 
 import React from "react";
 import styled from "styled-components";
+import { Prose } from "@/app/components/Prose";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  max-width: var(--page-max);
-  color: var(--text-muted);
-  font-size: var(--text-lg);
-
-  h2 {
-    margin: 0 0 1rem 0;
-    color: var(--text-body);
-  }
-
-  p {
-    font-size: var(--text-lg);
-    margin: 0 0 2rem 0;
-  }
-
-  ul {
-    margin: 0 0 2rem 0;
-  }
-`;
-
+/* No bottom margin: the h2 inside the next Section owns the gap between
+   sections, so the two were stacking and pushing headings a long way from the
+   paragraph they follow. */
 const Section = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 `;
 
 export default function AboutContent() {
   return (
-    <Container className={"container"}>
+    <Prose className={"container"}>
       <h1>About Speakgen</h1>
       <Section>
         <h2>{`Why this exists`}</h2>
         <p>
           {`Hi! I’m the creator of `}
-          <span style={{ fontWeight: "600" }}>{`Speakgen`}</span>
+          <strong>{`Speakgen`}</strong>
           {`—a simple, modern tool built to help teachers and students prepare for English speaking exams more effectively.`}
         </p>
         <p>
           {`Before I became a software developer, I worked as an `}
-          <span style={{ fontWeight: "600" }}>{`English teacher`}</span>
+          <strong>{`English teacher`}</strong>
           {`. Like many others, I relied heavily on printouts, photocopies, and a growing pile of paper resources just to simulate speaking exams like the `}
-          <span style={{ fontWeight: "600" }}>{`Cambridge First (FCE)`}</span>
+          <strong>{`Cambridge First (FCE)`}</strong>
           {` or `}
-          <span style={{ fontWeight: "600" }}>{`Advanced (CAE)`}</span>
+          <strong>{`Advanced (CAE)`}</strong>
           {`. It worked—but it was clunky, time-consuming, and hard to personalize.`}
         </p>
       </Section>
@@ -57,24 +38,18 @@ export default function AboutContent() {
         <p>
           {`After switching careers into tech, I saw a clear opportunity: `}
           <br />
-          <span
-            style={{ fontWeight: "600" }}
-          >{`Why not build a digital tool`}</span>
+          <strong>{`Why not build a digital tool`}</strong>
           {` that makes it easy to generate and organize realistic speaking practice—without the admin hassle?`}
         </p>
         <p>{`Speakgen is the result:`}</p>
         <ul>
           <li>
             {`A platform where `}
-            <span
-              style={{ fontWeight: "600" }}
-            >{`students can self-practice`}</span>
+            <strong>{`students can self-practice`}</strong>
           </li>
           <li>
             {`A tool for `}
-            <span
-              style={{ fontWeight: "600" }}
-            >{`teachers to build tailored question sets`}</span>
+            <strong>{`teachers to build tailored question sets`}</strong>
           </li>
           <li>
             {`A clean, focused experience with no fluff—just what you need to simulate the exam`}
@@ -86,9 +61,9 @@ export default function AboutContent() {
         <h2>{`🎯 The Mission`}</h2>
         <p>
           {`To make `}
-          <span style={{ fontWeight: "600" }}>
+          <strong>
             {`speaking exam practice accessible, flexible, and paper-free`}
-          </span>
+          </strong>
           {`, for learners and educators everywhere.`}
         </p>
       </Section>
@@ -100,25 +75,25 @@ export default function AboutContent() {
     </p>
     <ul>
       <li>
-        <span style={{ fontWeight: "600" }}>
+        <strong>
           {`Support for more exam types`}
-        </span>
+        </strong>
         {` (e.g., IELTS, CAE, CPE)`}
       </li>
       <li>
-        <span style={{ fontWeight: "600" }}>
+        <strong>
           {`Audio recording and feedback tools`}
-        </span>
+        </strong>
       </li>
       <li>
-        <span style={{ fontWeight: "600" }}>
+        <strong>
           {`Teacher-student collaboration features`}
-        </span>
+        </strong>
       </li>
       <li>
-        <span style={{ fontWeight: "600" }}>
+        <strong>
           {`Progress tracking and analytics`}
-        </span>
+        </strong>
       </li>
     </ul>
   </Section> */}
@@ -131,13 +106,14 @@ export default function AboutContent() {
     </p>
   </Section> */}
 
+      {/* The closing paragraph sat outside this Section, so its heading was
+          orphaned above a section break and the two drifted apart. */}
       <Section>
         <h2>{`🤝 Thanks for Visiting`}</h2>
+        <p>
+          {`Whether you're a teacher prepping your class or a student working on your own, I hope Speakgen helps make your journey to fluency a little smoother—and a lot more efficient.`}
+        </p>
       </Section>
-
-      <p>
-        {`Whether you're a teacher prepping your class or a student working on your own, I hope Speakgen helps make your journey to fluency a little smoother—and a lot more efficient.`}
-      </p>
-    </Container>
+    </Prose>
   );
 }

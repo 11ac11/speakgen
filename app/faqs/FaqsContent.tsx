@@ -2,35 +2,18 @@
 
 import React from "react";
 import styled from "styled-components";
+import { Prose } from "@/app/components/Prose";
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  max-width: var(--page-max);
-  color: var(--text-muted);
-
-  h2 {
-    margin: 0 0 1rem 0;
-    color: var(--text-body);
-  }
-
-  p {
-    margin: 0 0 2rem 0;
-  }
-
-  ul {
-    margin: 0 0 2rem 0;
-  }
-`;
-
+/* No bottom margin: the h2 inside the next Section owns the gap between
+   sections, so the two were stacking and pushing headings a long way from the
+   paragraph they follow. */
 const Section = styled.div`
-  margin-bottom: 1rem;
+  margin-bottom: 0;
 `;
 
 export default function FaqsContent() {
   return (
-    <Container className={"container"}>
+    <Prose className={"container"}>
       <h1>Frequently asked questions</h1>
       <Section>
         <h2>{`What is Speakgen?`}</h2>
@@ -70,6 +53,6 @@ export default function FaqsContent() {
           </li>
         </ul>
       </Section>
-    </Container>
+    </Prose>
   );
 }
