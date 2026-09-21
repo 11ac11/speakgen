@@ -28,7 +28,16 @@ const Label = styled.label`
   color: var(--text-label);
 `;
 
-const Control = styled.button<{ $active: boolean }>`
+/* The field's own styles, not an approximation of them. It sits in a row with
+   two Dropdowns whose control is an Input, so it borrows that: the white
+   ground, the 1.5px edge, the hover token and — the part that was missing —
+   the green focus ring. An open menu counts as focus here, because the control
+   is doing the same job as a focused field while its list is showing.
+
+   No tinted background when themes are chosen. The summary already reads "2
+   themes" rather than "Any", which says the filter is on without making this
+   the one control in the row that changes colour. */
+const Control = styled.button<{ $open: boolean }>`
   appearance: none;
   width: 100%;
   box-sizing: border-box;
@@ -40,25 +49,39 @@ const Control = styled.button<{ $active: boolean }>`
   min-height: 44px;
   padding: 0.6rem 1.9rem 0.6rem 0.9rem;
   cursor: pointer;
-  font-family: inherit;
+  font-family: var(--font-body), sans-serif;
   font-size: var(--text-base);
   text-align: center;
-  color: ${(p) => (p.$active ? "var(--green-600)" : "var(--text-body)")};
-  background: ${(p) => (p.$active ? "var(--green-tint)" : "#fff")};
-  border: 1.5px solid
-    ${(p) => (p.$active ? "var(--green-edge)" : "var(--field-edge)")};
+  color: var(--text-body);
+  background: #fff;
+  border: 1.5px solid var(--field-edge);
   border-radius: var(--radius-control);
+  outline: none;
+  /* The same lift the Input gets from the global .shadow class it sets on
+     itself, so this does not sit flat between two raised fields. Focus
+     replaces it with the ring, exactly as it does on an Input. */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
 
   &:hover {
-    border-color: var(--lightgrey);
+    border-color: var(--field-edge-hover);
   }
 
+  /* Focus is the one place the bright brand green earns its keep. */
   &:focus-visible {
-    outline: 2px solid var(--green-600);
-    outline-offset: 2px;
+    border-color: var(--green-600);
+    box-shadow: 0 0 0 4px rgba(98, 204, 84, 0.28);
   }
-`;
 
+  ${(p) =>
+    p.$open &&
+    `
+      border-color: var(--green-600);
+      box-shadow: 0 0 0 4px rgba(98, 204, 84, 0.28);
+    `}
+`;
 const Arrow = styled.span<{ $isOpen: boolean }>`
   position: absolute;
   right: 10px;
@@ -208,7 +231,7 @@ export const MultiSelect = ({
       {label && <Label>{label}</Label>}
       <Control
         type="button"
-        $active={selected.length > 0}
+        $open={isOpen}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         onClick={() => setIsOpen((open) => !open)}
