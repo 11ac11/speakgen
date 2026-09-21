@@ -6,6 +6,7 @@ import { Button } from "@/app/components/ui";
 import Timer from "@/app/components/Timer";
 import { Actions, Bar, Step, Steps } from "@/app/components/RunnerBar";
 import { getCambridgeSpeakingTask } from "@/lib/cambridgeBlueprints";
+import { getQuestionPartOptions } from "@/constants";
 
 export const QuestionControls = ({
   part,
@@ -21,8 +22,9 @@ export const QuestionControls = ({
   const suggestedSeconds =
     getCambridgeSpeakingTask(levelCode, part)?.suggestedSeconds ?? 0;
 
-  // C2 has three parts, the other levels four.
-  const parts = levelCode === "c2" ? ["1", "2", "3"] : ["1", "2", "3", "4"];
+  // C2 has three parts, the other levels four. QUESTION_LEVELS mirrors
+  // content.level_parts, so this reads the shape rather than restating it.
+  const parts = getQuestionPartOptions(levelCode);
 
   return (
     <Bar>

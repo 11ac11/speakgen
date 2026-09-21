@@ -9,6 +9,7 @@ import { createQuestion, updateQuestion } from "@/services/questionService";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ImageSelectors from "./ImageSelectors";
 import { getQuestionPartOptions, SUPPORTED_LEVELS } from "@/constants";
+import { getCambridgeSpeakingTask } from "@/lib/cambridgeBlueprints";
 import {
   checkPartShape,
   filledImageIds,
@@ -85,6 +86,13 @@ const QuestionForm = ({
   const [instructionTwo, setInstructionTwo] = useState(
     question?.instructions?.[1] || SECOND_INSTRUCTION
   );
+  /* The other half of a real task, and until now only reachable through SQL:
+     every user-written Part 2 in the database has no follow-up question and
+     every user-written Part 3 no decision, because the form never sent either.
+     The house content has both, which left teachers unable to write the thing
+     they were being shown. */
+  const [followUp, setFollowUp] = useState(question?.follow_up ?? "");
+  const [decision, setDecision] = useState(question?.decision ?? "");
   const [prompts, setPrompts] = useState<string[]>(question?.prompts ?? []);
   const [themes, setThemes] = useState<string[]>(question?.themes ?? []);
   const [imageIds, setImageIds] = useState<(number | null)[]>(
@@ -144,15 +152,24 @@ interest.`;
     }
   };
 
-  /* Which parts carry a second statement, and what it is, differs by level.
-     At C1 it is the second question above the photographs in Part 2 and the
-     "now decide..." phase of the Part 3 collaborative task. At C2 the
-     collaborative task is Part 2, so its second phase lives there — and Part 3
-     is the long turn, which has no second statement at all. Asking for one
-     there made the form demand a field nothing would ever read. */
-  const needsStatementTwo =
-    (level === "c1" && (part === "2" || part === "3")) ||
-    (level === "c2" && part === "2");
+  /* Which extra fields a task has is a property of the task, so the blueprint
+     decides rather than another level-and-part switch here. A task that gives
+     the interlocutor a line for follow_up or decision is exactly a task that
+     has one to write, and that line doubles as the hint under the box. */
+  const task = getCambridgeSpeakingTask(level, part);
+  const needsFollowUp = !!task?.followUpLabel;
+  const needsDecision = !!task?.decisionLabel;
+
+  /* Only C2's Part 2 has a second statement: it is the second phase of the
+     collaborative task, which the runner reveals behind a button.
+
+     The form used to offer one for C1 Part 2 and Part 3 as well. Neither was
+     right. C1 Part 2 asks its second question in the statement itself — every
+     house question does, on its own line — and a C1 Part 3 "now decide..."
+     is the decision field below, which is why 021 moves the one row that got
+     it wrong. Both were `required`, so the form was demanding text that then
+     rendered behind a button meant for a task C1 does not have. */
+  const needsStatementTwo = level === "c2" && part === "2";
 
   const generatePromptPlaceholdersByLevel = () => {
     switch (level.toLowerCase()) {
@@ -187,9 +204,17 @@ interest.`;
     setFormError(null);
     const requestData = {
       statement: statement,
-      statement_two: statementTwo,
       themes: themes,
       public: isPublic,
+      /* Each of these travels only when the task actually has it. The update
+         route assigns a column only when its key is present, so omitting one
+         leaves it alone rather than blanking it — which is what lets a teacher
+         edit a house question without stripping the parts of it the form is
+         not showing them. statement_two used to be sent unconditionally, so
+         editing any B2 question quietly cleared it. */
+      ...(needsStatementTwo && { statement_two: statementTwo }),
+      ...(needsFollowUp && { follow_up: followUp }),
+      ...(needsDecision && { decision: decision }),
       ...(part === "2" && {
         image_ids: filledImageIds(imageIds),
         /* Instructions are a C2 idea: only that level shows the two boxes, and
@@ -238,6 +263,8 @@ interest.`;
       setStatementTwo("");
       setInstructionOne("");
       setInstructionTwo(SECOND_INSTRUCTION);
+      setFollowUp("");
+      setDecision("");
       setPrompts([]);
       setThemes([]);
       setImageIds([]);
@@ -357,6 +384,50 @@ interest.`;
               placeholders={generatePromptPlaceholdersByLevel()}
             />
           )}
+          {/* Below the photographs and prompts because that is the order the
+              test runs them in: the task first, then what the interlocutor
+              says once the candidate has finished. Optional, unlike the
+              statement — a Part 2 without a follow-up is an incomplete task
+              but still a usable one, and six of the seven house B2 Part 2s
+              have one rather than all seven. */}
+          {needsFollowUp && (
+            <Input
+              name="follow-up"
+              label="Follow-up question"
+              type="text"
+              value={followUp}
+              onChange={setFollowUp}
+              maxLength={500}
+              placeholder={
+                level === "c2"
+                  ? "Do you think people are too quick to trust a machine?"
+                  : "Which of these jobs would you find most stressful?"
+              }
+              isTextArea={true}
+            />
+          )}
+          {needsFollowUp && task?.followUpLabel ? (
+            <Hint>{`The interlocutor reads this as: “${task.followUpLabel}”.`}</Hint>
+          ) : null}
+          {needsDecision && (
+            <Input
+              name="decision"
+              label={level === "c2" ? "Closing discussion" : "Decision task"}
+              type="text"
+              value={decision}
+              onChange={setDecision}
+              maxLength={500}
+              placeholder={
+                level === "c2"
+                  ? "Who should be held responsible when a decision turns out to be wrong?"
+                  : "Now decide which two a growing city should prioritise."
+              }
+              isTextArea={true}
+            />
+          )}
+          {needsDecision && task?.decisionLabel ? (
+            <Hint>{`The interlocutor reads this as: “${task.decisionLabel}”.`}</Hint>
+          ) : null}
           <ThemeSelector label="Themes" themes={themes} setThemes={setThemes} />
           <Checkbox
             checked={isPublic}
