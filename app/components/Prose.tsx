@@ -15,12 +15,12 @@ import styled from "styled-components";
  *                the title. --text-xl for a section heading puts a real gap
  *                above the body and a clearer one below the title.
  *
- *   The colour.  Body text was --text-muted, the grey meant for captions and
- *                hints, with headings in ink. Hierarchy was being carried by
- *                contrast because the sizes were too close to carry it. Body
- *                goes to --text-body and the sizes do the work; --text-muted
- *                is kept for the one lead line under the title, which is what
- *                the Plans page does and what these pages are matching.
+ *   The colour.  Body text is --text-muted, as the lead line on Plans is.
+ *                That grey was a problem while the sizes were within a whisker
+ *                of each other, because contrast was the only thing saying
+ *                which line was a heading. With the ladder stepping properly
+ *                it is just the softer colour to read a page of prose in, and
+ *                headings and emphasis keep ink to sit above it.
  *
  *   The size.    The container set --text-lg on everything, so body text ran a
  *                step larger than body text everywhere else in the app and the
@@ -41,8 +41,7 @@ export const Prose = styled.div`
   flex-direction: column;
   align-items: flex-start;
   max-width: 66ch;
-  color: var(--text-body);
-  line-height: 1.65;
+  color: var(--text-muted);
 
   h1 {
     margin: 0 0 1.5rem;
@@ -61,6 +60,17 @@ export const Prose = styled.div`
   > *:first-of-type h2:first-child,
   > h2:first-of-type {
     margin-top: 0;
+  }
+
+  /* Colour and line-height are set on the elements, not inherited from the
+     container: globals.css gives p and li both explicitly, and an element rule
+     beats an inherited value however specific the ancestor is. Setting them
+     on the container alone looked right in the file and changed nothing on
+     the page. */
+  p,
+  li {
+    color: var(--text-muted);
+    line-height: 1.65;
   }
 
   p {
