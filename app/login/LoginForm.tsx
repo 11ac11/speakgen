@@ -67,6 +67,20 @@ function messageFor(thrown: unknown) {
   return shaped?.error?.message || "Unable to log in. Please try again.";
 }
 
+/**
+ * Where to go after signing in.
+ *
+ * Only a path on this site. callbackUrl arrives from the query string, and
+ * router.push will follow an absolute URL to anywhere — so without this,
+ * /login?callbackUrl=https://example.com is a link that wears Speakgen's domain
+ * and lands somewhere else, which is the shape a phishing link wants. A leading
+ * "//" is the same trick with the scheme left off.
+ */
+function safeCallback(raw: string | null) {
+  if (!raw || !raw.startsWith("/") || raw.startsWith("//")) return "/dashboard";
+  return raw;
+}
+
 const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,7 +89,15 @@ const LoginForm = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
 
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  /* The dashboard, not the landing page. Signing in is something you do to get
+     at your own work, and the landing page is the one screen that has none of
+     it on — it is written for somebody who has not signed up. Signup already
+     went to the dashboard, and so did signing in with Google, so the email form
+     was the only way into the app that did not.
+
+     A callbackUrl still wins, because somebody bounced here from a page they
+     asked for should land back on it rather than on the dashboard. */
+  const callbackUrl = safeCallback(searchParams.get("callbackUrl"));
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,7 +136,10 @@ const LoginForm = () => {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard"
+        /* The same destination as the form beside it. This was hardcoded to
+           the dashboard, so being bounced to /login?callbackUrl=... and then
+           signing in with Google lost wherever you had been going. */
+        callbackURL: callbackUrl
       });
     } catch (thrown) {
       setError(messageFor(thrown));
