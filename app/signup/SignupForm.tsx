@@ -3,59 +3,16 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import styled from "styled-components";
+import {
+  Alt,
+  AuthContainer as Container,
+  AuthForm as StyledForm,
+  FormError,
+  Heading,
+  Sub
+} from "@/app/components/AuthShell";
 import { Input, Button } from "@/app/components/ui/index";
 import { authClient } from "@/lib/auth-client";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 420px;
-  margin: 4rem auto 0;
-  padding: 0 1rem;
-`;
-
-const Heading = styled.h1`
-  font-size: var(--text-2xl);
-  margin: 0 0 0.4rem;
-  align-self: flex-start;
-`;
-
-const Sub = styled.p`
-  font-size: var(--text-base);
-  color: var(--text-muted);
-  margin: 0 0 1.75rem;
-  align-self: flex-start;
-`;
-
-const Alt = styled.p`
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  margin: 1.75rem 0 0;
-
-  a {
-    color: var(--green-600);
-    font-weight: 500;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-`;
-
-const FormError = styled.p`
-  color: var(--danger);
-  font-size: var(--text-sm);
-  margin: 0;
-`;
-
-/* Same measurements as the login form, so the two pages do not drift. */
-const StyledForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1.15rem;
-  width: 100%;
-`;
 
 const LoginForm = () => {
   const [username, setUsername] = useState("");

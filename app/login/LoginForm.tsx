@@ -2,53 +2,19 @@
 
 import React, { useState } from "react";
 import styled from "styled-components";
+import {
+  Alt,
+  AuthContainer as Container,
+  AuthForm as StyledForm,
+  FormError,
+  Heading,
+  Sub
+} from "@/app/components/AuthShell";
 import { Input, Button } from "@/app/components/ui/index";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import GoogleIcon from "@/public/google-icon.svg";
 import { authClient } from "@/lib/auth-client";
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  max-width: 420px;
-  margin: 4rem auto 0;
-  padding: 0 1rem;
-`;
-
-const Heading = styled.h1`
-  font-size: var(--text-2xl);
-  margin: 0 0 0.4rem;
-  align-self: flex-start;
-`;
-
-const Sub = styled.p`
-  font-size: var(--text-base);
-  color: var(--text-muted);
-  margin: 0 0 1.75rem;
-  align-self: flex-start;
-`;
-
-const Alt = styled.p`
-  font-size: var(--text-sm);
-  color: var(--text-muted);
-  margin: 1.75rem 0 0;
-
-  a {
-    color: var(--green-600);
-    font-weight: 500;
-    text-decoration: underline;
-    text-underline-offset: 2px;
-  }
-`;
-
-const FormError = styled.p`
-  color: var(--danger);
-  font-size: var(--text-sm);
-  margin: 0;
-`;
 
 const OrContainer = styled.div`
   display: flex;
@@ -60,13 +26,6 @@ const OrContainer = styled.div`
   padding: 1.35rem 0;
   color: var(--text-muted);
   font-size: var(--text-sm);
-`;
-
-const StyledForm = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 1.15rem;
-  width: 100%;
 `;
 
 const Divider = styled.div`
@@ -227,7 +186,13 @@ const LoginForm = () => {
         <input type="hidden" name="redirectTo" value={callbackUrl} />
         {error && <FormError role="alert">{error}</FormError>}
       </StyledForm>
+      {/* Under the form rather than beside the password field: somebody who
+          knows their password never needs it, and somebody who does not has
+          already failed once and is looking for a way out. */}
       <Alt>
+        <Link href="/forgot-password">Forgotten your password?</Link>
+      </Alt>
+      <Alt style={{ marginTop: "0.5rem" }}>
         {"New here? "}
         <Link href="/signup">Create an account</Link>
       </Alt>
