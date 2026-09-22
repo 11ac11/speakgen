@@ -24,10 +24,12 @@ const NavContainer = styled.div`
   max-width: 1200px;
   margin: auto;
 
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: 820px) {
     width: 100%;
+    /* Wrapping is what lets the panel drop onto its own line below the title
+       and the burger, which stay on the first. */
     flex-wrap: wrap;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 `;
 
@@ -47,7 +49,13 @@ const Title = styled.div`
   }
 `;
 
-const NavList = styled.ul`
+/* Below this the bar becomes a hamburger. 820 rather than 768 because at 768
+   the items already reach within sixteen pixels of the edge — it fits, but only
+   until a fifth level or a longer label arrives. Below it the bar wrapped to two
+   rows and stood 147px tall, a fifth of a phone screen before any content. */
+const MOBILE = "820px";
+
+const NavList = styled.ul<{ $open: boolean }>`
   padding: 0;
   margin: 0;
   list-style: none;
@@ -55,9 +63,62 @@ const NavList = styled.ul`
   align-items: center;
   gap: 0.35rem;
 
-  @media only screen and (max-width: 768px) {
+  @media only screen and (max-width: ${MOBILE}) {
+    /* The panel: a column under the bar rather than a row inside it, the full
+       width of the screen, and gone entirely when closed. display: none rather
+       than a height animation, so a closed menu is not in the tab order. */
+    display: ${({ $open }) => ($open ? "flex" : "none")};
+    flex-direction: column;
+    align-items: stretch;
     gap: 0.15rem;
-    flex-wrap: wrap;
+    order: 3;
+    width: 100%;
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(23, 30, 25, 0.12);
+    /* A menu cannot be taller than the screen it is on. Open Exams on a short
+       phone and the four levels plus the note run past the fold, and the bar
+       pushes the page down with it. */
+    max-height: calc(100vh - 4.5rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+`;
+
+/* Three lines that become a cross. A button, not a div, so it is reachable by
+   Tab and says what it does — the label changes with the state, because "Menu"
+   on an open menu is the wrong word. */
+const Burger = styled.button`
+  display: none;
+
+  @media only screen and (max-width: ${MOBILE}) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-control);
+    background: transparent;
+    color: var(--text-heading);
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+  }
+
+  &:hover,
+  &[aria-expanded="true"] {
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--green-800);
+    outline-offset: 1px;
+  }
+
+  svg {
+    width: 22px;
+    height: 22px;
   }
 `;
 
@@ -97,6 +158,11 @@ const triggerStyles = `
 
 const NavLink = styled(Link)`
   ${triggerStyles}
+
+  @media only screen and (max-width: ${MOBILE}) {
+    width: 100%;
+    min-height: 44px;
+  }
 `;
 
 const MenuButton = styled.button`
@@ -104,6 +170,14 @@ const MenuButton = styled.button`
 
   &[aria-expanded="true"] {
     background: rgba(255, 255, 255, 0.45);
+  }
+
+  @media only screen and (max-width: ${MOBILE}) {
+    width: 100%;
+    justify-content: space-between;
+    /* 44px, the size a finger actually hits. The bar's 40px is fine for a
+       pointer and mean for a thumb. */
+    min-height: 44px;
   }
 
   &[aria-expanded="true"] svg {
@@ -142,6 +216,22 @@ const Menu = styled.ul<{ $open: boolean; $align: "start" | "end" }>`
     opacity 0.12s ease,
     transform 0.12s ease,
     visibility 0.12s;
+
+  /* Inside the panel it opens in place rather than floating over it. A popup
+     235px wide, positioned absolutely from an item in a full-width column,
+     hangs off the side of a 390px screen; and there is nothing for it to
+     overlap down here, because the panel is already the whole bar. */
+  @media only screen and (max-width: ${MOBILE}) {
+    position: static;
+    display: ${({ $open }) => ($open ? "block" : "none")};
+    width: 100%;
+    min-width: 0;
+    margin: 0.15rem 0 0.35rem;
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+    box-shadow: none;
+  }
 `;
 
 const MenuLink = styled(Link)`
@@ -172,6 +262,11 @@ const MenuLink = styled(Link)`
   &:focus-visible {
     outline: 2px solid var(--green-600);
     outline-offset: -2px;
+  }
+
+  @media only screen and (max-width: ${MOBILE}) {
+    /* Same reason as the triggers: a thumb needs more than 39px. */
+    padding: 0.7rem;
   }
 `;
 
@@ -220,7 +315,37 @@ const SignUp = styled(Link)`
     transform: translateY(1px);
     box-shadow: 0 1px 0 0 var(--green-800);
   }
+
+  @media only screen and (max-width: ${MOBILE}) {
+    /* The one call to action, so in a stacked menu it gets the full width and
+       the bottom of the list rather than being one item among several. */
+    justify-content: center;
+    width: 100%;
+    margin: 0.35rem 0 0.15rem;
+  }
 `;
+
+function BurgerIcon({ open }: { open: boolean }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+      {open ? (
+        <path
+          d="M6 6l12 12M18 6L6 18"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      ) : (
+        <path
+          d="M4 7h16M4 12h16M4 17h16"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+      )}
+    </svg>
+  );
+}
 
 function ChevronIcon() {
   return (
@@ -299,7 +424,18 @@ export default function Nav() {
   const isAuthenticated = !!session?.user;
 
   const [openMenu, setOpenMenu] = useState<string | null>(null);
+  /* The whole panel, on a phone. Separate from openMenu, which is one section
+     inside it — closing a section should not close the menu you are browsing. */
+  const [menuOpen, setMenuOpen] = useState(false);
   const listRef = useRef<HTMLUListElement>(null);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+
+  /* Following a link inside the panel navigates but leaves the panel sitting
+     over the page it has just opened. */
+  const closeEverything = useCallback(() => {
+    setMenuOpen(false);
+    setOpenMenu(null);
+  }, []);
 
   const close = useCallback(
     (key: string) =>
@@ -312,21 +448,65 @@ export default function Nav() {
     if (!openMenu) return;
 
     const dismiss = (event: PointerEvent) => {
-      if (!listRef.current?.contains(event.target as Node)) setOpenMenu(null);
+      const target = event.target as Node;
+      /* The burger is outside the list, so without this a tap on it closed the
+         section and toggled the panel in the same gesture. */
+      if (burgerRef.current?.contains(target)) return;
+      if (!listRef.current?.contains(target)) setOpenMenu(null);
     };
 
     document.addEventListener("pointerdown", dismiss);
     return () => document.removeEventListener("pointerdown", dismiss);
   }, [openMenu]);
 
+  // Escape closes the panel from anywhere, and returns focus to what opened it.
+  useEffect(() => {
+    if (!menuOpen) return;
+
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      closeEverything();
+      burgerRef.current?.focus();
+    };
+
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [menuOpen, closeEverything]);
+
   return (
     <Navbar aria-label="Main">
       <NavContainer>
         <Title>
-          <Link href="/">Speakgen</Link>
+          <Link href="/" onClick={closeEverything}>
+            Speakgen
+          </Link>
         </Title>
 
-        <NavList ref={listRef}>
+        <Burger
+          ref={burgerRef}
+          type="button"
+          aria-expanded={menuOpen}
+          aria-controls="main-menu"
+          aria-label={menuOpen ? "Close menu" : "Open menu"}
+          onClick={() => {
+            setMenuOpen((open) => !open);
+            setOpenMenu(null);
+          }}
+        >
+          <BurgerIcon open={menuOpen} />
+        </Burger>
+
+        {/* Any link in here has done its job by navigating, so the panel goes
+            with it. On a desktop $open is ignored — the list is a row that is
+            always shown. */}
+        <NavList
+          id="main-menu"
+          ref={listRef}
+          $open={menuOpen}
+          onClick={(event) => {
+            if ((event.target as HTMLElement).closest("a")) closeEverything();
+          }}
+        >
           {/* Two menus rather than one with two headings. Exams and single
               questions are different enough to be different errands, and a tab
               each means the list inside is just levels — which is what has to
