@@ -3,7 +3,13 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
-import { Input, Button, Dropdown, Checkbox } from "@/app/components/ui/index";
+import {
+  Input,
+  Button,
+  Dropdown,
+  Checkbox,
+  Notice
+} from "@/app/components/ui/index";
 import Prompts from "./Prompts";
 import { createQuestion, updateQuestion } from "@/services/questionService";
 import ThemeSelector from "@/app/components/ThemeSelector";
@@ -157,8 +163,18 @@ const QuestionForm = ({
 
   // Level is required too. The level chooser starts with none chosen, and
   // submitting without one used to build a request with an empty level.
-  const allFieldsCompleted =
-    !!level && !!part && !!statement && themes.length > 0 && !partShapeError;
+  /* Named, not just counted. A disabled Save says no without saying why, and
+     the commonest reason — no theme picked — is invisible, because an empty
+     theme row looks the same as one you decided against. */
+  const blockers = [
+    !level ? "Choose a level" : null,
+    !part ? "Choose a part" : null,
+    !statement.trim() ? "Write the statement" : null,
+    themes.length === 0 ? "Pick at least one theme" : null,
+    partShapeError
+  ].filter((reason): reason is string => !!reason);
+
+  const allFieldsCompleted = blockers.length === 0;
 
   const generatePlaceholderByPart = (isSecondStatement?: boolean) => {
     switch (part) {
@@ -375,7 +391,13 @@ interest.`;
             label="Part"
             options={getQuestionPartOptions(level)}
             value={part}
-            onChange={setPart}
+            /* The shape rules are recomputed from the new part on the next
+               render, but a failed save is state and would otherwise sit there
+               describing a part you have left. */
+            onChange={(next) => {
+              setPart(next);
+              setFormError(null);
+            }}
             placeholder="-"
             width="100px"
           />
@@ -519,8 +541,12 @@ interest.`;
         </>
       )}
       {/* A disabled Save with no explanation is worse than the error it is
-          preventing, so the rule that is holding it back is named. */}
-      {partShapeError ? <Hint>{partShapeError}</Hint> : null}
+          preventing, so everything holding it back is named. Amber, because
+          nothing has gone wrong — the form is waiting. */}
+      {!loading ? (
+        <Notice title="Before you can save:" reasons={blockers} />
+      ) : null}
+      {/* Red, and separate: this one is a save that actually failed. */}
       {formError ? <FormError role="alert">{formError}</FormError> : null}
       {/* Submitting is the form's job, not the button's. This used to call
           handleSubmit from onClick while also being a submit button by

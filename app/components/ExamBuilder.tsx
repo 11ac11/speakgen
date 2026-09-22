@@ -7,6 +7,7 @@ import Modal from "@/app/components/ui/Modal";
 import QuestionForm from "@/app/components/QuestionForm";
 import type { QuestionRow } from "@/lib/questions";
 import Button from "@/app/components/ui/Button";
+import { Notice } from "@/app/components/ui/Notice";
 import QuestionPreview, { ThemePills } from "@/app/components/QuestionPreview";
 import type { ExamSlot } from "@/lib/cambridgeBlueprints";
 
@@ -208,20 +209,6 @@ const AddButton = styled.button`
   }
 `;
 
-const Notice = styled.div`
-  padding: 1rem 1.25rem;
-  border-radius: 0.9rem;
-  margin-bottom: 1.25rem;
-  color: var(--text-body);
-  border: 1px solid #f0c98a;
-  background: #fff8ec;
-
-  strong {
-    display: block;
-    margin-bottom: 0.3rem;
-  }
-`;
-
 export type PickerQuestion = {
   id: number;
   part: string;
@@ -312,7 +299,18 @@ export default function ExamBuilder({
   };
 
   const named = title.trim().length > 0;
-  const complete = named && slots.every((s) => picked[slotKey(s)]);
+  const emptySlots = slots.filter((s) => !picked[slotKey(s)]).length;
+  const complete = named && emptySlots === 0;
+
+  /* Why Save is off. "Give it a name" is the one worth saying out loud: an
+     empty title box looks exactly like a title box you have decided against,
+     and the missing questions at least leave visibly empty slots. */
+  const blockers = [
+    !named ? "Give the exam a name" : null,
+    emptySlots > 0
+      ? `Fill the last ${emptySlots} ${emptySlots === 1 ? "part" : "parts"}`
+      : null
+  ].filter((reason): reason is string => !!reason);
 
   /**
    * One random question per slot. The two Part 2 slots are filled from
@@ -384,10 +382,14 @@ export default function ExamBuilder({
     return (
       <Wrap>
         <Notice>
-          <strong>You have used your free exam</strong>
-          The free plan includes one saved exam. Upgrade for unlimited exams and
-          practices, PDF export and no ads — or delete an existing exam to make
-          room.
+          <p>
+            <strong>You have used your free exam</strong>
+          </p>
+          <p>
+            The free plan includes one saved exam. Upgrade for unlimited exams
+            and practices, PDF export and no ads — or delete an existing exam to
+            make room.
+          </p>
         </Notice>
         <div style={{ display: "flex", gap: "0.75rem" }}>
           <Button text="See plans" onClick={() => router.push("/pricing")} />
@@ -564,6 +566,12 @@ export default function ExamBuilder({
             onCreated={(created) => handleCreated(writingFor, created)}
           />
         </Modal>
+      ) : null}
+
+      {!saving ? (
+        <div style={{ marginTop: "1.25rem" }}>
+          <Notice title="Before you can save:" reasons={blockers} />
+        </div>
       ) : null}
 
       <div style={{ display: "flex", gap: "0.75rem", marginTop: "1.25rem" }}>

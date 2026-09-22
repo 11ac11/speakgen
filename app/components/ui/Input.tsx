@@ -155,9 +155,14 @@ const SecureInput: React.FC<SecureInputProps> = ({
   isTextArea
 }) => {
   const [inputError, setInputError] = useState<string | undefined>(error);
-  const [inputPlaceholder, setInputPlaceholder] = useState<string | undefined>(
-    placeholder
-  );
+  /* Focus state, not a copy of the placeholder.
+     
+     The placeholder used to be held in state, initialised once from the prop
+     and only reassigned on blur. So a form that changes its placeholder while
+     you are looking at it — the question form does, because what to write
+     depends on the part — kept showing the example for the part you had
+     already left, until you clicked into the box and out of it again. */
+  const [focused, setFocused] = useState(false);
 
   // Utility function to sanitize the input value to prevent XSS attacks
   const sanitizeInput = (input: string) => {
@@ -198,13 +203,14 @@ const SecureInput: React.FC<SecureInputProps> = ({
           id={name}
           onChange={handleChange}
           onClick={onClick}
-          onFocus={() => setInputPlaceholder("")}
+          onFocus={() => setFocused(true)}
           onBlur={() => {
             handleBlur?.(); // optional chaining if `handleBlur` exists
-            setInputPlaceholder(placeholder); // restore
+            setFocused(false);
           }}
           required={required}
-          placeholder={inputPlaceholder}
+          /* Out of the way while you are typing into it, back when you leave. */
+          placeholder={focused ? "" : placeholder}
           minLength={minLength}
           maxLength={maxLength}
           error={inputError}
@@ -220,13 +226,13 @@ const SecureInput: React.FC<SecureInputProps> = ({
           id={name}
           onChange={handleChange}
           onClick={onClick}
-          onFocus={() => setInputPlaceholder("")}
+          onFocus={() => setFocused(true)}
           onBlur={() => {
             handleBlur?.(); // optional chaining if `handleBlur` exists
-            setInputPlaceholder(placeholder); // restore
+            setFocused(false);
           }}
           required={required}
-          placeholder={inputPlaceholder}
+          placeholder={focused ? "" : placeholder}
           minLength={minLength}
           maxLength={maxLength}
           error={inputError}

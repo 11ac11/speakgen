@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Button from "@/app/components/ui/Button";
+import { Notice } from "@/app/components/ui/Notice";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import { getQuestionPartOptions, THEME_VALUES_FOR_PILLS } from "@/constants";
 
@@ -284,6 +285,19 @@ export default function PracticeBuilder({
   const named = title.trim().length > 0;
   const canSave = named && enoughQuestions && countChoices.length > 0;
 
+  /* Why Create is off. The question count already has its own explanation
+     beside the chooser, so it is worded shorter here; the name has none at all,
+     and an empty title box is the reason nobody can see. */
+  const blockers = [
+    !named ? "Give the practice a name" : null,
+    available !== null && !enoughQuestions
+      ? "No questions match this yet — widen the level, part or themes"
+      : null,
+    enoughQuestions && countChoices.length === 0
+      ? "Choose how many questions to draw"
+      : null
+  ].filter((reason): reason is string => !!reason);
+
   const applyPreset = (preset: Preset) => {
     if (preset === "mix") {
       setPart(null);
@@ -542,6 +556,11 @@ export default function PracticeBuilder({
         )}
       </Summary>
 
+      {!saving ? (
+        <Notice title="Before you can create it:" reasons={blockers} />
+      ) : null}
+
+      {/* Red, and separate: this one is a save that actually failed. */}
       {error ? <FormError>{error}</FormError> : null}
 
       <Actions>

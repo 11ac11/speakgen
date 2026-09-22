@@ -32,6 +32,10 @@ const StyledInput = styled(Input)`
   }
 `;
 
+/* Five boxes, of which a Part 3 fills three to five. The blueprint holds the
+   real per-task range; this is just how many the editor draws. */
+const SLOTS = 5;
+
 const Prompts = ({
   prompts,
   setPrompts,
@@ -41,7 +45,20 @@ const Prompts = ({
   setPrompts: React.Dispatch<React.SetStateAction<string[]>>; // Correct type for setState
   placeholders: string[];
 }) => {
-  const paddedPrompts = [...prompts, ...Array(5 - prompts.length).fill("")];
+  /* Dense, not spread-and-pad.
+     
+     Assigning by index into a copy of the real array leaves holes: type into
+     the fourth box of an empty form and you store [ , , , "x"], which spreads
+     to [null, null, null, "x", ""]. React sees value={null} on the three boxes
+     above and reports a controlled input turning uncontrolled — after which
+     those boxes keep their own DOM value and stop agreeing with state.
+     
+     Reading every slot through ?? "" means there is never a hole to render, and
+     writing through the padded array means there is never one to store. */
+  const paddedPrompts = Array.from(
+    { length: SLOTS },
+    (_, index) => prompts[index] ?? ""
+  );
 
   return (
     <Wrap>
@@ -56,9 +73,12 @@ const Prompts = ({
             value={prompt}
             onChange={(value) =>
               setPrompts((prev) => {
-                const newTags = [...prev];
-                newTags[index] = value;
-                return newTags;
+                const next = Array.from(
+                  { length: SLOTS },
+                  (_, i) => prev[i] ?? ""
+                );
+                next[index] = value;
+                return next;
               })
             }
             /* Not required: a Part 3 takes three to five prompts, so two of

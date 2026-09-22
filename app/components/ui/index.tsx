@@ -8,6 +8,7 @@ import RandomQuestion from "./RandomQuestion";
 import Modal from "./Modal";
 import Checkbox from "./Checkbox";
 import { MultiSelect } from "./MultiSelect";
+import { Notice } from "./Notice";
 
 export {
   Button,
@@ -19,5 +20,6 @@ export {
   RandomQuestion,
   Modal,
   Checkbox,
-  MultiSelect
+  MultiSelect,
+  Notice
 };
