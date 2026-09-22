@@ -18,12 +18,32 @@ import styled from "styled-components";
  * tall as the tallest card needs and every card agrees on where it starts. Add
  * a feature and the rows follow; rewrite a blurb and nothing shifts.
  */
+/* Three columns of at least 250px, plus two gaps, need 782px of grid — and the
+   page gives the grid the viewport less its padding. So below this there is no
+   room for three, and there is no room for two either: every card spans every
+   row, so no two of them can share a column, and the column count is pinned at
+   three however narrow the screen gets.
+   
+   That was the bug. auto-fit could not collapse, minmax could not shrink past
+   250px, and the columns came out 575px wide inside a 358px grid — which made
+   the whole document wider than the phone and the browser zoomed the entire
+   page out to fit. */
+const STACK = "840px";
+
 export const PlanGrid = styled.div<{ $rows: number }>`
   display: grid;
   gap: 1rem;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   grid-template-rows: repeat(${(p) => p.$rows}, auto);
   align-items: start;
+
+  /* One column, and the shared rows go with it: lining a feature up across
+     columns means nothing when the cards are stacked, and the machinery that
+     did it is what stopped them stacking. */
+  @media only screen and (max-width: ${STACK}) {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
 `;
 
 export const Card = styled.div<{ $current: boolean }>`
@@ -39,6 +59,12 @@ export const Card = styled.div<{ $current: boolean }>`
      appears on one card would make that card a different size from the others
      and knock the columns out of true. */
   border: 2px solid ${(p) => (p.$current ? "var(--green-600)" : "transparent")};
+
+  @media only screen and (max-width: ${STACK}) {
+    display: block;
+    grid-row: auto;
+    grid-template-rows: none;
+  }
 `;
 
 /* The badge sits in the corner rather than under the price, where the words
@@ -99,6 +125,12 @@ export const Features = styled.ul<{ $rows: number }>`
      this list is row three of every other list on the page. */
   grid-row: span ${(p) => p.$rows};
   grid-template-rows: subgrid;
+
+  @media only screen and (max-width: ${STACK}) {
+    display: block;
+    grid-row: auto;
+    grid-template-rows: none;
+  }
 `;
 
 export const Feature = styled.li<{ $on: boolean }>`
@@ -124,6 +156,11 @@ export const Feature = styled.li<{ $on: boolean }>`
 const Actions = styled.div`
   /* Bottom of the card whatever the rows above did. */
   align-self: end;
+
+  @media only screen and (max-width: ${STACK}) {
+    /* No row to sit at the bottom of once the card is a block. */
+    margin-top: 1.25rem;
+  }
 `;
 
 export { Actions };
