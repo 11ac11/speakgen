@@ -427,6 +427,7 @@ export default function Nav() {
                 <li>
                   <MenuLink href="/pricing">
                     <strong>Compare plans</strong>
+                    <small>Pricing and plan limits</small>
                   </MenuLink>
                 </li>
                 {/* The About menu, which is where a logged-out visitor finds
@@ -463,6 +464,7 @@ export default function Nav() {
                 <li>
                   <MenuLink href="/faqs">
                     <strong>FAQs</strong>
+                    <small>What it does and what it costs</small>
                   </MenuLink>
                 </li>
                 <li>
