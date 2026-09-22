@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import styled from "styled-components";
 import { Prose } from "@/app/components/Prose";
 
@@ -98,13 +99,16 @@ export default function AboutContent() {
     </ul>
   </Section> */}
 
-      {/* <Section>
-    <p>
-      <em>{`Have a feature request? Want to get involved?`}</em>
-      <br />
-      <a href="#">{`Reach out here →`}</a>
-    </p>
-  </Section> */}
+      {/* This sat commented out with href="#" because there was nowhere for it
+          to go. There is now. */}
+      <Section>
+        <h2>{`✉️ Get in touch`}</h2>
+        <p>
+          {`Have a feature request, found something broken, or want to get involved? `}
+          <Link href="/contact">{`Send me a message`}</Link>
+          {`. It is one person reading.`}
+        </p>
+      </Section>
 
       {/* The closing paragraph sat outside this Section, so its heading was
           orphaned above a section break and the two drifted apart. */}

@@ -198,6 +198,17 @@ const FAQS: { id: string; question: string; answer: React.ReactNode }[] = [
     )
   },
   {
+    id: "get-in-touch",
+    question: "How do I report a bug or ask for something?",
+    answer: (
+      <p>
+        {`There is a `}
+        <Link href="/contact">{`contact page`}</Link>
+        {` — pick what it is about, write what happened, and it comes straight to me. Speakgen is built by one person, so a feature request is read by the person who would build it.`}
+      </p>
+    )
+  },
+  {
     id: "whole-class",
     question: "Can I use it with a whole class?",
     answer: (

@@ -429,6 +429,16 @@ export default function Nav() {
                     <strong>Compare plans</strong>
                   </MenuLink>
                 </li>
+                {/* The About menu, which is where a logged-out visitor finds
+                    this, is not rendered once you are signed in — so without a
+                    second way in, the people most likely to have something to
+                    report would have had only the footer. */}
+                <li>
+                  <MenuLink href="/contact">
+                    <strong>Contact</strong>
+                    <small>Feedback, bugs and questions</small>
+                  </MenuLink>
+                </li>
                 <li>
                   <MenuLink href="/" onClick={() => authClient.signOut()}>
                     <strong>Sign out</strong>
@@ -453,6 +463,12 @@ export default function Nav() {
                 <li>
                   <MenuLink href="/faqs">
                     <strong>FAQs</strong>
+                  </MenuLink>
+                </li>
+                <li>
+                  <MenuLink href="/contact">
+                    <strong>Contact</strong>
+                    <small>Feedback, bugs and questions</small>
                   </MenuLink>
                 </li>
               </Dropdown>
