@@ -1,14 +1,6 @@
 export type CambridgeLevel = "b1" | "b2" | "c1" | "c2";
 export type CambridgePart = "1" | "2" | "3" | "4";
 
-export type CambridgeContentType =
-  | "interview_prompt"
-  | "visual_long_turn"
-  | "collaborative_task"
-  | "visual_collaborative_task"
-  | "prompted_long_turn"
-  | "discussion_prompt";
-
 /**
  * Which column of content.questions carries a phase's words.
  *
@@ -60,11 +52,15 @@ export type CambridgeSpeakingPhase = {
  * Who is speaking, which is the first thing a teacher setting a part up needs
  * to know and the one thing the task did not say.
  *
- * It cannot be read off contentType or perCandidate. C2's Part 2 and Part 3 are
- * both "visual" and both have photographs or cards, but one is the pair talking
+ * It cannot be inferred from what a task carries or from whether it runs twice.
+ * C2's Part 2 and Part 3 both have visual material, but one is the pair talking
  * to each other and the other is one candidate alone; B2's Part 1 and Part 4 are
  * both examiner-led but only one of them is a conversation between the
  * candidates.
+ *
+ * It replaced a `contentType` tag — "visual_long_turn", "collaborative_task" —
+ * which named the task but answered no question anybody asked, and which
+ * nothing outside this file ever read.
  */
 export type CambridgeInteraction =
   /** The examiner asks each candidate in turn. */
@@ -79,11 +75,9 @@ export type CambridgeInteraction =
 export type CambridgeSpeakingTask = {
   part: CambridgePart;
   title: string;
-  contentType: CambridgeContentType;
   suggestedSeconds: number;
   candidateGuidance: string;
   interaction: CambridgeInteraction;
-  contentRequirements: readonly string[];
   /**
    * The test runs this part once per candidate, so an exam needs two questions
    * for it rather than one. B2 and C1 double Part 2 — each candidate gets their
@@ -129,13 +123,21 @@ export function getTaskPhase(
   return task?.phases.find((phase) => phase.source === source);
 }
 
+/**
+ * What a level's speaking test is made of.
+ *
+ * Only the tasks. It used to carry an id, a level, a qualification name, a
+ * version and a length in minutes, and nothing outside this file ever read one
+ * of them: the name and the length are columns on content.levels, which is what
+ * every page already queries alongside `enabled` and the sort order, and the
+ * level is the key this is stored under.
+ *
+ * There is no version because there is nothing to version against. The format
+ * is Cambridge's, it is the same for every user, and when they change it the
+ * previous one stops being worth practising — so a blueprint is only ever the
+ * current shape of the test.
+ */
 export type CambridgeSpeakingBlueprint = {
-  id: string;
-  level: CambridgeLevel;
-  qualification:
-    "B1 Preliminary" | "B2 First" | "C1 Advanced" | "C2 Proficiency";
-  version: 1;
-  speakingPairMinutes: number;
   tasks: readonly CambridgeSpeakingTask[];
 };
 
@@ -143,28 +145,20 @@ const sharedTasks = {
   part1: {
     part: "1" as const,
     title: "Interview",
-    contentType: "interview_prompt" as const,
     suggestedSeconds: 120,
     candidateGuidance:
       "Answer the interlocutor's questions about yourself and familiar topics.",
     interaction: "interview",
-    contentRequirements: ["prompt set", "theme"],
     phases: [{ source: "statement", seconds: 120 }]
   },
   part2: {
     part: "2" as const,
     title: "Individual long turn",
-    contentType: "visual_long_turn" as const,
     suggestedSeconds: 120,
     perCandidate: true as const,
     candidateGuidance:
       "Speak individually using the visual prompts, then respond briefly to the other candidate.",
     interaction: "individual",
-    contentRequirements: [
-      "two visual prompts",
-      "candidate instruction",
-      "comparison focus"
-    ],
     /* A minute from this candidate, then thirty seconds from the other about
        the same photographs. The photographs stay up across both — it is the
        question being asked that changes, not what is being looked at. */
@@ -181,16 +175,10 @@ const sharedTasks = {
   part3: {
     part: "3" as const,
     title: "Collaborative task",
-    contentType: "collaborative_task" as const,
     suggestedSeconds: 180,
     candidateGuidance:
       "Discuss the options together and reach a decision when the task asks you to do so.",
     interaction: "pair",
-    contentRequirements: [
-      "task instruction",
-      "options or prompts",
-      "decision focus"
-    ],
     prompts: { min: 3, max: 5 },
     /* Two minutes discussing the prompts, then a minute deciding. The decision
        is the whole point of the second phase, so showing it from the start told
@@ -225,33 +213,24 @@ const sharedTasks = {
  * About twelve minutes for a pair, the shortest of the four.
  */
 const b1PreliminarySpeaking: CambridgeSpeakingBlueprint = {
-  id: "b1-preliminary-speaking-v1",
-  level: "b1",
-  qualification: "B1 Preliminary",
-  version: 1,
-  speakingPairMinutes: 12,
   tasks: [
     {
       part: "1",
       title: "Interview",
-      contentType: "interview_prompt",
       suggestedSeconds: 150,
       candidateGuidance:
         "Answer the examiner's questions about yourself, your routines and what you like.",
       interaction: "interview",
-      contentRequirements: ["prompt set", "theme"],
       phases: [{ source: "statement", seconds: 150 }]
     },
     {
       part: "2",
       title: "Individual long turn",
-      contentType: "visual_long_turn",
       suggestedSeconds: 60,
       perCandidate: true,
       candidateGuidance:
         "Talk on your own about your photograph for about a minute.",
       interaction: "individual",
-      contentRequirements: ["one visual prompt", "candidate instruction"],
       /* Exactly one. The form draws as many slots as the minimum, so this is
          also what stops a B1 question offering a second photograph there is
          nothing in the test to put in. */
@@ -264,16 +243,10 @@ const b1PreliminarySpeaking: CambridgeSpeakingBlueprint = {
     {
       part: "3",
       title: "Collaborative task",
-      contentType: "collaborative_task",
       suggestedSeconds: 180,
       candidateGuidance:
         "Talk to each other about the options, then decide together.",
       interaction: "pair",
-      contentRequirements: [
-        "task instruction",
-        "options or prompts",
-        "decision focus"
-      ],
       prompts: { min: 3, max: 5 },
       phases: [
         { source: "statement", seconds: 120 },
@@ -288,23 +261,16 @@ const b1PreliminarySpeaking: CambridgeSpeakingBlueprint = {
     {
       part: "4",
       title: "Discussion",
-      contentType: "discussion_prompt",
       suggestedSeconds: 180,
       candidateGuidance:
         "Talk about the Part 3 topic more generally — what you like, what you do, what you think.",
       interaction: "discussion",
-      contentRequirements: ["follow-up prompt set", "theme"],
       phases: [{ source: "statement", seconds: 180 }]
     }
   ]
 };
 
 const b2FirstSpeaking: CambridgeSpeakingBlueprint = {
-  id: "b2-first-speaking-v1",
-  level: "b2",
-  qualification: "B2 First",
-  version: 1,
-  speakingPairMinutes: 14,
   tasks: [
     sharedTasks.part1,
     /* Two photographs, compared. The count is the one thing B2's long turn and
@@ -314,23 +280,16 @@ const b2FirstSpeaking: CambridgeSpeakingBlueprint = {
     {
       part: "4",
       title: "Discussion",
-      contentType: "discussion_prompt",
       suggestedSeconds: 240,
       candidateGuidance:
         "Discuss the Part 3 topic and related questions in more detail.",
       interaction: "discussion",
-      contentRequirements: ["follow-up prompt set", "theme"],
       phases: [{ source: "statement", seconds: 240 }]
     }
   ]
 };
 
 const c1AdvancedSpeaking: CambridgeSpeakingBlueprint = {
-  id: "c1-advanced-speaking-v1",
-  level: "c1",
-  qualification: "C1 Advanced",
-  version: 1,
-  speakingPairMinutes: 15,
   tasks: [
     sharedTasks.part1,
     // Three at C1: the candidate is given three and chooses two to compare.
@@ -339,16 +298,10 @@ const c1AdvancedSpeaking: CambridgeSpeakingBlueprint = {
     {
       part: "4",
       title: "Discussion",
-      contentType: "discussion_prompt",
       suggestedSeconds: 300,
       candidateGuidance:
         "Discuss the Part 3 topic and related questions in greater depth.",
       interaction: "discussion",
-      contentRequirements: [
-        "follow-up prompt set",
-        "theme",
-        "depth of discussion"
-      ],
       phases: [{ source: "statement", seconds: 300 }]
     }
   ]
@@ -370,27 +323,15 @@ const c1AdvancedSpeaking: CambridgeSpeakingBlueprint = {
  *           runner prints as an interlocutor note.
  */
 const c2ProficiencySpeaking: CambridgeSpeakingBlueprint = {
-  id: "c2-proficiency-speaking-v1",
-  level: "c2",
-  qualification: "C2 Proficiency",
-  version: 1,
-  speakingPairMinutes: 16,
   tasks: [
     sharedTasks.part1,
     {
       part: "2",
       title: "Collaborative task",
-      contentType: "visual_collaborative_task",
       suggestedSeconds: 240,
       candidateGuidance:
         "Talk about two of the photographs together, then use all of them for the decision task.",
       interaction: "pair",
-      contentRequirements: [
-        "four visual prompts",
-        "first-phase question",
-        "second-phase task",
-        "decision focus"
-      ],
       /* Four. The real test may print more, but four is what the question form
          draws at this level and what every C2 question here carries, so it is
          what the instructions page should promise. */
@@ -407,18 +348,11 @@ const c2ProficiencySpeaking: CambridgeSpeakingBlueprint = {
     {
       part: "3",
       title: "Long turn and discussion",
-      contentType: "prompted_long_turn",
       suggestedSeconds: 180,
       perCandidate: true,
       candidateGuidance:
         "Speak on your own for two minutes from the card, then respond to the other candidate's turn.",
       interaction: "individual",
-      contentRequirements: [
-        "card question",
-        "three ideas",
-        "response question",
-        "closing discussion"
-      ],
       prompts: { min: 3, max: 5 },
       /* Three, the most of any task: two minutes from the card, a minute from
          the other candidate, then the examiner-led discussion that closes the
