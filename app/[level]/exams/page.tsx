@@ -43,6 +43,15 @@ export default async function LevelExamsPage({
           {`Free ${level.label} speaking tests, about ${level.minutes} minutes for a pair of candidates. No account needed.`}
         </Lead>
 
+        {/* Above the exams rather than under them: somebody who has not run one
+            of these before needs the format first, and asking them to scroll
+            past every exam to find it would answer the question too late. */}
+        <div style={{ marginBottom: "2rem" }}>
+          <ExamsLink href={`/${level.code}`}>
+            {`How the ${level.label} exam works`}
+          </ExamsLink>
+        </div>
+
         {usage ? (
           <div
             style={{

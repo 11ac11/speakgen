@@ -56,12 +56,33 @@ export type CambridgeSpeakingPhase = {
   seconds: number;
 };
 
+/**
+ * Who is speaking, which is the first thing a teacher setting a part up needs
+ * to know and the one thing the task did not say.
+ *
+ * It cannot be read off contentType or perCandidate. C2's Part 2 and Part 3 are
+ * both "visual" and both have photographs or cards, but one is the pair talking
+ * to each other and the other is one candidate alone; B2's Part 1 and Part 4 are
+ * both examiner-led but only one of them is a conversation between the
+ * candidates.
+ */
+export type CambridgeInteraction =
+  /** The examiner asks each candidate in turn. */
+  | "interview"
+  /** One candidate speaks on their own. */
+  | "individual"
+  /** The two candidates talk to each other. */
+  | "pair"
+  /** Both candidates and the examiner, together. */
+  | "discussion";
+
 export type CambridgeSpeakingTask = {
   part: CambridgePart;
   title: string;
   contentType: CambridgeContentType;
   suggestedSeconds: number;
   candidateGuidance: string;
+  interaction: CambridgeInteraction;
   contentRequirements: readonly string[];
   /**
    * The test runs this part once per candidate, so an exam needs two questions
@@ -126,6 +147,7 @@ const sharedTasks = {
     suggestedSeconds: 120,
     candidateGuidance:
       "Answer the interlocutor's questions about yourself and familiar topics.",
+    interaction: "interview",
     contentRequirements: ["prompt set", "theme"],
     phases: [{ source: "statement", seconds: 120 }]
   },
@@ -137,12 +159,12 @@ const sharedTasks = {
     perCandidate: true as const,
     candidateGuidance:
       "Speak individually using the visual prompts, then respond briefly to the other candidate.",
+    interaction: "individual",
     contentRequirements: [
       "two visual prompts",
       "candidate instruction",
       "comparison focus"
     ],
-    images: { min: 2, max: 5 },
     /* A minute from this candidate, then thirty seconds from the other about
        the same photographs. The photographs stay up across both — it is the
        question being asked that changes, not what is being looked at. */
@@ -163,6 +185,7 @@ const sharedTasks = {
     suggestedSeconds: 180,
     candidateGuidance:
       "Discuss the options together and reach a decision when the task asks you to do so.",
+    interaction: "pair",
     contentRequirements: [
       "task instruction",
       "options or prompts",
@@ -215,6 +238,7 @@ const b1PreliminarySpeaking: CambridgeSpeakingBlueprint = {
       suggestedSeconds: 150,
       candidateGuidance:
         "Answer the examiner's questions about yourself, your routines and what you like.",
+      interaction: "interview",
       contentRequirements: ["prompt set", "theme"],
       phases: [{ source: "statement", seconds: 150 }]
     },
@@ -226,6 +250,7 @@ const b1PreliminarySpeaking: CambridgeSpeakingBlueprint = {
       perCandidate: true,
       candidateGuidance:
         "Talk on your own about your photograph for about a minute.",
+      interaction: "individual",
       contentRequirements: ["one visual prompt", "candidate instruction"],
       /* Exactly one. The form draws as many slots as the minimum, so this is
          also what stops a B1 question offering a second photograph there is
@@ -243,6 +268,7 @@ const b1PreliminarySpeaking: CambridgeSpeakingBlueprint = {
       suggestedSeconds: 180,
       candidateGuidance:
         "Talk to each other about the options, then decide together.",
+      interaction: "pair",
       contentRequirements: [
         "task instruction",
         "options or prompts",
@@ -266,6 +292,7 @@ const b1PreliminarySpeaking: CambridgeSpeakingBlueprint = {
       suggestedSeconds: 180,
       candidateGuidance:
         "Talk about the Part 3 topic more generally — what you like, what you do, what you think.",
+      interaction: "discussion",
       contentRequirements: ["follow-up prompt set", "theme"],
       phases: [{ source: "statement", seconds: 180 }]
     }
@@ -280,7 +307,9 @@ const b2FirstSpeaking: CambridgeSpeakingBlueprint = {
   speakingPairMinutes: 14,
   tasks: [
     sharedTasks.part1,
-    sharedTasks.part2,
+    /* Two photographs, compared. The count is the one thing B2's long turn and
+       C1's do not share, so it is set here rather than on the shared task. */
+    { ...sharedTasks.part2, images: { min: 2, max: 2 } },
     sharedTasks.part3,
     {
       part: "4",
@@ -289,6 +318,7 @@ const b2FirstSpeaking: CambridgeSpeakingBlueprint = {
       suggestedSeconds: 240,
       candidateGuidance:
         "Discuss the Part 3 topic and related questions in more detail.",
+      interaction: "discussion",
       contentRequirements: ["follow-up prompt set", "theme"],
       phases: [{ source: "statement", seconds: 240 }]
     }
@@ -303,7 +333,8 @@ const c1AdvancedSpeaking: CambridgeSpeakingBlueprint = {
   speakingPairMinutes: 15,
   tasks: [
     sharedTasks.part1,
-    sharedTasks.part2,
+    // Three at C1: the candidate is given three and chooses two to compare.
+    { ...sharedTasks.part2, images: { min: 3, max: 3 } },
     sharedTasks.part3,
     {
       part: "4",
@@ -312,6 +343,7 @@ const c1AdvancedSpeaking: CambridgeSpeakingBlueprint = {
       suggestedSeconds: 300,
       candidateGuidance:
         "Discuss the Part 3 topic and related questions in greater depth.",
+      interaction: "discussion",
       contentRequirements: [
         "follow-up prompt set",
         "theme",
@@ -352,13 +384,17 @@ const c2ProficiencySpeaking: CambridgeSpeakingBlueprint = {
       suggestedSeconds: 240,
       candidateGuidance:
         "Talk about two of the photographs together, then use all of them for the decision task.",
+      interaction: "pair",
       contentRequirements: [
         "four visual prompts",
         "first-phase question",
         "second-phase task",
         "decision focus"
       ],
-      images: { min: 2, max: 5 },
+      /* Four. The real test may print more, but four is what the question form
+         draws at this level and what every C2 question here carries, so it is
+         what the instructions page should promise. */
+      images: { min: 4, max: 4 },
       /* The one task whose phase labels are written per question rather than
          here: "Look at photographs one and two" then "Now look at all the
          photographs" name the pictures, so they belong to the question and
@@ -376,6 +412,7 @@ const c2ProficiencySpeaking: CambridgeSpeakingBlueprint = {
       perCandidate: true,
       candidateGuidance:
         "Speak on your own for two minutes from the card, then respond to the other candidate's turn.",
+      interaction: "individual",
       contentRequirements: [
         "card question",
         "three ideas",
