@@ -9,7 +9,10 @@ import { createQuestion, updateQuestion } from "@/services/questionService";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import ImageSelectors from "./ImageSelectors";
 import { getQuestionPartOptions, SUPPORTED_LEVELS } from "@/constants";
-import { getCambridgeSpeakingTask } from "@/lib/cambridgeBlueprints";
+import {
+  getCambridgeSpeakingTask,
+  getTaskPhase
+} from "@/lib/cambridgeBlueprints";
 import {
   checkPartShape,
   filledImageIds,
@@ -153,23 +156,21 @@ interest.`;
   };
 
   /* Which extra fields a task has is a property of the task, so the blueprint
-     decides rather than another level-and-part switch here. A task that gives
-     the interlocutor a line for follow_up or decision is exactly a task that
-     has one to write, and that line doubles as the hint under the box. */
+     decides rather than another level-and-part switch here. A task that runs a
+     phase from a column is exactly a task with that column to write, and the
+     phase's label doubles as the hint under the box.
+
+     needsStatementTwo was `level === "c2" && part === "2"` — true today and
+     wrong the moment a level is added whose Part 2 is single-phase, or whose
+     Part 3 is not. Asking the blueprint costs the same and cannot go stale. */
   const task = getCambridgeSpeakingTask(level, part);
-  const needsFollowUp = !!task?.followUpLabel;
-  const needsDecision = !!task?.decisionLabel;
+  const followUpPhase = getTaskPhase(task, "follow_up");
+  const decisionPhase = getTaskPhase(task, "decision");
+  const statementTwoPhase = getTaskPhase(task, "statement_two");
 
-  /* Only C2's Part 2 has a second statement: it is the second phase of the
-     collaborative task, which the runner reveals behind a button.
-
-     The form used to offer one for C1 Part 2 and Part 3 as well. Neither was
-     right. C1 Part 2 asks its second question in the statement itself — every
-     house question does, on its own line — and a C1 Part 3 "now decide..."
-     is the decision field below, which is why 021 moves the one row that got
-     it wrong. Both were `required`, so the form was demanding text that then
-     rendered behind a button meant for a task C1 does not have. */
-  const needsStatementTwo = level === "c2" && part === "2";
+  const needsFollowUp = !!followUpPhase;
+  const needsDecision = !!decisionPhase;
+  const needsStatementTwo = !!statementTwoPhase;
 
   const generatePromptPlaceholdersByLevel = () => {
     switch (level.toLowerCase()) {
@@ -406,8 +407,8 @@ interest.`;
               isTextArea={true}
             />
           )}
-          {needsFollowUp && task?.followUpLabel ? (
-            <Hint>{`The interlocutor reads this as: “${task.followUpLabel}”.`}</Hint>
+          {followUpPhase?.label ? (
+            <Hint>{`The interlocutor reads this as: “${followUpPhase.label}”.`}</Hint>
           ) : null}
           {needsDecision && (
             <Input
@@ -425,8 +426,8 @@ interest.`;
               isTextArea={true}
             />
           )}
-          {needsDecision && task?.decisionLabel ? (
-            <Hint>{`The interlocutor reads this as: “${task.decisionLabel}”.`}</Hint>
+          {decisionPhase?.label ? (
+            <Hint>{`The interlocutor reads this as: “${decisionPhase.label}”.`}</Hint>
           ) : null}
           <ThemeSelector label="Themes" themes={themes} setThemes={setThemes} />
           <Checkbox

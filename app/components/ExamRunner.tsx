@@ -1,32 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import styled from "styled-components";
-import Question from "@/app/components/Question";
+import QuestionPhases from "@/app/components/QuestionPhases";
 import Button from "@/app/components/ui/Button";
 import Timer from "@/app/components/Timer";
 import { Actions, Bar, Step, Steps } from "@/app/components/RunnerBar";
 import type { Exam, ExamQuestion } from "@/lib/exams";
 import { getCambridgeSpeakingTask } from "@/lib/cambridgeBlueprints";
 import type { QuestionStructures } from "@/types/types";
-
-const Interlocutor = styled.div`
-  margin-top: 1.5rem;
-  padding: 1rem 1.25rem;
-  border-radius: 1rem;
-  font-size: var(--text-base);
-  line-height: 1.5;
-  color: var(--text-body);
-
-  strong {
-    display: block;
-    text-transform: uppercase;
-    font-size: var(--text-xs);
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    margin-bottom: 0.35rem;
-  }
-`;
 
 const Meta = styled.span`
   font-weight: 400;
@@ -45,6 +27,16 @@ function stepLabel(item: ExamQuestion) {
 
 export default function ExamRunner({ exam }: { exam: Exam }) {
   const [index, setIndex] = useState(0);
+  /* The timer follows the phase, not the part: a Part 2 long turn is a minute
+     and then thirty seconds, and counting two minutes across both told the
+     teacher nothing about either. QuestionPhases reports the phase it is on,
+     and the key restarts the clock when it changes. */
+  const [phase, setPhase] = useState({ seconds: 0, index: 0 });
+  const onPhaseChange = useCallback(
+    (seconds: number, phaseIndex: number) =>
+      setPhase({ seconds, index: phaseIndex }),
+    []
+  );
   const current = exam.questions[index];
 
   if (!current) return <p>This exam has no questions yet.</p>;
@@ -82,7 +74,10 @@ export default function ExamRunner({ exam }: { exam: Exam }) {
           />
           {/* A guide to how long the part runs. It stops at zero and does
               nothing else: moving on is the teacher's call. */}
-          <Timer seconds={task?.suggestedSeconds ?? 0} resetKey={index} />
+          <Timer
+            seconds={phase.seconds || (task?.suggestedSeconds ?? 0)}
+            resetKey={`${index}-${phase.index}`}
+          />
         </Actions>
       </Bar>
 
@@ -94,33 +89,17 @@ export default function ExamRunner({ exam }: { exam: Exam }) {
         ) : null}
       </h2>
 
-      <Question
-        question={current as unknown as QuestionStructures}
+      {/* follow_up and decision used to be printed here, below the question and
+          visible from the moment the part opened. They are phases of the task,
+          not footnotes to it, so they are revealed in turn like everything
+          else — see QuestionPhases. */}
+      <QuestionPhases
+        key={`${current.part}-${current.candidate}`}
+        level={exam.level}
         part={current.part}
+        question={current as unknown as QuestionStructures}
+        onPhaseChange={onPhaseChange}
       />
-
-      {/*
-        follow_up and decision are printed parts of the real task that the
-        Question component does not render: at B2 and C1, the 30-second question
-        the other candidate answers in Part 2 and the second-phase decision task
-        in Part 3; at C2, the minute-long response to a Part 3 long turn and the
-        discussion that closes the part. They are shown here as interlocutor
-        notes, under whatever heading the blueprint gives the task — the timings
-        differ by level, so the wording cannot live here.
-      */}
-      {current.follow_up && task?.followUpLabel ? (
-        <Interlocutor className="glass">
-          <strong>{task.followUpLabel}</strong>
-          {current.follow_up}
-        </Interlocutor>
-      ) : null}
-
-      {current.decision && task?.decisionLabel ? (
-        <Interlocutor className="glass">
-          <strong>{task.decisionLabel}</strong>
-          {current.decision}
-        </Interlocutor>
-      ) : null}
     </div>
   );
 }

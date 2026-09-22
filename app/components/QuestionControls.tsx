@@ -10,17 +10,25 @@ import { getQuestionPartOptions } from "@/constants";
 
 export const QuestionControls = ({
   part,
-  question
+  question,
+  seconds,
+  phaseIndex = 0
 }: {
   part: string;
   question: any;
+  /** The current phase's length, from the runner above. */
+  seconds?: number;
+  phaseIndex?: number;
 }) => {
   const router = useRouter();
   const { level } = useParams();
   const levelCode = String(level);
 
+  /* The phase's length when the runner has one, the whole part otherwise —
+     which is what a part with a single phase amounts to anyway. */
   const suggestedSeconds =
-    getCambridgeSpeakingTask(levelCode, part)?.suggestedSeconds ?? 0;
+    seconds ||
+    (getCambridgeSpeakingTask(levelCode, part)?.suggestedSeconds ?? 0);
 
   // C2 has three parts, the other levels four. QUESTION_LEVELS mirrors
   // content.level_parts, so this reads the shape rather than restating it.
@@ -53,7 +61,10 @@ export const QuestionControls = ({
           secondary
           onClick={() => router.refresh()}
         />
-        <Timer seconds={suggestedSeconds} resetKey={question?.id ?? part} />
+        <Timer
+          seconds={suggestedSeconds}
+          resetKey={`${question?.id ?? part}-${phaseIndex}`}
+        />
       </Actions>
     </Bar>
   );

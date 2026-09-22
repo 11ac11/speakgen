@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { getLevel } from "@/lib/levels";
-import Question from "@/app/components/Question";
-import { QuestionControls } from "@/app/components/QuestionControls";
+import RandomQuestionRunner from "@/app/components/RandomQuestionRunner";
 import { listQuestions } from "@/lib/questions";
 import { getViewer } from "@/lib/questionAccess";
 import { isValidLevelPart } from "@/lib/questionRules";
@@ -53,10 +52,10 @@ export default async function RandomQuestionPage({
           change the part, or draw another.
         </p>
       </div>
-      <QuestionControls question={question} part={part} />
-      <Question
-        question={question as unknown as QuestionStructures}
+      <RandomQuestionRunner
+        level={level.toLowerCase()}
         part={part}
+        question={question as unknown as QuestionStructures}
       />
     </div>
   );

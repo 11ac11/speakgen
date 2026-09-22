@@ -102,40 +102,83 @@ const Prompt = styled.div`
   }
 `;
 
+/**
+ * The question on screen, for whichever phase of the part is showing.
+ *
+ * `statement` and `instruction` are the phase's, not the question's: a part runs
+ * in one, two or three phases, and the words change between them while the
+ * photographs or prompts stay put. Defaulting to question.statement keeps the
+ * single-phase parts — and any caller that has no phases to give — working
+ * exactly as before.
+ */
 export default function Question({
   question,
-  part
+  part,
+  statement,
+  instruction
 }: {
   question: QuestionStructures;
   part: string;
+  statement?: string;
+  instruction?: string | null;
 }) {
   if (!question) return <>No question</>;
+
+  const shown = statement ?? question.statement;
 
   switch (part) {
     case "1":
     case "4":
-      return <Part1or4 question={question as NewPart1QStructure} />;
+      return (
+        <Part1or4
+          question={question as NewPart1QStructure}
+          statement={shown}
+          instruction={instruction}
+        />
+      );
     case "2":
-      return <Part2 question={question as Part2QStructure} />;
+      return (
+        <Part2
+          question={question as Part2QStructure}
+          statement={shown}
+          instruction={instruction}
+        />
+      );
     case "3":
-      return <Part3 question={question as Part3QStructure} />;
+      return (
+        <Part3
+          question={question as Part3QStructure}
+          statement={shown}
+          instruction={instruction}
+        />
+      );
     default:
       return <>Not a valid part</>;
   }
 }
 
-const Part1or4 = ({ question }: { question: NewPart1QStructure }) => {
-  console.log("question.statement:", question.statement);
+type PhaseProps = { statement: string; instruction?: string | null };
+
+const Part1or4 = ({
+  question,
+  statement,
+  instruction
+}: { question: NewPart1QStructure } & PhaseProps) => {
   return (
     <StatementAndTheme
-      statement={question.statement}
+      statement={statement}
+      instruction={instruction}
       themes={question?.themes}
     />
   );
 };
 
-const Part2 = ({ question }: { question: Part2QStructure }) => {
-  const { image_ids, statement, statement_two, instructions } = question;
+const Part2 = ({
+  question,
+  statement,
+  instruction
+}: { question: Part2QStructure } & PhaseProps) => {
+  const { image_ids } = question;
 
   const [loading, setLoading] = useState(true);
   const [images, setImages] = useState<any[]>([]);
@@ -171,8 +214,7 @@ const Part2 = ({ question }: { question: Part2QStructure }) => {
     <>
       <StatementAndTheme
         statement={statement}
-        statementTwo={statement_two}
-        instructions={instructions}
+        instruction={instruction}
         themes={question?.themes}
         smallFont
       />
@@ -196,8 +238,12 @@ const Part2 = ({ question }: { question: Part2QStructure }) => {
   );
 };
 
-const Part3 = ({ question }: { question: Part3QStructure }) => {
-  const { prompts, statement } = question;
+const Part3 = ({
+  question,
+  statement,
+  instruction
+}: { question: Part3QStructure } & PhaseProps) => {
+  const { prompts } = question;
   const mid = Math.ceil(prompts.length / 2);
 
   return (
@@ -210,7 +256,11 @@ const Part3 = ({ question }: { question: Part3QStructure }) => {
             </Prompt>
           ))}
         </PromptContainer>
-        <StatementAndTheme statement={statement} themes={question?.themes} />
+        <StatementAndTheme
+          statement={statement}
+          instruction={instruction}
+          themes={question?.themes}
+        />
         <PromptContainer>
           {prompts.slice(mid).map((prompt, i) => (
             <Prompt className={`glass`} key={i}>

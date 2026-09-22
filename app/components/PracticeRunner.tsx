@@ -1,33 +1,15 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
-import Question from "@/app/components/Question";
+import QuestionPhases from "@/app/components/QuestionPhases";
 import Button from "@/app/components/ui/Button";
 import Timer from "@/app/components/Timer";
 import { Actions, Bar, Step, Steps } from "@/app/components/RunnerBar";
 import type { Practice } from "@/lib/practices";
 import { getCambridgeSpeakingTask } from "@/lib/cambridgeBlueprints";
 import type { QuestionStructures } from "@/types/types";
-
-const Interlocutor = styled.div`
-  margin-top: 1.5rem;
-  padding: 1rem 1.25rem;
-  border-radius: 1rem;
-  font-size: var(--text-base);
-  line-height: 1.5;
-  color: var(--text-body);
-
-  strong {
-    display: block;
-    text-transform: uppercase;
-    font-size: var(--text-xs);
-    letter-spacing: 0.08em;
-    color: var(--text-muted);
-    margin-bottom: 0.35rem;
-  }
-`;
 
 const Meta = styled.span`
   font-weight: 400;
@@ -47,6 +29,13 @@ export default function PracticeRunner({ practice }: { practice: Practice }) {
   const router = useRouter();
   const [index, setIndex] = useState(0);
   const [redrawing, setRedrawing] = useState(false);
+  // As in the exam runner: the clock belongs to the phase, not the part.
+  const [phase, setPhase] = useState({ seconds: 0, index: 0 });
+  const onPhaseChange = useCallback(
+    (seconds: number, phaseIndex: number) =>
+      setPhase({ seconds, index: phaseIndex }),
+    []
+  );
 
   const current = practice.questions[index];
 
@@ -101,7 +90,10 @@ export default function PracticeRunner({ practice }: { practice: Practice }) {
               setIndex((i) => Math.min(practice.questions.length - 1, i + 1))
             }
           />
-          <Timer seconds={task?.suggestedSeconds ?? 0} resetKey={index} />
+          <Timer
+            seconds={phase.seconds || (task?.suggestedSeconds ?? 0)}
+            resetKey={`${index}-${phase.index}`}
+          />
         </Actions>
       </Bar>
 
@@ -111,24 +103,13 @@ export default function PracticeRunner({ practice }: { practice: Practice }) {
         <Meta>{`  ·  ${index + 1} of ${practice.questions.length}`}</Meta>
       </h2>
 
-      <Question
-        question={current as unknown as QuestionStructures}
+      <QuestionPhases
+        key={current.id}
+        level={practice.level}
         part={current.part}
+        question={current as unknown as QuestionStructures}
+        onPhaseChange={onPhaseChange}
       />
-
-      {current.follow_up && task?.followUpLabel ? (
-        <Interlocutor className="glass">
-          <strong>{task.followUpLabel}</strong>
-          {current.follow_up}
-        </Interlocutor>
-      ) : null}
-
-      {current.decision && task?.decisionLabel ? (
-        <Interlocutor className="glass">
-          <strong>{task.decisionLabel}</strong>
-          {current.decision}
-        </Interlocutor>
-      ) : null}
 
       <div style={{ marginTop: "2rem" }}>
         <Button

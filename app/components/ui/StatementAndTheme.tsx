@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Pill, Button } from "@/app/components/ui";
+import React from "react";
+import { Pill } from "@/app/components/ui";
 import { THEME_VALUES_FOR_PILLS } from "@/constants";
 import styled from "styled-components";
 
@@ -29,31 +29,29 @@ const Instruction = styled.span`
   color: var(--text-muted);
 `;
 
+/**
+ * The card at the top of a question: its themes, the interlocutor's line, and
+ * the words themselves.
+ *
+ * It used to hold the reveal button for C2's second statement, along with the
+ * state deciding which of the two was showing. Both have gone: a part can have
+ * three phases rather than two, whose words come from four different columns,
+ * and the one that knows the order is the runner. This component now shows
+ * whatever it is handed, which is also what makes it usable for a phase that is
+ * not a statement at all.
+ */
 export const StatementAndTheme = ({
   themes,
   statement,
-  statementTwo,
-  instructions,
+  instruction,
   smallFont = false
 }: {
   themes: string[];
   statement: string;
-  statementTwo?: string;
-  /* C2 Part 2 runs in two phases over one set of photographs, and each phase
-     opens with its own line: "Look at photographs one and two", then "Now look
-     at all the photographs". They are indexed to match the statement being
-     shown, so the instruction changes with it. Every other part has none. */
-  instructions?: string[];
+  /** The interlocutor's line into this phase, where it has one. */
+  instruction?: string | null;
   smallFont?: boolean;
 }) => {
-  const [statementToView, setStatementToView] = useState(statement);
-  const showingSecond = !!statementTwo && statementToView === statementTwo;
-  const instruction = instructions?.[showingSecond ? 1 : 0];
-
-  useEffect(() => {
-    setStatementToView(statement);
-  }, [statement]);
-
   const renderPill = (value: string | undefined) => {
     const storedTheme = THEME_VALUES_FOR_PILLS.find((theme) =>
       theme.value.includes(value || "")
@@ -78,13 +76,7 @@ export const StatementAndTheme = ({
         ))}
       </ThemesContainer>
       {!!instruction && <Instruction>{instruction}</Instruction>}
-      <Statement $smallFont={smallFont}>{statementToView}</Statement>
-      {!!statementTwo && statementToView !== statementTwo && (
-        <Button
-          text={"Continue to second part of question"}
-          onClick={() => setStatementToView(statementTwo)}
-        ></Button>
-      )}
+      <Statement $smallFont={smallFont}>{statement}</Statement>
     </div>
   );
 };

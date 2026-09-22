@@ -9,6 +9,42 @@ export type CambridgeContentType =
   | "prompted_long_turn"
   | "discussion_prompt";
 
+/**
+ * Which column of content.questions carries a phase's words.
+ *
+ * These are the four text fields a question can hold, and naming them here is
+ * what lets a task say "I run in three phases, and this is the order they come
+ * in" without any new storage. The columns already exist and already hold the
+ * right words — what was missing was anything saying they are a sequence.
+ */
+export type CambridgePhaseSource =
+  "statement" | "statement_two" | "follow_up" | "decision";
+
+/**
+ * One turn within a part: what the interlocutor says to open it, whose words
+ * fill it, and roughly how long it runs.
+ */
+export type CambridgeSpeakingPhase = {
+  source: CambridgePhaseSource;
+  /**
+   * The interlocutor's line into this phase. Omitted where the phase IS the
+   * task and needs no introduction — the opening phase of most parts — and
+   * omitted on C2's collaborative task, whose two lines are written per
+   * question and stored in `instructions`, because they name which photographs
+   * to look at and so differ question by question.
+   */
+  label?: string;
+  /**
+   * How long this phase runs, which is what the timer counts down.
+   *
+   * The labels used to carry it too — "(about 30 seconds)", "(about one
+   * minute)" — from when nothing else knew a phase had a length. Two copies of
+   * a number is one too many, and the timer is the one a teacher is actually
+   * watching.
+   */
+  seconds: number;
+};
+
 export type CambridgeSpeakingTask = {
   part: CambridgePart;
   title: string;
@@ -25,15 +61,29 @@ export type CambridgeSpeakingTask = {
    */
   perCandidate?: true;
   /**
-   * How the interlocutor introduces follow_up and decision, which are printed
-   * parts of the task that the Question component does not render. The timings
-   * differ by level — B2 and C1 give the other candidate 30 seconds after a
-   * Part 2 long turn, C2 gives them a full minute after a Part 3 one — so the
-   * wording belongs to the task rather than to the runner.
+   * How the part runs, in order.
+   *
+   * Every part has at least one phase, and several have more: a B2 long turn is
+   * a minute from one candidate and then thirty seconds from the other, a
+   * collaborative task is a discussion and then a decision. Those later phases
+   * were being printed down the page from the start, so the question the other
+   * candidate is about to be asked sat on screen throughout the first
+   * candidate's turn — readable by exactly the person who should not see it.
+   *
+   * Declaring them here rather than in the runner is what stops this being a
+   * level-and-part switch statement. A new level is a new blueprint entry and
+   * nothing else: the runner already knows how to walk a list.
    */
-  followUpLabel?: string;
-  decisionLabel?: string;
+  phases: readonly CambridgeSpeakingPhase[];
 };
+
+/** The phase of this task that a given column fills, if it has one. */
+export function getTaskPhase(
+  task: CambridgeSpeakingTask | undefined,
+  source: CambridgePhaseSource
+) {
+  return task?.phases.find((phase) => phase.source === source);
+}
 
 export type CambridgeSpeakingBlueprint = {
   id: string;
@@ -52,7 +102,8 @@ const sharedTasks = {
     suggestedSeconds: 120,
     candidateGuidance:
       "Answer the interlocutor's questions about yourself and familiar topics.",
-    contentRequirements: ["prompt set", "theme"]
+    contentRequirements: ["prompt set", "theme"],
+    phases: [{ source: "statement", seconds: 120 }]
   },
   part2: {
     part: "2" as const,
@@ -67,7 +118,17 @@ const sharedTasks = {
       "candidate instruction",
       "comparison focus"
     ],
-    followUpLabel: "Then ask the other candidate (about 30 seconds)"
+    /* A minute from this candidate, then thirty seconds from the other about
+       the same photographs. The photographs stay up across both — it is the
+       question being asked that changes, not what is being looked at. */
+    phases: [
+      { source: "statement", seconds: 60 },
+      {
+        source: "follow_up",
+        label: "Then ask the other candidate",
+        seconds: 30
+      }
+    ]
   },
   part3: {
     part: "3" as const,
@@ -81,7 +142,17 @@ const sharedTasks = {
       "options or prompts",
       "decision focus"
     ],
-    decisionLabel: "Then, after about two minutes (about one minute)"
+    /* Two minutes discussing the prompts, then a minute deciding. The decision
+       is the whole point of the second phase, so showing it from the start told
+       the pair where they were meant to end up before they had started. */
+    phases: [
+      { source: "statement", seconds: 120 },
+      {
+        source: "decision",
+        label: "Then, the decision task",
+        seconds: 60
+      }
+    ]
   }
 } satisfies Record<"part1" | "part2" | "part3", CambridgeSpeakingTask>;
 
@@ -102,7 +173,8 @@ const b2FirstSpeaking: CambridgeSpeakingBlueprint = {
       suggestedSeconds: 240,
       candidateGuidance:
         "Discuss the Part 3 topic and related questions in more detail.",
-      contentRequirements: ["follow-up prompt set", "theme"]
+      contentRequirements: ["follow-up prompt set", "theme"],
+      phases: [{ source: "statement", seconds: 240 }]
     }
   ]
 };
@@ -128,7 +200,8 @@ const c1AdvancedSpeaking: CambridgeSpeakingBlueprint = {
         "follow-up prompt set",
         "theme",
         "depth of discussion"
-      ]
+      ],
+      phases: [{ source: "statement", seconds: 300 }]
     }
   ]
 };
@@ -168,6 +241,14 @@ const c2ProficiencySpeaking: CambridgeSpeakingBlueprint = {
         "first-phase question",
         "second-phase task",
         "decision focus"
+      ],
+      /* The one task whose phase labels are written per question rather than
+         here: "Look at photographs one and two" then "Now look at all the
+         photographs" name the pictures, so they belong to the question and
+         live in `instructions`, indexed to match these phases. */
+      phases: [
+        { source: "statement", seconds: 60 },
+        { source: "statement_two", seconds: 180 }
       ]
     },
     {
@@ -184,8 +265,23 @@ const c2ProficiencySpeaking: CambridgeSpeakingBlueprint = {
         "response question",
         "closing discussion"
       ],
-      followUpLabel: "Then ask the other candidate (about one minute)",
-      decisionLabel: "Then, once both candidates have spoken (about 4 minutes)"
+      /* Three, the most of any task: two minutes from the card, a minute from
+         the other candidate, then the examiner-led discussion that closes the
+         part. That last one belongs to the part rather than to either card, so
+         it rides on whichever card is on screen when you reach it. */
+      phases: [
+        { source: "statement", seconds: 120 },
+        {
+          source: "follow_up",
+          label: "Then ask the other candidate",
+          seconds: 60
+        },
+        {
+          source: "decision",
+          label: "Then, once both candidates have spoken",
+          seconds: 240
+        }
+      ]
     }
   ]
 };
