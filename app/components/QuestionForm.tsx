@@ -41,6 +41,26 @@ const FormError = styled.p`
   color: var(--danger);
 `;
 
+/* A level or part that has already been decided: the same label the dropdown
+   wears, over the value, so a settled field lines up with a live one. */
+const Settled = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  span.label {
+    font-size: var(--text-xs);
+    font-weight: 500;
+    color: var(--text-label);
+  }
+
+  span.value {
+    font-size: var(--text-lg);
+    font-weight: 600;
+    color: var(--text-heading);
+  }
+`;
+
 const FormRow = styled.div`
   display: flex;
   flex-direction: row;
@@ -54,6 +74,7 @@ const QuestionForm = ({
   partParam,
   levelParam,
   lockLevelAndPart,
+  lockLevel,
   onCreated
 }: {
   /* Exactly what the edit page hands over: the row getQuestionById returns.
@@ -63,13 +84,25 @@ const QuestionForm = ({
   levelParam?: string | undefined;
   /** For a caller that opened the form to fill one particular slot. */
   lockLevelAndPart?: boolean;
+  /**
+   * The level came from the URL and is not up for discussion, but the part
+   * still is — which is what /[level]/questions/new wants.
+   *
+   * Separate from lockLevelAndPart because the two used to be one flag, and a
+   * single flag cannot say "this half is settled and that half is not".
+   */
+  lockLevel?: boolean;
   /** Hands the new question back instead of leaving for the dashboard, so the
       form can be used inside something that wants to keep the page. */
   onCreated?: (created: QuestionRow) => void;
 }) => {
   const router = useRouter();
   const isEdit = !!question;
-  const fixed = isEdit || !!lockLevelAndPart;
+  /* Editing settles both: neither travels in the update payload. Filling an
+     exam slot settles both too. Arriving from /[level]/questions/new settles
+     only the level. */
+  const levelFixed = isEdit || !!lockLevelAndPart || !!lockLevel;
+  const partFixed = isEdit || !!lockLevelAndPart;
 
   const [level, setLevel] = useState(levelParam?.toLowerCase() || "");
   const [part, setPart] = useState(partParam || "");
@@ -122,7 +155,7 @@ const QuestionForm = ({
     return message as string | null;
   })();
 
-  // Level is required too. /questions/new starts with none chosen, and
+  // Level is required too. The level chooser starts with none chosen, and
   // submitting without one used to build a request with an empty level.
   const allFieldsCompleted =
     !!level && !!part && !!statement && themes.length > 0 && !partShapeError;
@@ -301,40 +334,52 @@ interest.`;
 
   return (
     <StyledForm onSubmit={handleSubmit}>
-      {/* Fixed once a question exists. Neither travels in the update payload,
-          so these were editable controls that changed what the form drew and
-          then saved nothing: switch a Part 1 question to Part 3, add prompts,
-          and you got a Part 1 row carrying Part 3 prompts while believing you
-          had moved it. Read-only says what is actually true. */}
+      {/* A settled level or part is printed, not offered in a control that
+          cannot be operated. Neither travels in the update payload, so an
+          editable-looking dropdown was a control that changed what the form
+          drew and then saved nothing: switch a Part 1 question to Part 3, add
+          prompts, and you got a Part 1 row carrying Part 3 prompts while
+          believing you had moved it. */}
       <FormRow>
-        <Dropdown
-          label="Level"
-          options={SUPPORTED_LEVELS}
-          value={level.toUpperCase()}
-          onChange={(val) => {
-            const next = val.toLowerCase();
-            setLevel(next);
-            /* B2 and C1 both have four parts, so today nothing can go wrong.
-               C2 has three, and the moment it is offered here a Part 4 left
-               over from another level would be a combination that cannot be
-               saved. Clearing it costs nothing and removes the trap. */
-            if (part && !getQuestionPartOptions(next).includes(part)) {
-              setPart("");
-            }
-          }}
-          placeholder="-"
-          width="100px"
-          disabled={fixed}
-        />
-        <Dropdown
-          label="Part"
-          options={getQuestionPartOptions(level)}
-          value={part}
-          onChange={setPart}
-          placeholder="-"
-          width="100px"
-          disabled={fixed}
-        />
+        {levelFixed ? (
+          <Settled>
+            <span className="label">Level</span>
+            <span className="value">{level.toUpperCase()}</span>
+          </Settled>
+        ) : (
+          <Dropdown
+            label="Level"
+            options={SUPPORTED_LEVELS}
+            value={level.toUpperCase()}
+            onChange={(val) => {
+              const next = val.toLowerCase();
+              setLevel(next);
+              /* C2 has three parts where the others have four, so a Part 4 left
+                 over from another level would be a combination that cannot be
+                 saved. Clearing it costs nothing and removes the trap. */
+              if (part && !getQuestionPartOptions(next).includes(part)) {
+                setPart("");
+              }
+            }}
+            placeholder="-"
+            width="100px"
+          />
+        )}
+        {partFixed ? (
+          <Settled>
+            <span className="label">Part</span>
+            <span className="value">{part}</span>
+          </Settled>
+        ) : (
+          <Dropdown
+            label="Part"
+            options={getQuestionPartOptions(level)}
+            value={part}
+            onChange={setPart}
+            placeholder="-"
+            width="100px"
+          />
+        )}
       </FormRow>
       {isEdit ? (
         <Hint>

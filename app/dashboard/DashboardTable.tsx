@@ -5,7 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Table from "../components/Table";
-import { Button, Dropdown, MultiSelect } from "../components/ui";
+import { Dropdown, MultiSelect } from "../components/ui";
 import {
   getQuestionPartOptions,
   SUPPORTED_LEVELS,
@@ -28,13 +28,6 @@ const LeftSide = styled.div`
 // Centre, not flex-end: the two controls have different intrinsic heights
 // (one carries a chevron), so bottom-aligning them left them visibly offset.
 const RightSide = styled(LeftSide)`
-  align-items: center;
-`;
-
-// No local button styling: it used to re-declare radius, padding and border on
-// top of the shared button, which is why Create and Quick Start disagreed.
-const Dashboardbutton = styled(Button)`
-  display: flex;
   align-items: center;
 `;
 
@@ -96,12 +89,20 @@ export default function DashboardTable() {
           />
         </LeftSide>
         <RightSide>
-          {/* Create alone now. The random question button used to sit beside
-              it, which put a thing that saves nothing next to the thing that
-              makes something — see TabMenu, where it went. */}
-          <Dashboardbutton
-            text={"Create"}
-            onClick={() => router.push("/questions/new")}
+          {/* A level chooser rather than a plain Create, matching New exam and
+              New practice, which have always worked this way. The level decides
+              what the form asks for — one photograph or four, prompts or none —
+              so it is settled before the form opens rather than being the first
+              field in it. */}
+          <Dropdown
+            options={SUPPORTED_LEVELS}
+            value={""}
+            onChange={(level) =>
+              router.push(`/${level.toLowerCase()}/questions/new`)
+            }
+            placeholder="Create"
+            width={"150px"}
+            inputAsButton
             isDashboardButton
           />
         </RightSide>

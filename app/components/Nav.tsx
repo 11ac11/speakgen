@@ -406,7 +406,7 @@ export default function Nav() {
                 <li>
                   <MenuLink href="/questions/new">
                     <strong>New question</strong>
-                    <small>Add one to your bank</small>
+                    <small>Pick a level, then write it</small>
                   </MenuLink>
                 </li>
               </Dropdown>

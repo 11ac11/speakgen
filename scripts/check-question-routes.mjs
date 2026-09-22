@@ -218,7 +218,13 @@ pass(
 console.log("\nPAGES");
 for (const [name, path, expect] of [
   ["edit page", `/b2/questions/${p2.body.id}`, 200],
-  ["new question page", "/questions/new", 200],
+  // The form moved under the level; /questions/new is the chooser that sends
+  // you to it, which is why both still answer 200.
+  ["new question form, b2", "/b2/questions/new", 200],
+  ["new question form, c2", "/c2/questions/new", 200],
+  ["new question form, b1", "/b1/questions/new", 200],
+  ["new question form, unknown level", "/zz/questions/new", 404],
+  ["level chooser", "/questions/new", 200],
   ["random runner", "/b2/questions/random/1", 200],
   ["random runner part 3", "/b2/questions/random/3", 200],
   ["random runner, c1", "/c1/questions/random/2", 200],
