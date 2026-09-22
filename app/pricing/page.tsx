@@ -1,5 +1,19 @@
 import { Lead } from "@/app/components/Lead";
-import { PLANS, ENTITLEMENTS } from "@/lib/entitlements";
+import { PLANS, ENTITLEMENTS, type Entitlements } from "@/lib/entitlements";
+import {
+  Actions,
+  Blurb,
+  Card,
+  CurrentBadge,
+  Cross,
+  Feature,
+  Features,
+  PlanGrid,
+  PlanName,
+  Price,
+  Tick,
+  Yearly
+} from "./PlanCard";
 import { formatPrice, getPrice } from "@/lib/billing/prices";
 import { isBillingEnabled, isBillingSimulated } from "@/lib/billing/provider";
 import { getAuthenticatedUserId } from "@/lib/session";
@@ -31,6 +45,63 @@ function limit(value: number | null, singular: string, plural: string) {
   return `${value} ${value === 1 ? singular : plural}`;
 }
 
+/**
+ * One list of features, read once per plan.
+ *
+ * Every card renders every row, in this order, whether the plan has the thing
+ * or not — which is what makes "PDF export" the same line on all three columns
+ * and lets you read across. The cards used to build their own lists and pad the
+ * gaps with an em dash, so a row meant nothing until you had counted down to it
+ * in the column beside.
+ *
+ * `on` is what the tick and cross report, and it is not the same as "has a
+ * value": the free plan has one saved exam, which is a thing you get, while it
+ * also has ads, which is a thing you would rather not. So each row says for
+ * itself which way round it reads.
+ */
+const FEATURES: {
+  key: string;
+  of: (e: Entitlements) => { on: boolean; text: string };
+}[] = [
+  {
+    key: "questions",
+    of: () => ({ on: true, text: "Unlimited questions" })
+  },
+  {
+    key: "exams",
+    of: (e) => ({ on: true, text: limit(e.exams, "saved exam", "saved exams") })
+  },
+  {
+    key: "practices",
+    of: (e) => ({ on: true, text: limit(e.practices, "practice", "practices") })
+  },
+  {
+    key: "pdf",
+    of: (e) => ({ on: e.pdfExport, text: "PDF export" })
+  },
+  {
+    key: "branding",
+    of: (e) => ({ on: e.branding, text: "Your school's branding" })
+  },
+  {
+    /* The one row whose tick is for the absence of something. Ads are a cost to
+       the reader, so having them is the cross. */
+    key: "ads",
+    of: (e) => ({ on: !e.ads, text: e.ads ? "Includes ads" : "No ads" })
+  },
+  {
+    key: "seats",
+    of: (e) => ({
+      on: true,
+      text: `${e.seats} ${e.seats === 1 ? "teacher" : "teachers"}`
+    })
+  }
+];
+
+/* Name, price, yearly, blurb, one per feature, then the actions. The container
+   declares them so that every card can share them. */
+const CARD_ROWS = 4 + FEATURES.length + 1;
+
 export const dynamic = "force-dynamic";
 
 export default async function PricingPage() {
@@ -48,91 +119,51 @@ export default async function PricingPage() {
           Paying lifts the limits on saved exams and practices.
         </Lead>
 
-        <div
-          style={{
-            display: "grid",
-            gap: "1rem",
-            gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))"
-          }}
-        >
+        <PlanGrid $rows={CARD_ROWS}>
           {PLANS.map((plan) => {
             const e = ENTITLEMENTS[plan];
             const price = priceLabels(plan);
+            const isCurrent = currentPlan === plan;
 
             return (
-              <div
-                key={plan}
-                className="glass"
-                style={{
-                  padding: "1.5rem",
-                  borderRadius: "var(--radius-card)"
-                }}
-              >
-                <h2
-                  style={{
-                    fontSize: "var(--text-lg)",
-                    textTransform: "capitalize",
-                    margin: 0
-                  }}
-                >
-                  {plan}
-                </h2>
-                <div
-                  style={{
-                    fontSize: "var(--text-3xl)",
-                    fontWeight: 600,
-                    margin: "0.5rem 0 0.1rem",
-                    color: "var(--text-body)"
-                  }}
-                >
+              <Card key={plan} className="glass" $current={isCurrent}>
+                {isCurrent ? <CurrentBadge>Current plan</CurrentBadge> : null}
+
+                <PlanName $current={isCurrent}>{plan}</PlanName>
+
+                <Price>
                   {price.monthly}
-                  {plan !== "free" ? (
-                    <span
-                      style={{ fontSize: "var(--text-sm)", fontWeight: 400 }}
-                    >
-                      {" / month"}
-                    </span>
-                  ) : null}
-                </div>
-                <div
-                  style={{
-                    color: "var(--text-muted)",
-                    fontSize: "var(--text-sm)",
-                    marginBottom: "1rem"
-                  }}
-                >
-                  {price.yearly}
-                </div>
-                <p style={{ fontSize: "var(--text-sm)", marginBottom: "1rem" }}>
-                  {BLURBS[plan]}
-                </p>
-                <ul
-                  style={{
-                    listStyle: "none",
-                    padding: 0,
-                    margin: 0,
-                    fontSize: "var(--text-sm)",
-                    lineHeight: 1.9
-                  }}
-                >
-                  <li>Unlimited questions</li>
-                  <li>{limit(e.exams, "saved exam", "saved exams")}</li>
-                  <li>{limit(e.practices, "practice", "practices")}</li>
-                  <li>{e.pdfExport ? "PDF export" : "—"}</li>
-                  <li>{e.branding ? "Your school's branding" : "—"}</li>
-                  <li>{e.ads ? "Includes ads" : "No ads"}</li>
-                  {e.seats > 1 ? <li>{`${e.seats} teachers`}</li> : null}
-                </ul>
-                <PlanActions
-                  plan={plan}
-                  currentPlan={currentPlan}
-                  signedIn={Boolean(userId)}
-                  billingEnabled={billingEnabled}
-                />
-              </div>
+                  {plan !== "free" ? <span>{" / month"}</span> : null}
+                </Price>
+
+                <Yearly>{price.yearly}</Yearly>
+
+                <Blurb>{BLURBS[plan]}</Blurb>
+
+                <Features $rows={FEATURES.length}>
+                  {FEATURES.map((feature) => {
+                    const { on, text } = feature.of(e);
+                    return (
+                      <Feature key={feature.key} $on={on}>
+                        {on ? <Tick /> : <Cross />}
+                        <span>{text}</span>
+                      </Feature>
+                    );
+                  })}
+                </Features>
+
+                <Actions>
+                  <PlanActions
+                    plan={plan}
+                    currentPlan={currentPlan}
+                    signedIn={Boolean(userId)}
+                    billingEnabled={billingEnabled}
+                  />
+                </Actions>
+              </Card>
             );
           })}
-        </div>
+        </PlanGrid>
 
         <p
           style={{

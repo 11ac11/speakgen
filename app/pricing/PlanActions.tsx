@@ -22,13 +22,6 @@ const Row = styled.div`
   }
 `;
 
-const Current = styled.div`
-  margin-top: 1.25rem;
-  font-size: var(--text-sm);
-  font-weight: 600;
-  color: var(--leafgreen);
-`;
-
 export default function PlanActions({
   plan,
   currentPlan,
@@ -44,7 +37,10 @@ export default function PlanActions({
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  if (currentPlan === plan) return <Current>Your current plan</Current>;
+  /* Nothing at all: the card says so with a badge in its corner and a green
+     border, which is both louder and out of the way. This used to print "Your
+     current plan" where the buttons go, at the bottom of the tallest column. */
+  if (currentPlan === plan) return null;
 
   if (plan === "free") {
     return signedIn ? null : (
