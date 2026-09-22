@@ -5,12 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Table from "../components/Table";
-import {
-  Button,
-  Dropdown,
-  MultiSelect,
-  RandomQuestion
-} from "../components/ui";
+import { Button, Dropdown, MultiSelect } from "../components/ui";
 import {
   getQuestionPartOptions,
   SUPPORTED_LEVELS,
@@ -101,12 +96,14 @@ export default function DashboardTable() {
           />
         </LeftSide>
         <RightSide>
+          {/* Create alone now. The random question button used to sit beside
+              it, which put a thing that saves nothing next to the thing that
+              makes something — see TabMenu, where it went. */}
           <Dashboardbutton
             text={"Create"}
             onClick={() => router.push("/questions/new")}
             isDashboardButton
           />
-          <RandomQuestion isDashboardButton />
         </RightSide>
       </FiltersRow>
       <Table ownerId={ownerId} filters={filters} />

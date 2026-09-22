@@ -14,6 +14,17 @@ import { SUPPORTED_LEVELS } from "@/constants";
  * practices existed, a teacher saw "Quick Start" next to "New practice" with
  * nothing to tell them apart. The word "practice" now means one thing — the
  * saved rule — so this had to stop borrowing it.
+ *
+ * The width is generous on purpose. Dropdown draws its chevron absolutely
+ * over the control, so a label that fills the button runs underneath it — at
+ * 230px the final "n" sat behind the arrow.
+ *
+ * "Start a random question", not "Random question", because it sits among
+ * things that are not actions — the tabs naming your saved work, the filters
+ * naming what is in the table — and a bare noun phrase there reads as another
+ * label rather than a thing to press. The verb is what says it takes you
+ * somewhere. Not "Quick start" either, for the reason above: it describes the
+ * occasion rather than what you get.
  */
 export default function RandomQuestion({
   isDashboardButton,
@@ -33,8 +44,8 @@ export default function RandomQuestion({
       options={SUPPORTED_LEVELS}
       value={""}
       onChange={handleStart}
-      placeholder="Random question"
-      width={width || "200px"}
+      placeholder="Start a random question"
+      width={width || "265px"}
       inputAsButton={true}
       secondary
       isDashboardButton={isDashboardButton}
