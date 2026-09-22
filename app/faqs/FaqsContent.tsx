@@ -90,11 +90,15 @@ const FAQS: { id: string; question: string; answer: React.ReactNode }[] = [
     question: "Which exams does it cover?",
     answer: (
       <>
-        <p>{`Three levels, each following the real format:`}</p>
+        <p>{`Four levels, each following the real format:`}</p>
         <ul>
           <li>
+            <strong>{`B1 Preliminary`}</strong>
+            {` — four parts, about 12 minutes for a pair of candidates. In Part 2 each candidate describes a single photograph on their own, rather than comparing two.`}
+          </li>
+          <li>
             <strong>{`B2 First`}</strong>
-            {` — four parts, about 14 minutes for a pair of candidates.`}
+            {` — four parts, about 14 minutes.`}
           </li>
           <li>
             <strong>{`C1 Advanced`}</strong>

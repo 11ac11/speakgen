@@ -224,6 +224,11 @@ for (const [name, path, expect] of [
   ["random runner, c1", "/c1/questions/random/2", 200],
   ["random runner, bad part", "/b2/questions/random/9", 404],
   ["random runner, c2", "/c2/questions/random/1", 200],
+  ["random runner, b1", "/b1/questions/random/1", 200],
+  // B1's long turn is one photograph, so this is the case that proves the
+  // level is seeded and the per-level photograph count let it be saved.
+  ["random runner, b1 part 2", "/b1/questions/random/2", 200],
+  ["random runner, b1 part 4", "/b1/questions/random/4", 200],
   // C2 has three parts, so Part 4 is the level-shape guard rather than the
   // whole level. This case used to assert that /c2/... 404s while C2 was
   // disabled; 019 enabled it, and no level is disabled now, so the

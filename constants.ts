@@ -131,10 +131,11 @@ export const getQuestionPartOptions = (level: string) => {
 
 // Levels offered in the UI. content.levels.enabled is the authority; a level
 // listed here but disabled there will 404 rather than render.
-export const SUPPORTED_LEVELS = ["B2", "C1", "C2"];
+export const SUPPORTED_LEVELS = ["B1", "B2", "C1", "C2"];
 
 // Mirrors content.level_parts. C2 Proficiency has three parts, not four.
 export const QUESTION_LEVELS: Record<string, { parts: string[] }> = {
+  b1: { parts: ["1", "2", "3", "4"] },
   b2: { parts: ["1", "2", "3", "4"] },
   c1: { parts: ["1", "2", "3", "4"] },
   c2: { parts: ["1", "2", "3"] }

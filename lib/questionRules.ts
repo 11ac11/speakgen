@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { QUESTION_LEVELS } from "@/constants";
+import { getCambridgeSpeakingTask } from "@/lib/cambridgeBlueprints";
 
 export const questionPayloadSchema = z.object({
   statement: z.string().trim().min(1).max(200),
@@ -39,6 +40,14 @@ export function filledImageIds(imageIds: unknown): number[] {
     .filter((id) => Number.isInteger(id) && id > 0);
 }
 
+/** "one photograph", "between 3 and 5 prompts" — whichever the task wants. */
+function countPhrase(range: { min: number; max: number }, noun: string) {
+  if (range.min === range.max) {
+    return range.min === 1 ? `one ${noun}` : `${range.min} ${noun}s`;
+  }
+  return `between ${range.min} and ${range.max} ${noun}s`;
+}
+
 /**
  * Mirrors the two CHECK constraints on content.questions, questions_p2_images
  * and questions_p3_prompts.
@@ -49,26 +58,41 @@ export function filledImageIds(imageIds: unknown): number[] {
  * typing into the third prompt box of an empty form produces an array of
  * length three holding one prompt. Trusting the length would let that through.
  *
+ * The counts come from the blueprint rather than from the part number. They
+ * used to be written into `if (part === "2")`, which was true for B2, C1 and C2
+ * and wrong the moment B1 arrived: its long turn is one photograph described,
+ * not two compared, and under the old rule no B1 Part 2 question could be
+ * saved at all.
+ *
  * The database is still the authority. This exists so a request that breaks a
  * constraint comes back as a 400 naming the field, rather than as a violation
  * the caller has to guess at.
  */
 export function checkPartShape(
+  level: string,
   part: string,
   payload: { image_ids?: unknown; prompts?: unknown },
   fail: (path: "image_ids" | "prompts", message: string) => void
 ) {
-  if (part === "2") {
+  const task = getCambridgeSpeakingTask(level, part);
+  if (!task) return;
+
+  const label = `A ${level.toUpperCase()} Part ${part} question`;
+
+  if (task.images) {
     const images = filledImageIds(payload.image_ids).length;
-    if (images < 2 || images > 5) {
-      fail("image_ids", "A Part 2 question needs between 2 and 5 photographs");
+    if (images < task.images.min || images > task.images.max) {
+      fail(
+        "image_ids",
+        `${label} needs ${countPhrase(task.images, "photograph")}`
+      );
     }
   }
 
-  if (part === "3") {
+  if (task.prompts) {
     const prompts = filledPrompts(payload.prompts).length;
-    if (prompts < 3 || prompts > 5) {
-      fail("prompts", "A Part 3 question needs between 3 and 5 prompts");
+    if (prompts < task.prompts.min || prompts > task.prompts.max) {
+      fail("prompts", `${label} needs ${countPhrase(task.prompts, "prompt")}`);
     }
   }
 }
@@ -83,7 +107,7 @@ export const questionCreateSchema = questionPayloadSchema
     part: z.string().trim().regex(/^\d$/)
   })
   .superRefine((value, ctx) => {
-    checkPartShape(value.part, value, (path, message) =>
+    checkPartShape(value.level, value.part, value, (path, message) =>
       ctx.addIssue({ code: z.ZodIssueCode.custom, path: [path], message })
     );
   });

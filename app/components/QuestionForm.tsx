@@ -111,9 +111,14 @@ const QuestionForm = ({
      prompt, the insert broke a CHECK constraint, and the question was lost. */
   const partShapeError = (() => {
     let message: string | null = null;
-    checkPartShape(part, { image_ids: imageIds, prompts }, (_path, text) => {
-      message = message ?? text;
-    });
+    checkPartShape(
+      level,
+      part,
+      { image_ids: imageIds, prompts },
+      (_path, text) => {
+        message = message ?? text;
+      }
+    );
     return message as string | null;
   })();
 
@@ -125,15 +130,20 @@ const QuestionForm = ({
   const generatePlaceholderByPart = (isSecondStatement?: boolean) => {
     switch (part) {
       case "1":
-        return "Tell me about where you live.";
+        return level === "b1"
+          ? "What do you usually do at the weekend?"
+          : "Tell me about where you live.";
       case "2":
         if (!isSecondStatement) {
-          /* C2's Part 2 is the collaborative task, not the long turn, so it
-             opens with a question the pair answer together about two of the
-             photographs rather than an instruction to compare. */
-          return level === "c2"
-            ? "Why might people choose to spend time in places like these?"
-            : "Compare the two ways how people are enjoying listening to music";
+          /* Three different tasks share this part number. C2's is the
+             collaborative task, so it opens with a question the pair answer
+             together about two of the photographs; B1's is one photograph
+             described rather than two compared. */
+          if (level === "c2")
+            return "Why might people choose to spend time in places like these?";
+          if (level === "b1")
+            return "Tell me what you can see in your photograph.";
+          return "Compare the two ways how people are enjoying listening to music";
         } else {
           return `I'd like you to imagine that a television documentary is being produced on
 working in the food industry. These pictures show some of the issues that are
@@ -144,12 +154,16 @@ interest.`;
         }
       case "3":
         if (!isSecondStatement) {
+          if (level === "b1")
+            return "A family is planning a day out together. Talk about what they could do, then decide which is best.";
           return "What might people have to consider when making decisions?";
         } else {
           return "Decide in which situation it is important to make the right decision.";
         }
       case "4":
-        return "Would you prefer to live in a modern city or a city with lots of history?";
+        return level === "b1"
+          ? "Do you prefer spending time indoors or outdoors?"
+          : "Would you prefer to live in a modern city or a city with lots of history?";
       default:
         return "";
     }
@@ -174,6 +188,17 @@ interest.`;
 
   const generatePromptPlaceholdersByLevel = () => {
     switch (level.toLowerCase()) {
+      /* B1's collaborative task prints a page of small drawings; the options
+         they show are what these stand in for, so they are everyday things
+         rather than the abstractions C1 and C2 argue about. */
+      case "b1":
+        return [
+          "go to the beach",
+          "visit a museum",
+          "have a picnic",
+          "go to the cinema",
+          "stay at home"
+        ];
       case "b2":
         return [];
       case "c1":

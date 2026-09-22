@@ -10,7 +10,7 @@ import { getLevel } from "@/lib/levels";
  * layout 404s unknown or disabled levels so /nonsense/exams/1 cannot render.
  *
  * Adding a new top-level route shadows a level of the same name, which is the
- * cost of this URL shape. Level codes are short (b2, c1, c2), so the names to
+ * cost of this URL shape. Level codes are short (b1, b2, c1, c2), so the names to
  * avoid are few and obvious.
  */
 export default async function LevelLayout({

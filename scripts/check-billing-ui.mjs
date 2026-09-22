@@ -43,10 +43,7 @@ const page = async (path, c = cookie) =>
 console.log("PAGES");
 pass("pricing renders signed out", (await page("/pricing", "")).status === 200);
 pass("pricing renders signed in", (await page("/pricing")).status === 200);
-pass(
-  "settings page",
-  (await page("/settings")).status === 200
-);
+pass("settings page", (await page("/settings")).status === 200);
 pass(
   "dashboard exams tab",
   (await page("/dashboard?tab=exams")).status === 200
@@ -54,8 +51,7 @@ pass(
 pass(
   "settings redirects when signed out",
   [307, 302].includes(
-    (await fetch(`${BASE}/settings`, { redirect: "manual" }))
-      .status
+    (await fetch(`${BASE}/settings`, { redirect: "manual" })).status
   )
 );
 
