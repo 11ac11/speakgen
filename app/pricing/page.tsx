@@ -1,5 +1,10 @@
 import { Lead } from "@/app/components/Lead";
-import { PLANS, ENTITLEMENTS, type Entitlements } from "@/lib/entitlements";
+import {
+  PLANS,
+  ENTITLEMENTS,
+  type Entitlements,
+  type Plan
+} from "@/lib/entitlements";
 import {
   Actions,
   Blurb,
@@ -58,9 +63,18 @@ function limit(value: number | null, singular: string, plural: string) {
  * value": the free plan has one saved exam, which is a thing you get, while it
  * also has ads, which is a thing you would rather not. So each row says for
  * itself which way round it reads.
+ *
+ * `plans` is the exception to "every card renders every row", and it goes at
+ * the end of the list for a reason. A row that only one plan has cannot be
+ * compared, so putting it among the shared rows would push everything below it
+ * out of line on that card alone — the exact fault this layout was built to
+ * fix. Below them it costs nothing: the seven rows above stay level across all
+ * three columns, and Academy simply runs one longer.
  */
 const FEATURES: {
   key: string;
+  /** Which plans show this row at all. Absent means all of them. */
+  plans?: readonly Plan[];
   of: (e: Entitlements) => { on: boolean; text: string };
 }[] = [
   {
@@ -95,12 +109,31 @@ const FEATURES: {
       on: true,
       text: `${e.seats} ${e.seats === 1 ? "teacher" : "teachers"}`
     })
+  },
+  {
+    /* Academy only, and shown on no other card — a cross here would advertise
+       something the other two plans have no use for, since neither has a school
+       to pool anything with. Questions, exams and practices written inside a
+       school already carry its organization_id, so this is describing what
+       migration 014 built rather than promising it. */
+    key: "pooling",
+    plans: ["academy"],
+    of: () => ({ on: true, text: "Pool resources across your school" })
   }
 ];
 
-/* Name, price, yearly, blurb, one per feature, then the actions. The container
-   declares them so that every card can share them. */
-const CARD_ROWS = 4 + FEATURES.length + 1;
+function featuresFor(plan: Plan) {
+  return FEATURES.filter((f) => !f.plans || f.plans.includes(plan));
+}
+
+/* The longest card sets the number of feature rows, and every card reserves all
+   of them so that the actions below still start on the same line. A card with
+   fewer simply leaves the last one empty. */
+const FEATURE_ROWS = Math.max(...PLANS.map((plan) => featuresFor(plan).length));
+
+/* Name, price, yearly, blurb, one per feature row, then the actions. The
+   container declares them so that every card can share them. */
+const CARD_ROWS = 4 + FEATURE_ROWS + 1;
 
 export const dynamic = "force-dynamic";
 
@@ -140,8 +173,8 @@ export default async function PricingPage() {
 
                 <Blurb>{BLURBS[plan]}</Blurb>
 
-                <Features $rows={FEATURES.length}>
-                  {FEATURES.map((feature) => {
+                <Features $rows={FEATURE_ROWS}>
+                  {featuresFor(plan).map((feature) => {
                     const { on, text } = feature.of(e);
                     return (
                       <Feature key={feature.key} $on={on}>
