@@ -127,9 +127,11 @@ export default function Question({
    * controls go.
    *
    * A slot rather than something the caller puts after <Question>, because
-   * after is below two 40vh photographs: on a projector the button that moves
-   * the exam on was off the bottom of the screen. It belongs with the words it
-   * advances, above the material they are about.
+   * every position outside the card was wrong in one part or another: below
+   * two 40vh photographs at Part 2, off the bottom of a projected screen, and
+   * at Part 3 wedged between the statement and the last prompt, splitting the
+   * frame of prompts that surrounds it. Inside the card it is in the same
+   * place in all of them, with the words it advances.
    */
   afterStatement?: React.ReactNode;
 }) {
@@ -189,8 +191,8 @@ const Part1or4 = ({
         statement={statement}
         instruction={instruction}
         themes={question?.themes}
+        footer={afterStatement}
       />
-      {afterStatement}
     </>
   );
 };
@@ -239,9 +241,9 @@ const Part2 = ({
         statement={statement}
         instruction={instruction}
         themes={question?.themes}
+        footer={afterStatement}
         smallFont
       />
-      {afterStatement}
       <ImagesContainer>
         {!loading && images?.length ? (
           images.map((image, index) => (
@@ -285,8 +287,8 @@ const Part3 = ({
           statement={statement}
           instruction={instruction}
           themes={question?.themes}
+          footer={afterStatement}
         />
-        {afterStatement}
         <PromptContainer>
           {prompts.slice(mid).map((prompt, i) => (
             <Prompt className={`glass`} key={i}>
