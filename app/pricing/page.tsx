@@ -22,7 +22,7 @@ import {
 import { formatPrice, getPrice } from "@/lib/billing/prices";
 import { isBillingEnabled, isBillingSimulated } from "@/lib/billing/provider";
 import { getAuthenticatedUserId } from "@/lib/session";
-import { getProfile } from "@/lib/profile";
+import { getEffectivePlan } from "@/lib/profile";
 import PlanActions from "./PlanActions";
 
 export const metadata = { title: "Plans — Speakgen" };
@@ -36,7 +36,11 @@ const BLURBS: Record<string, string> = {
 // Amounts come from the billing price catalogue, so this page and the checkout
 // cannot quote different numbers.
 function priceLabels(plan: string) {
-  if (plan === "free") return { monthly: "\u20ac0", yearly: "\u2014" };
+  /* "No card needed" rather than an em dash. The band under the price is the
+     second thing you read about the cost, and on the free plan the honest
+     answer to "and then what?" is that there is no payment step at all — a
+     dash left the question hanging next to two cards that answered it. */
+  if (plan === "free") return { monthly: "\u20ac0", yearly: "No card needed" };
 
   const paid = plan as "pro" | "academy";
   return {
@@ -139,8 +143,19 @@ export const dynamic = "force-dynamic";
 
 export default async function PricingPage() {
   const userId = await getAuthenticatedUserId();
-  const profile = userId ? await getProfile(userId) : null;
-  const currentPlan = profile?.plan ?? null;
+
+  /* getEffectivePlan rather than getProfile, which was wrong twice.
+     
+     It read a row that may not exist: signing up does not create one, only
+     ensureProfile does, and nothing on the way here called it — so a teacher
+     who signed up and came straight to this page saw no current plan at all.
+     getEffectivePlan creates the row on sight.
+
+     And it ignored school membership. A teacher whose school pays for Academy
+     has "free" on their own profile, because the subscription belongs to the
+     organisation; this page would have badged their Free card and offered to
+     sell them Pro. */
+  const currentPlan = userId ? await getEffectivePlan(userId) : null;
   const billingEnabled = isBillingEnabled();
 
   return (
