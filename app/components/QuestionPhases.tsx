@@ -7,12 +7,16 @@ import Button from "@/app/components/ui/Button";
 import { getQuestionPhases, type PhasedQuestion } from "@/lib/examPhases";
 import type { QuestionStructures } from "@/types/types";
 
+/* Centred, because it now sits between the statement card and the photographs
+   rather than at the foot of the page, and everything in that column is
+   centred. */
 const Controls = styled.div`
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
   flex-wrap: wrap;
-  margin-top: 2rem;
+  margin: 1.5rem 0 0.5rem;
 `;
 
 /* "2 of 3", beside the buttons. Small, because it answers a question nobody is
@@ -98,43 +102,46 @@ export default function QuestionPhases({
   const hasMore = safeIndex < phases.length - 1;
   const next = phases[safeIndex + 1];
 
-  return (
-    <>
-      <Question
-        question={question}
-        part={part}
-        statement={current.text}
-        instruction={current.label}
-      />
-
-      {/* Nothing at all when the part has one phase, which is most of Part 1
-          and every Part 4: a lone disabled button under an interview question
-          is a control that does nothing but look broken. */}
-      {phases.length > 1 && (
-        <Controls>
-          {/* "Back a step", not "Back": the toolbar above has a Back of its
-              own that moves to the previous part, and two buttons reading
-              "Back" on one screen is a coin toss in the middle of an exam. */}
+  /* Nothing at all when the part has one phase, which is most of Part 1 and
+     every Part 4: a lone disabled button under an interview question is a
+     control that does nothing but look broken. */
+  const controls =
+    phases.length > 1 ? (
+      <Controls>
+        {/* "Back a step", not "Back": the toolbar above has a Back of its own
+            that moves to the previous part, and two buttons reading "Back" on
+            one screen is a coin toss in the middle of an exam. */}
+        <Button
+          text="Back a step"
+          secondary
+          disabled={safeIndex === 0}
+          onClick={() => setIndex((i) => Math.max(0, i - 1))}
+        />
+        {hasMore && (
+          /* Named, not just "Continue". The teacher is reading this off a
+             projector mid-exam and the useful question is what happens next,
+             which is the thing the label was written to answer. */
           <Button
-            text="Back a step"
-            secondary
-            disabled={safeIndex === 0}
-            onClick={() => setIndex((i) => Math.max(0, i - 1))}
+            text={next?.label ? `Continue — ${next.label}` : "Continue"}
+            onClick={() => setIndex((i) => Math.min(phases.length - 1, i + 1))}
           />
-          {hasMore && (
-            /* Named, not just "Continue". The teacher is reading this off a
-               projector mid-exam and the useful question is what happens next,
-               which is the thing the label was written to answer. */
-            <Button
-              text={next?.label ? `Continue — ${next.label}` : "Continue"}
-              onClick={() =>
-                setIndex((i) => Math.min(phases.length - 1, i + 1))
-              }
-            />
-          )}
-          <Position>{`${safeIndex + 1} of ${phases.length}`}</Position>
-        </Controls>
-      )}
-    </>
+        )}
+        <Position>{`${safeIndex + 1} of ${phases.length}`}</Position>
+      </Controls>
+    ) : null;
+
+  /* Handed to Question rather than rendered after it, so it lands under the
+     statement and above the photographs. Below them it was off the bottom of a
+     projected screen: two 40vh pictures is most of the viewport, and the
+     control that moves the exam on cannot be the thing you have to scroll for
+     while a candidate is waiting. */
+  return (
+    <Question
+      question={question}
+      part={part}
+      statement={current.text}
+      instruction={current.label}
+      afterStatement={controls}
+    />
   );
 }

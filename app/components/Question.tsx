@@ -115,12 +115,23 @@ export default function Question({
   question,
   part,
   statement,
-  instruction
+  instruction,
+  afterStatement
 }: {
   question: QuestionStructures;
   part: string;
   statement?: string;
   instruction?: string | null;
+  /**
+   * Rendered directly beneath the statement card, which is where the phase
+   * controls go.
+   *
+   * A slot rather than something the caller puts after <Question>, because
+   * after is below two 40vh photographs: on a projector the button that moves
+   * the exam on was off the bottom of the screen. It belongs with the words it
+   * advances, above the material they are about.
+   */
+  afterStatement?: React.ReactNode;
 }) {
   if (!question) return <>No question</>;
 
@@ -134,6 +145,7 @@ export default function Question({
           question={question as NewPart1QStructure}
           statement={shown}
           instruction={instruction}
+          afterStatement={afterStatement}
         />
       );
     case "2":
@@ -142,6 +154,7 @@ export default function Question({
           question={question as Part2QStructure}
           statement={shown}
           instruction={instruction}
+          afterStatement={afterStatement}
         />
       );
     case "3":
@@ -150,6 +163,7 @@ export default function Question({
           question={question as Part3QStructure}
           statement={shown}
           instruction={instruction}
+          afterStatement={afterStatement}
         />
       );
     default:
@@ -157,26 +171,35 @@ export default function Question({
   }
 }
 
-type PhaseProps = { statement: string; instruction?: string | null };
+type PhaseProps = {
+  statement: string;
+  instruction?: string | null;
+  afterStatement?: React.ReactNode;
+};
 
 const Part1or4 = ({
   question,
   statement,
-  instruction
+  instruction,
+  afterStatement
 }: { question: NewPart1QStructure } & PhaseProps) => {
   return (
-    <StatementAndTheme
-      statement={statement}
-      instruction={instruction}
-      themes={question?.themes}
-    />
+    <>
+      <StatementAndTheme
+        statement={statement}
+        instruction={instruction}
+        themes={question?.themes}
+      />
+      {afterStatement}
+    </>
   );
 };
 
 const Part2 = ({
   question,
   statement,
-  instruction
+  instruction,
+  afterStatement
 }: { question: Part2QStructure } & PhaseProps) => {
   const { image_ids } = question;
 
@@ -218,6 +241,7 @@ const Part2 = ({
         themes={question?.themes}
         smallFont
       />
+      {afterStatement}
       <ImagesContainer>
         {!loading && images?.length ? (
           images.map((image, index) => (
@@ -241,7 +265,8 @@ const Part2 = ({
 const Part3 = ({
   question,
   statement,
-  instruction
+  instruction,
+  afterStatement
 }: { question: Part3QStructure } & PhaseProps) => {
   const { prompts } = question;
   const mid = Math.ceil(prompts.length / 2);
@@ -261,6 +286,7 @@ const Part3 = ({
           instruction={instruction}
           themes={question?.themes}
         />
+        {afterStatement}
         <PromptContainer>
           {prompts.slice(mid).map((prompt, i) => (
             <Prompt className={`glass`} key={i}>
