@@ -16,6 +16,8 @@ export type QuestionPhase = {
   source: CambridgePhaseSource;
   /** The interlocutor's line into this phase, where it has one. */
   label: string | null;
+  /** What the button that opens this phase says. */
+  action: string;
   /** What is on screen: the question, the follow-up, the decision. */
   text: string;
   seconds: number;
@@ -33,6 +35,19 @@ export type PhasedQuestion = {
 
 function textFor(question: PhasedQuestion, source: CambridgePhaseSource) {
   return (question[source] ?? "").trim();
+}
+
+/**
+ * A question's own instruction, used as a button label where the blueprint has
+ * no action of its own — which is C2's collaborative task, whose phases are
+ * introduced by lines written per question.
+ *
+ * The full stop goes. "Now look at all the photographs." is a sentence someone
+ * wrote to be read aloud; on a button it is a sentence with a full stop on it.
+ */
+function actionFromInstruction(instruction: string | undefined) {
+  const trimmed = instruction?.trim().replace(/[.]+$/, "");
+  return trimmed || null;
 }
 
 /**
@@ -67,6 +82,7 @@ export function getQuestionPhases(
       {
         source: "statement",
         label: null,
+        action: "Continue",
         text: textFor(question, "statement"),
         seconds: 0
       }
@@ -77,10 +93,14 @@ export function getQuestionPhases(
     const text = textFor(question, phase.source);
     if (!text) return [];
 
+    const instruction = question.instructions?.[index];
+
     return [
       {
         source: phase.source,
-        label: phase.label ?? question.instructions?.[index]?.trim() ?? null,
+        label: phase.label ?? instruction?.trim() ?? null,
+        action:
+          phase.action ?? actionFromInstruction(instruction) ?? "Continue",
         text,
         seconds: phase.seconds
       }

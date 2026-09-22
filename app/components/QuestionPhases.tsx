@@ -108,11 +108,12 @@ export default function QuestionPhases({
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
         />
         {hasMore && (
-          /* Named, not just "Continue". The teacher is reading this off a
-             projector mid-exam and the useful question is what happens next,
-             which is the thing the label was written to answer. */
+          /* The next phase's action, on its own. It used to be prefixed with
+             "Continue — " and given the next phase's label, which produced
+             "Continue — Then, the decision task": a heading doing a button's
+             job. A button is a verb, so it says what pressing it does. */
           <Button
-            text={next?.label ? `Continue — ${next.label}` : "Continue"}
+            text={next?.action ?? "Continue"}
             onClick={() => setIndex((i) => Math.min(phases.length - 1, i + 1))}
           />
         )}

@@ -35,6 +35,17 @@ export type CambridgeSpeakingPhase = {
    */
   label?: string;
   /**
+   * What the button that opens this phase says.
+   *
+   * Separate from `label` because the two do different jobs and the same words
+   * cannot do both. A label sits above the words as a heading, so it is a cue:
+   * "Then ask the other candidate". A button is a thing you press, so it is an
+   * instruction: "Ask the other candidate". Using the label for both gave
+   * "Continue — Then, the decision task", which reads like a sentence that lost
+   * its verb.
+   */
+  action?: string;
+  /**
    * How long this phase runs, which is what the timer counts down.
    *
    * The labels used to carry it too — "(about 30 seconds)", "(about one
@@ -126,6 +137,7 @@ const sharedTasks = {
       {
         source: "follow_up",
         label: "Then ask the other candidate",
+        action: "Ask the other candidate",
         seconds: 30
       }
     ]
@@ -149,7 +161,8 @@ const sharedTasks = {
       { source: "statement", seconds: 120 },
       {
         source: "decision",
-        label: "Then, the decision task",
+        label: "The decision task",
+        action: "Start the decision task",
         seconds: 60
       }
     ]
@@ -274,11 +287,13 @@ const c2ProficiencySpeaking: CambridgeSpeakingBlueprint = {
         {
           source: "follow_up",
           label: "Then ask the other candidate",
+          action: "Ask the other candidate",
           seconds: 60
         },
         {
           source: "decision",
-          label: "Then, once both candidates have spoken",
+          label: "The closing discussion",
+          action: "Open the closing discussion",
           seconds: 240
         }
       ]

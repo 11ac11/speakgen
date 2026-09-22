@@ -408,7 +408,7 @@ interest.`;
             />
           )}
           {followUpPhase?.label ? (
-            <Hint>{`The interlocutor reads this as: “${followUpPhase.label}”.`}</Hint>
+            <Hint>{`Shown in the runner under the heading “${followUpPhase.label}”.`}</Hint>
           ) : null}
           {needsDecision && (
             <Input
@@ -427,7 +427,7 @@ interest.`;
             />
           )}
           {decisionPhase?.label ? (
-            <Hint>{`The interlocutor reads this as: “${decisionPhase.label}”.`}</Hint>
+            <Hint>{`Shown in the runner under the heading “${decisionPhase.label}”.`}</Hint>
           ) : null}
           <ThemeSelector label="Themes" themes={themes} setThemes={setThemes} />
           <Checkbox
