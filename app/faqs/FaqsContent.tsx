@@ -3,7 +3,8 @@
 import React from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import { Prose, Lead } from "@/app/components/Prose";
+import { Prose } from "@/app/components/Prose";
+import { Lead } from "@/app/components/Lead";
 
 const Section = styled.section`
   /* No bottom margin: the h2 inside the next section owns the gap between

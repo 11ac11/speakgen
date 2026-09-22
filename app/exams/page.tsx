@@ -1,3 +1,4 @@
+import { Lead } from "@/app/components/Lead";
 import { listExams } from "@/lib/exams";
 import { listLevels } from "@/lib/levels";
 import { getViewer } from "@/lib/questionAccess";
@@ -27,10 +28,10 @@ export default async function AllExamsPage() {
     <div className="page" style={{ paddingTop: "4rem" }}>
       <div>
         <h1>Practice exams</h1>
-        <p style={{ marginBottom: "2rem" }}>
+        <Lead>
           Full Cambridge speaking tests, run straight through. Free ones need no
           account.
-        </p>
+        </Lead>
 
         {levels.map((level) => {
           const forLevel = exams.filter((exam) => exam.level === level.code);

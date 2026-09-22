@@ -3,7 +3,8 @@
 import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import styled from "styled-components";
-import { Prose, Lead } from "@/app/components/Prose";
+import { Prose } from "@/app/components/Prose";
+import { Lead } from "@/app/components/Lead";
 import { FEEDBACK_TOPICS, feedbackTopicLabel } from "@/lib/feedback";
 
 /* The form is full width inside the prose measure, because 66ch is a column of

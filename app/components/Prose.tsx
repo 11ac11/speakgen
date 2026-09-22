@@ -127,10 +127,4 @@ export const Prose = styled.div`
   }
 `;
 
-/** The one muted line under the page title, as on Plans. */
-export const Lead = styled.p`
-  color: var(--text-muted);
-  margin: 0 0 2.5rem;
-`;
-
 export default Prose;

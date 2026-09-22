@@ -1,3 +1,4 @@
+import { Lead } from "@/app/components/Lead";
 import { PLANS, ENTITLEMENTS } from "@/lib/entitlements";
 import { formatPrice, getPrice } from "@/lib/billing/prices";
 import { isBillingEnabled, isBillingSimulated } from "@/lib/billing/provider";
@@ -42,10 +43,10 @@ export default async function PricingPage() {
     <div className="page" style={{ paddingTop: "4rem" }}>
       <div>
         <h1>Plans</h1>
-        <p style={{ marginBottom: "2.5rem", color: "var(--text-muted)" }}>
+        <Lead>
           Your question bank is unlimited on every plan, including the free one.
           Paying lifts the limits on saved exams and practices.
-        </p>
+        </Lead>
 
         <div
           style={{

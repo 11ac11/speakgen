@@ -1,10 +1,10 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { listExams } from "@/lib/exams";
 import { getLevel } from "@/lib/levels";
 import { getViewer } from "@/lib/questionAccess";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { getUsage } from "@/lib/limits";
+import { Lead } from "@/app/components/Lead";
 import {
   ExamCard,
   ExamList,
@@ -39,9 +39,9 @@ export default async function LevelExamsPage({
     <div className="page" style={{ paddingTop: "4rem" }}>
       <div>
         <h1>{level.label} practice exams</h1>
-        <p style={{ marginBottom: "2rem" }}>
+        <Lead>
           {`Free ${level.label} speaking tests, about ${level.minutes} minutes for a pair of candidates. No account needed.`}
-        </p>
+        </Lead>
 
         {usage ? (
           <div
