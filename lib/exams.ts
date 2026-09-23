@@ -12,6 +12,8 @@ export type ExamSummary = {
   level: string;
   title: string;
   owner_id: string | null;
+  /** The school that owns it, which is whose branding it wears. */
+  organization_id: string | null;
   is_house: boolean;
   question_count: number;
   /** Every theme its questions carry, deduplicated. What the exam is about. */
@@ -49,6 +51,7 @@ export async function listExams(
             e.level,
             e.title,
             e.owner_id,
+            e.organization_id,
             e.owner_id IS NULL AS is_house,
             (SELECT count(*)::int FROM content.exam_questions eq
               WHERE eq.exam_id = e.id) AS question_count,
@@ -82,6 +85,7 @@ export async function getExam(
 
   const exams = (await sql(
     `SELECT e.id::int AS id, e.level, e.title, e.owner_id,
+            e.organization_id,
             e.owner_id IS NULL AS is_house, 0 AS question_count,
             '{}'::text[] AS themes
        FROM content.exams e

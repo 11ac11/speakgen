@@ -20,6 +20,8 @@ export type PracticeSummary = {
   level: string;
   title: string;
   owner_id: string | null;
+  /** The school that owns it, which is whose branding it wears. */
+  organization_id: string | null;
   is_house: boolean;
   /** NULL means every part the level has. */
   part: number | null;
@@ -49,6 +51,7 @@ const SELECT_PRACTICE = `
          p.level,
          p.title,
          p.owner_id,
+         p.organization_id,
          p.owner_id IS NULL AS is_house,
          p.part::int        AS part,
          p.question_count::int AS question_count,
