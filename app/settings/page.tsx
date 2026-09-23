@@ -12,6 +12,9 @@ import {
 } from "@/lib/organizations";
 import PlanPanel from "@/app/components/PlanPanel";
 import SchoolPanel from "@/app/components/SchoolPanel";
+import BrandingPanel from "@/app/components/BrandingPanel";
+import { getBrandingSettings, isBrandingEntitled } from "@/lib/branding";
+import { isLogoStorageEnabled } from "@/lib/logoStorage";
 
 export const dynamic = "force-dynamic";
 
@@ -35,9 +38,20 @@ export default async function SettingsPage() {
   ]);
 
   const school = organizations[0] ?? null;
+  const canAdmin = ["owner", "admin"].includes(school?.role ?? "");
   const [members, seats] = school
     ? await Promise.all([getMembers(school.id), getSeatUsage(school.id)])
     : [[], { members: 0, pending: 0, seats: 0, used: 0 }];
+
+  // Branding belongs to the school, so only its admins see the panel, and only
+  // once there is a school to brand.
+  const [branding, brandingEntitled] =
+    school && canAdmin
+      ? await Promise.all([
+          getBrandingSettings(school.id),
+          isBrandingEntitled(school.id)
+        ])
+      : [null, false];
 
   const host = (await headers()).get("host") ?? "localhost:3001";
   const origin = `${host.startsWith("localhost") ? "http" : "https"}://${host}`;
@@ -80,9 +94,23 @@ export default async function SettingsPage() {
             seats: seats.seats,
             pending: seats.pending
           }}
-          canAdmin={["owner", "admin"].includes(school?.role ?? "")}
+          canAdmin={canAdmin}
           origin={origin}
         />
+
+        {school && canAdmin && branding ? (
+          <BrandingPanel
+            organizationId={school.id}
+            organizationName={branding.organizationName}
+            entitled={brandingEntitled}
+            logoStorageEnabled={isLogoStorageEnabled()}
+            initial={{
+              displayName: branding.displayName,
+              accentColor: branding.accentColor,
+              logoUrl: branding.logoUrl
+            }}
+          />
+        ) : null}
       </div>
     </div>
   );
