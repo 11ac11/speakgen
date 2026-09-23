@@ -16,6 +16,8 @@ export type ExamSummary = {
   organization_id: string | null;
   is_house: boolean;
   question_count: number;
+  /** A live share link exists, which the dashboard card says. */
+  shared: boolean;
   /** Every theme its questions carry, deduplicated. What the exam is about. */
   themes: string[];
 };
@@ -55,6 +57,8 @@ export async function listExams(
             e.owner_id IS NULL AS is_house,
             (SELECT count(*)::int FROM content.exam_questions eq
               WHERE eq.exam_id = e.id) AS question_count,
+            EXISTS (SELECT 1 FROM content.share_links s
+                     WHERE s.exam_id = e.id AND s.revoked_at IS NULL) AS shared,
             -- The themes of the questions in it, deduplicated: an exam has no
             -- themes of its own, it inherits whatever it is built from.
             COALESCE(
@@ -87,6 +91,8 @@ export async function getExam(
     `SELECT e.id::int AS id, e.level, e.title, e.owner_id,
             e.organization_id,
             e.owner_id IS NULL AS is_house, 0 AS question_count,
+            EXISTS (SELECT 1 FROM content.share_links s
+                     WHERE s.exam_id = e.id AND s.revoked_at IS NULL) AS shared,
             '{}'::text[] AS themes
        FROM content.exams e
       WHERE e.id = $1 AND ${access.clause}

@@ -2,11 +2,10 @@ import { notFound, redirect } from "next/navigation";
 import { getExam } from "@/lib/exams";
 import { getLevel } from "@/lib/levels";
 import { getViewer } from "@/lib/questionAccess";
-import { BackLink, ExamsLink } from "@/app/components/ExamCards";
+import { BackLink } from "@/app/components/ExamCards";
 import { getAuthenticatedUserId } from "@/lib/session";
 import ExamRunner from "@/app/components/ExamRunner";
 import ContentActions from "@/app/components/ContentActions";
-import { getEntitlements } from "@/lib/profile";
 import { getShareLink, sharePath } from "@/lib/shareLinks";
 
 export const dynamic = "force-dynamic";
@@ -35,14 +34,13 @@ export default async function LevelExamPage({
   const userId = await getAuthenticatedUserId();
   const canEdit = !!userId && !exam.is_house;
 
-  // Sharing follows editing: the author or their school. PDF follows the plan,
-  // and applies to house exams too, since anything you can run you can print.
-  const [entitlements, shareLink] = await Promise.all([
-    userId ? getEntitlements(userId) : null,
+  /* This page is the runner, on a screen in front of a class, so it carries
+     only Share. Editing and PDF export are on the exam's card in the
+     dashboard. Sharing follows editing: the author or their school. */
+  const shareLink =
     canEdit && userId
-      ? getShareLink(userId, { kind: "exam", id: exam.id })
-      : null
-  ]);
+      ? await getShareLink(userId, { kind: "exam", id: exam.id })
+      : null;
 
   return (
     <div className="page page-wide" style={{ paddingTop: "3rem" }}>
@@ -66,25 +64,13 @@ export default async function LevelExamPage({
           }}
         >
           <h1 style={{ marginBottom: "0.25rem" }}>{exam.title}</h1>
-          <ContentActions
-            kind="exam"
-            id={exam.id}
-            pdf={
-              !entitlements
-                ? "hidden"
-                : entitlements.pdfExport
-                  ? "allowed"
-                  : "upgrade"
-            }
-            canShare={canEdit}
-            initialSharePath={shareLink ? sharePath(shareLink.token) : null}
-          >
-            {canEdit ? (
-              <ExamsLink href={`/${level.code}/exams/${exam.id}/edit`}>
-                Edit exam
-              </ExamsLink>
-            ) : null}
-          </ContentActions>
+          {canEdit ? (
+            <ContentActions
+              kind="exam"
+              id={exam.id}
+              initialSharePath={shareLink ? sharePath(shareLink.token) : null}
+            />
+          ) : null}
         </div>
       </div>
       <ExamRunner exam={exam} />

@@ -8,7 +8,12 @@ import { Dropdown } from "@/app/components/ui";
 import { SUPPORTED_LEVELS } from "@/constants";
 import DashboardTable from "./DashboardTable";
 import { ExamThemes } from "@/app/components/ExamCards";
-import RowMenu from "@/app/components/ui/RowMenu";
+import RowMenu, { type RowMenuItem } from "@/app/components/ui/RowMenu";
+import LinkIcon from "@/app/components/ui/LinkIcon";
+import TickIcon from "@/app/components/ui/TickIcon";
+import Modal from "@/app/components/ui/Modal";
+import SharePanel, { type ShareKind } from "@/app/components/SharePanel";
+import { usePdfDownload } from "@/app/components/usePdfDownload";
 
 /* stretch, not center: the page sets the measure now, so everything inside
    lines up on the same left edge instead of each block centring itself at
@@ -29,7 +34,9 @@ const ExamsHeader = styled.div`
   flex-wrap: wrap;
   width: 100%;
 
-  span {
+  /* The count on the left, and only that: a descendant rule reached into the
+     New exam dropdown and turned its chevron grey on the green button. */
+  > span {
     color: var(--text-muted);
     font-size: var(--text-sm);
   }
@@ -105,11 +112,58 @@ const ExamCard = styled(Link)`
   }
 `;
 
+/* The title and, when a link is active, the badge saying so. The padding that
+   kept the title clear of the menu in the corner moves here from the h3, so
+   the badge stays clear of it too. */
+const TitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.6rem;
+  padding-right: 4.5rem;
+
+  && h3 {
+    padding-right: 0;
+  }
+`;
+
+/* Green like the rest of the "this is on" signals in the product, with a
+   link glyph so it does not rely on colour. It says the link works right now,
+   which is the thing a teacher needs to know before handing the exam to a
+   different class. */
+const SharedBadge = styled.span`
+  && {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0;
+    padding: 0.15rem 0.55rem;
+    border-radius: var(--radius-pill);
+    background: var(--green-tint);
+    border: 1px solid var(--green-edge);
+    color: var(--green-600);
+    font-size: var(--text-xs);
+    font-weight: 600;
+  }
+`;
+
+function Shared() {
+  return (
+    <SharedBadge title="Anyone with the link can run this">
+      <LinkIcon size={12} />
+      Share link active
+      <TickIcon size={12} />
+    </SharedBadge>
+  );
+}
+
 export type DashboardExam = {
   id: number;
   level: string;
   title: string;
   question_count: number;
+  /** A live share link exists. */
+  shared: boolean;
   themes: string[];
 };
 
@@ -120,12 +174,15 @@ export type DashboardPractice = {
   /** NULL means every part the level has. */
   part: number | null;
   question_count: number;
+  /** A live share link exists. */
+  shared: boolean;
   themes: string[];
 };
 
 export default function TabContainer({
   activeTab,
   usage,
+  pdfExport,
   exams,
   practices
 }: {
@@ -134,12 +191,37 @@ export default function TabContainer({
     exams: { used: number; limit: number | null };
     practices: { used: number; limit: number | null };
   };
+  /** Whether the plan includes PDF export; if not, the item leads to pricing. */
+  pdfExport: boolean;
   exams: DashboardExam[];
   practices: DashboardPractice[];
 }) {
   const router = useRouter();
   const [examError, setExamError] = useState<string | null>(null);
   const [practiceError, setPracticeError] = useState<string | null>(null);
+  const [sharing, setSharing] = useState<{
+    kind: ShareKind;
+    id: number;
+    title: string;
+  } | null>(null);
+  const pdf = usePdfDownload();
+
+  /* The actions every card of this kind carries, beside Edit and Delete.
+     Share opens the same panel the page has, in a dialog; the menu closes as
+     it opens, so the dialog is what the teacher is left looking at. */
+  const shareItem = (
+    kind: ShareKind,
+    id: number,
+    title: string
+  ): RowMenuItem => ({
+    label: "Share",
+    onSelect: () => setSharing({ kind, id, title })
+  });
+
+  const pdfItem = (kind: ShareKind, id: number): RowMenuItem =>
+    pdfExport
+      ? { label: "Export as PDF", onSelect: () => pdf.download(kind, id) }
+      : { label: "Export as PDF (Pro)", href: "/pricing" };
 
   const handleDeleteExam = async (id: number) => {
     setExamError(null);
@@ -231,11 +313,15 @@ export default function TabContainer({
             )}
           </ExamsHeader>
 
-          {examError ? (
+          {examError || pdf.error ? (
             <Empty role="alert" style={{ color: "var(--danger)" }}>
-              {examError}
+              {examError ?? pdf.error}
             </Empty>
           ) : null}
+
+          {/* The menu has closed by the time the PDF is built, so the wait is
+              said here rather than on a button that is no longer on screen. */}
+          {pdf.busy ? <Empty role="status">Preparing the PDF…</Empty> : null}
 
           {exams.length === 0 ? (
             <Empty>
@@ -251,7 +337,10 @@ export default function TabContainer({
                       href={`/${exam.level}/exams/${exam.id}`}
                       className="glass"
                     >
-                      <h3>{exam.title}</h3>
+                      <TitleRow>
+                        <h3>{exam.title}</h3>
+                        {exam.shared ? <Shared /> : null}
+                      </TitleRow>
                       <span>
                         {`${exam.level.toUpperCase()} · ${exam.question_count} questions`}
                       </span>
@@ -264,6 +353,8 @@ export default function TabContainer({
                           label: "Edit",
                           href: `/${exam.level}/exams/${exam.id}/edit`
                         },
+                        shareItem("exam", exam.id, exam.title),
+                        pdfItem("exam", exam.id),
                         {
                           label: "Delete",
                           danger: true,
@@ -318,11 +409,13 @@ export default function TabContainer({
             )}
           </ExamsHeader>
 
-          {practiceError ? (
+          {practiceError || pdf.error ? (
             <Empty role="alert" style={{ color: "var(--danger)" }}>
-              {practiceError}
+              {practiceError ?? pdf.error}
             </Empty>
           ) : null}
+
+          {pdf.busy ? <Empty role="status">Preparing the PDF…</Empty> : null}
 
           {practices.length === 0 ? (
             <Empty>
@@ -339,7 +432,10 @@ export default function TabContainer({
                       href={`/${practice.level}/practices/${practice.id}`}
                       className="glass"
                     >
-                      <h3>{practice.title}</h3>
+                      <TitleRow>
+                        <h3>{practice.title}</h3>
+                        {practice.shared ? <Shared /> : null}
+                      </TitleRow>
                       <span>{practiceSummary(practice)}</span>
                       <ExamThemes themes={practice.themes} />
                     </ExamCard>
@@ -350,6 +446,8 @@ export default function TabContainer({
                           label: "Edit",
                           href: `/${practice.level}/practices/${practice.id}/edit`
                         },
+                        shareItem("practice", practice.id, practice.title),
+                        pdfItem("practice", practice.id),
                         {
                           label: "Delete",
                           danger: true,
@@ -365,6 +463,22 @@ export default function TabContainer({
           )}
         </>
       )}
+
+      {sharing ? (
+        <Modal
+          closeModal={() => setSharing(null)}
+          label={`Share ${sharing.title}`}
+        >
+          <SharePanel
+            kind={sharing.kind}
+            id={sharing.id}
+            title={sharing.title}
+            // The cards came from the server, so it redraws them — and
+            // their badge — when a link is made or stopped.
+            onChange={() => router.refresh()}
+          />
+        </Modal>
+      ) : null}
     </Container>
   );
 }

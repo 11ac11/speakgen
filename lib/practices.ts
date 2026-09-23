@@ -26,6 +26,8 @@ export type PracticeSummary = {
   /** NULL means every part the level has. */
   part: number | null;
   question_count: number;
+  /** A live share link exists, which the dashboard card says. */
+  shared: boolean;
   /** Empty means any theme. */
   themes: string[];
 };
@@ -55,6 +57,8 @@ const SELECT_PRACTICE = `
          p.owner_id IS NULL AS is_house,
          p.part::int        AS part,
          p.question_count::int AS question_count,
+         EXISTS (SELECT 1 FROM content.share_links s
+                  WHERE s.practice_id = p.id AND s.revoked_at IS NULL) AS shared,
          COALESCE(
            (SELECT array_agg(pt.theme_slug ORDER BY pt.theme_slug)
               FROM content.practice_themes pt

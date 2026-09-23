@@ -3,9 +3,8 @@ import { getLevel } from "@/lib/levels";
 import { getPractice } from "@/lib/practices";
 import { getViewer } from "@/lib/questionAccess";
 import PracticeRunner from "@/app/components/PracticeRunner";
-import { BackLink, ExamsLink } from "@/app/components/ExamCards";
+import { BackLink } from "@/app/components/ExamCards";
 import ContentActions from "@/app/components/ContentActions";
-import { getEntitlements } from "@/lib/profile";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { getShareLink, sharePath } from "@/lib/shareLinks";
 import { THEME_VALUES_FOR_PILLS } from "@/constants";
@@ -28,16 +27,14 @@ export default async function PracticePage({
   // The level in the path has to agree with the row, as the exam pages do.
   if (practice.level !== level.code) notFound();
 
-  // As on the exam page: sharing and editing belong to the author or their
-  // school, PDF export to the plan.
+  // As on the exam page: only Share here, for the author or their school.
+  // Editing and PDF export are on the practice's card in the dashboard.
   const userId = await getAuthenticatedUserId();
   const canEdit = !!userId && !practice.is_house;
-  const [entitlements, shareLink] = await Promise.all([
-    userId ? getEntitlements(userId) : null,
+  const shareLink =
     canEdit && userId
-      ? getShareLink(userId, { kind: "practice", id: practice.id })
-      : null
-  ]);
+      ? await getShareLink(userId, { kind: "practice", id: practice.id })
+      : null;
 
   const partName =
     practice.part === null ? "any part" : `Part ${practice.part}`;
@@ -67,25 +64,13 @@ export default async function PracticePage({
               {`${level.label} · ${partName} · ${themeNames || "any theme"} · a new set every time`}
             </p>
           </div>
-          <ContentActions
-            kind="practice"
-            id={practice.id}
-            pdf={
-              !entitlements
-                ? "hidden"
-                : entitlements.pdfExport
-                  ? "allowed"
-                  : "upgrade"
-            }
-            canShare={canEdit}
-            initialSharePath={shareLink ? sharePath(shareLink.token) : null}
-          >
-            {canEdit ? (
-              <ExamsLink href={`/${level.code}/practices/${practice.id}/edit`}>
-                Edit practice
-              </ExamsLink>
-            ) : null}
-          </ContentActions>
+          {canEdit ? (
+            <ContentActions
+              kind="practice"
+              id={practice.id}
+              initialSharePath={shareLink ? sharePath(shareLink.token) : null}
+            />
+          ) : null}
         </div>
       </div>
       <PracticeRunner practice={practice} />

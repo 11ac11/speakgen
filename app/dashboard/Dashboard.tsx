@@ -9,6 +9,7 @@ import { listExams } from "@/lib/exams";
 import { listPractices } from "@/lib/practices";
 import { getViewer } from "@/lib/questionAccess";
 import AdSlot from "@/app/components/ads/AdSlot";
+import { entitlementsFor } from "@/lib/entitlements";
 
 const validTabs = ["questions", "exams", "practices"] as const;
 type Tab = (typeof validTabs)[number];
@@ -42,6 +43,7 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
       level: exam.level,
       title: exam.title,
       question_count: exam.question_count,
+      shared: exam.shared,
       themes: exam.themes
     }));
 
@@ -56,6 +58,7 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
       title: practice.title,
       part: practice.part,
       question_count: practice.question_count,
+      shared: practice.shared,
       themes: practice.themes
     }));
 
@@ -66,6 +69,7 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
         <TabContainer
           activeTab={activeTab}
           usage={{ exams: usage.exams, practices: usage.practices }}
+          pdfExport={entitlementsFor(usage.plan).pdfExport}
           exams={myExams}
           practices={myPractices}
         />
