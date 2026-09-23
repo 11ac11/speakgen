@@ -5,7 +5,12 @@ import {
   isBillingSimulated
 } from "@/lib/billing/provider";
 import { getPrice } from "@/lib/billing/prices";
-import { BillingNotConfiguredError } from "@/lib/billing/types";
+import {
+  BillingNotConfiguredError,
+  type BillingSubject
+} from "@/lib/billing/types";
+import { ENTITLEMENTS } from "@/lib/entitlements";
+import { getUserOrganizations } from "@/lib/organizations";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -51,12 +56,47 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    /* Pro is the teacher's own. Academy is the school's: it covers every
+       member, so it has to be bought by someone who runs the school, and a
+       teacher with no school has to make one first — the pricing card offers
+       to, on the "no_school" answer below. */
+    let subject: BillingSubject = { kind: "user", userId };
+    let seatCount = seats;
+
+    if (plan === "academy") {
+      const schools = await getUserOrganizations(userId);
+      const runs = schools.filter((school) =>
+        ["owner", "admin"].includes(school.role)
+      );
+
+      if (schools.length === 0) {
+        return NextResponse.json(
+          { error: "Create your school first", reason: "no_school" },
+          { status: 409 }
+        );
+      }
+      if (runs.length === 0) {
+        return NextResponse.json(
+          {
+            error:
+              "Only your school's owner or an admin can buy Academy for it.",
+            reason: "not_admin"
+          },
+          { status: 403 }
+        );
+      }
+
+      subject = { kind: "organization", organizationId: runs[0].id };
+      // The plan's own seat count. Extra seats beyond it are a later change.
+      seatCount = ENTITLEMENTS.academy.seats;
+    }
+
     const origin = new URL(req.url).origin;
     const { url } = await getBillingProvider().createCheckout({
-      subject: { kind: "user", userId },
+      subject,
       plan,
       interval,
-      seats,
+      seats: seatCount,
       successUrl: `${origin}/settings?checkout=success`,
       cancelUrl: `${origin}/pricing?checkout=cancelled`
     });

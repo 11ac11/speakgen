@@ -73,6 +73,10 @@ export type PlanPanelProps = {
     interval: string | null;
     renewsAt: string | null;
     cancelAtPeriodEnd: boolean;
+    /** Set when the plan is a school's Academy subscription. */
+    schoolName?: string | null;
+    /** False for a teacher covered by their school, who cannot cancel it. */
+    canManage?: boolean;
   };
 };
 
@@ -126,6 +130,8 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
   };
 
   const isFree = plan === "free";
+  const coveredBySchool = Boolean(billing.schoolName) && !billing.canManage;
+  const forSchool = billing.schoolName ? ` for ${billing.schoolName}` : "";
 
   return (
     <Panel className="glass">
@@ -133,11 +139,13 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
       <Meta>
         {isFree
           ? "You are on the free plan."
-          : billing.cancelAtPeriodEnd
-            ? `Cancels on ${billing.renewsAt ?? "the end of the period"}.`
-            : `Billed ${billing.interval === "year" ? "yearly" : "monthly"}${
-                billing.renewsAt ? `, renews ${billing.renewsAt}` : ""
-              }.`}
+          : coveredBySchool
+            ? `Covered by ${billing.schoolName}'s Academy plan. Its owner or an admin manages billing.`
+            : billing.cancelAtPeriodEnd
+              ? `Cancels on ${billing.renewsAt ?? "the end of the period"}.`
+              : `Billed ${billing.interval === "year" ? "yearly" : "monthly"}${forSchool}${
+                  billing.renewsAt ? `, renews ${billing.renewsAt}` : ""
+                }.`}
       </Meta>
 
       <UsageRow>
@@ -199,7 +207,7 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
               onClick={() => start("year")}
             />
           </>
-        ) : (
+        ) : coveredBySchool ? null : (
           <Button
             text={busy === "portal" ? "Opening…" : "Manage or cancel"}
             disabled={busy !== null}

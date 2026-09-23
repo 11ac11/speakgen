@@ -59,7 +59,7 @@ console.log("\nCONSTRAINTS");
 // A throwaway user, never a real one. This used to take the first row of
 // neon_auth."user" and write to its profile and subscriptions, which meant
 // running the suite could and did clobber a real account's plan.
-const BASE = "http://localhost:3001";
+const BASE = process.env.CHECK_BASE ?? "http://localhost:3001";
 const me = { id: (await signUpTestUser(BASE, "plancheck")).userId };
 
 // Profiles appear on first authenticated write, so a fresh signup has none and

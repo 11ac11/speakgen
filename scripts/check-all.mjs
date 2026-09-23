@@ -14,7 +14,8 @@ const SUITES = [
   "check-question-routes",
   "check-ads",
   "check-academy",
-  "check-sharing"
+  "check-sharing",
+  "check-academy-billing"
 ];
 
 const PAUSE_MS = 1500;

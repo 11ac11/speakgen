@@ -2,6 +2,7 @@ import { decodeIntent, signDummyBody } from "@/lib/billing/dummy";
 import { getPrice } from "@/lib/billing/prices";
 import { isBillingSimulated } from "@/lib/billing/provider";
 import { getAuthenticatedUserId } from "@/lib/session";
+import { isAdmin } from "@/lib/organizations";
 import { processWebhook } from "@/lib/billing/webhook";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -33,10 +34,22 @@ export async function POST(req: NextRequest) {
   }
 
   // The intent is signed, but bind it to the session anyway: a token issued for
-  // one account must not be redeemable by another.
-  if (decoded.subject.kind !== "user" || decoded.subject.userId !== userId) {
+  // one account must not be redeemable by another. A school's purchase is
+  // redeemable by the people who run that school, and nobody else.
+  const allowed =
+    decoded.subject.kind === "user"
+      ? decoded.subject.userId === userId
+      : await isAdmin(userId, decoded.subject.organizationId);
+  if (!allowed) {
     return NextResponse.json({ error: "Intent is not yours" }, { status: 403 });
   }
+
+  // Stable per payer, so buying again updates the same subscription rather
+  // than adding a second one alongside it.
+  const payer =
+    decoded.subject.kind === "user"
+      ? userId.slice(0, 8)
+      : `org_${decoded.subject.organizationId.slice(0, 8)}`;
 
   const price = getPrice(decoded.plan, decoded.interval);
   const periodEnd = new Date();
@@ -51,8 +64,8 @@ export async function POST(req: NextRequest) {
     type: "subscription.updated",
     subscription: {
       provider: "stripe",
-      providerCustomerId: `dummy_cus_${userId.slice(0, 8)}`,
-      providerSubscriptionId: `dummy_sub_${userId.slice(0, 8)}_${decoded.plan}`,
+      providerCustomerId: `dummy_cus_${payer}`,
+      providerSubscriptionId: `dummy_sub_${payer}_${decoded.plan}`,
       subject: decoded.subject,
       plan: decoded.plan,
       status: "active",

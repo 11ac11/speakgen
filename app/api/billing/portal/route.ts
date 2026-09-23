@@ -1,5 +1,5 @@
 import { getBillingProvider, isBillingEnabled } from "@/lib/billing/provider";
-import { getSubscriptionForUser } from "@/lib/billing/reconcile";
+import { getSubscriptionForViewer } from "@/lib/billing/reconcile";
 import { BillingNotConfiguredError } from "@/lib/billing/types";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
@@ -23,12 +23,20 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const subscription = await getSubscriptionForUser(userId);
-    const customerId = subscription?.provider_customer_id as string | undefined;
-    if (!customerId) {
+    // Their own subscription, or their school's if they run it. A teacher
+    // covered by their school can see the plan but not cancel it.
+    const subscription = await getSubscriptionForViewer(userId);
+    const customerId = subscription?.provider_customer_id ?? undefined;
+    if (!subscription || !customerId) {
       return NextResponse.json(
         { error: "No subscription to manage" },
         { status: 404 }
+      );
+    }
+    if (!subscription.can_manage) {
+      return NextResponse.json(
+        { error: "Your school's plan is managed by its owner or an admin." },
+        { status: 403 }
       );
     }
 

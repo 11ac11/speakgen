@@ -21,7 +21,14 @@ const Banner = styled.div`
   margin-bottom: 1.5rem;
 `;
 
-export default function DummyPortal({ returnUrl }: { returnUrl: string }) {
+export default function DummyPortal({
+  returnUrl,
+  schoolName
+}: {
+  returnUrl: string;
+  /** Set when the plan being managed is a school's Academy subscription. */
+  schoolName?: string | null;
+}) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -52,9 +59,9 @@ export default function DummyPortal({ returnUrl }: { returnUrl: string }) {
 
       <h1 style={{ fontSize: "1.3rem", marginTop: 0 }}>Manage your plan</h1>
       <p style={{ fontSize: "var(--text-base)" }}>
-        Cancelling returns you to the free plan immediately. Your questions are
-        kept; exams beyond the free limit stay saved but you will not be able to
-        create more until you are under it.
+        {schoolName
+          ? `Cancelling returns every teacher at ${schoolName} to their own plan immediately, and turns off its branding. The school's questions, exams and practices are kept.`
+          : "Cancelling returns you to the free plan immediately. Your questions are kept; exams beyond the free limit stay saved but you will not be able to create more until you are under it."}
       </p>
 
       {error ? (

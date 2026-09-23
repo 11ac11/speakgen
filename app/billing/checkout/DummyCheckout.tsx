@@ -40,12 +40,17 @@ export default function DummyCheckout({
   intent,
   planLabel,
   intervalLabel,
-  amount
+  amount,
+  schoolName,
+  seats
 }: {
   intent: string;
   planLabel: string;
   intervalLabel: string;
   amount: string;
+  /** Who is billed, for a school's Academy purchase. */
+  schoolName?: string | null;
+  seats?: number | null;
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
@@ -88,6 +93,18 @@ export default function DummyCheckout({
         <span>Plan</span>
         <span>{planLabel}</span>
       </Line>
+      {schoolName ? (
+        <Line>
+          <span>School</span>
+          <span>{schoolName}</span>
+        </Line>
+      ) : null}
+      {seats ? (
+        <Line>
+          <span>Teachers</span>
+          <span>{`Up to ${seats}`}</span>
+        </Line>
+      ) : null}
       <Line>
         <span>Billing</span>
         <span>{intervalLabel}</span>

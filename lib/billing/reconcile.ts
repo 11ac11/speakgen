@@ -127,9 +127,63 @@ export async function applySubscriptionState(state: SubscriptionState) {
     ]
   );
 
-  // An organisation subscription covers its members, which needs the member
-  // table adopted first. Until the Academy tier lands, such a subscription is
-  // recorded but grants nothing, and the UPDATE above matches no profile.
+  // An organisation subscription writes no profile. Its members get the plan
+  // on read, from getEffectivePlan in lib/profile.ts, which joins membership
+  // to the school's live subscription — so joining or leaving a school changes
+  // a teacher's plan without anything here having to run.
+}
+
+export type ViewerSubscription = {
+  id: number;
+  plan: string;
+  status: string;
+  billing_interval: string;
+  seats: number;
+  provider: string;
+  provider_customer_id: string | null;
+  provider_subscription_id: string;
+  current_period_end: string | null;
+  cancel_at_period_end: boolean;
+  user_id: string | null;
+  organization_id: string | null;
+  /** The school's name, when the subscription is a school's. */
+  school_name: string | null;
+  /**
+   * Whether this user may manage it: their own, or a school they are an owner
+   * or admin of. A teacher covered by their school sees the plan and cannot
+   * cancel it.
+   */
+  can_manage: boolean;
+};
+
+/**
+ * The live subscription that gives a user their plan: their own, or their
+ * school's. Where there are both — a teacher who kept Pro after their school
+ * bought Academy — the better plan wins, as it does in getEffectivePlan, so
+ * Settings describes the subscription actually in force.
+ */
+export async function getSubscriptionForViewer(
+  userId: string
+): Promise<ViewerSubscription | null> {
+  const rows = (await sql(
+    `SELECT s.id::int AS id, s.plan, s.status, s.billing_interval, s.seats,
+            s.provider, s.provider_customer_id, s.provider_subscription_id,
+            s.current_period_end, s.cancel_at_period_end,
+            s.user_id, s.organization_id,
+            o.name AS school_name,
+            (s.user_id = $1 OR m.role IN ('owner', 'admin')) AS can_manage
+       FROM content.subscriptions s
+       LEFT JOIN neon_auth.member m
+         ON m."organizationId" = s.organization_id AND m."userId" = $1
+       LEFT JOIN neon_auth.organization o ON o.id = s.organization_id
+      WHERE (s.user_id = $1 OR m."userId" IS NOT NULL)
+        AND s.status IN ('trialing', 'active', 'past_due')
+      ORDER BY (s.plan = 'academy') DESC, can_manage DESC
+      LIMIT 1`,
+    [userId]
+  )) as unknown as ViewerSubscription[];
+
+  return rows[0] ?? null;
 }
 
 /** The live subscription for a user, if any. */

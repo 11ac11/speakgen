@@ -3,6 +3,7 @@ import { decodeIntent } from "@/lib/billing/dummy";
 import { isBillingSimulated } from "@/lib/billing/provider";
 import { formatPrice, getPrice } from "@/lib/billing/prices";
 import DummyCheckout from "./DummyCheckout";
+import { sql } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,16 @@ export default async function DummyCheckoutPage({
 
   const price = getPrice(decoded.plan, decoded.interval);
 
+  // A school's purchase says which school, since that is who is being billed.
+  const schoolName =
+    decoded.subject.kind === "organization"
+      ? ((
+          (await sql(`SELECT name FROM neon_auth.organization WHERE id = $1`, [
+            decoded.subject.organizationId
+          ])) as unknown as { name: string }[]
+        )[0]?.name ?? null)
+      : null;
+
   return (
     <div className="page page-narrow" style={{ paddingTop: "4rem" }}>
       <DummyCheckout
@@ -28,6 +39,8 @@ export default async function DummyCheckoutPage({
         planLabel={decoded.plan === "pro" ? "Teacher Pro" : "Academy"}
         intervalLabel={decoded.interval === "year" ? "Yearly" : "Monthly"}
         amount={formatPrice(price)}
+        schoolName={schoolName}
+        seats={decoded.subject.kind === "organization" ? decoded.seats : null}
       />
     </div>
   );

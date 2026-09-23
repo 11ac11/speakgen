@@ -4,7 +4,7 @@ import { getAuthenticatedUserId } from "@/lib/session";
 import { ensureProfile } from "@/lib/profile";
 import { getUsage } from "@/lib/limits";
 import { isBillingEnabled, isBillingSimulated } from "@/lib/billing/provider";
-import { getSubscriptionForUser } from "@/lib/billing/reconcile";
+import { getSubscriptionForViewer } from "@/lib/billing/reconcile";
 import {
   getMembers,
   getSeatUsage,
@@ -33,7 +33,7 @@ export default async function SettingsPage() {
   // extra round trip and no chance of the client being told a plan it can edit.
   const [usage, subscription, organizations] = await Promise.all([
     getUsage(userId),
-    getSubscriptionForUser(userId),
+    getSubscriptionForViewer(userId),
     getUserOrganizations(userId)
   ]);
 
@@ -74,9 +74,13 @@ export default async function SettingsPage() {
           billing={{
             enabled: isBillingEnabled(),
             simulated: isBillingSimulated(),
-            interval: (subscription?.billing_interval as string) ?? null,
+            interval: subscription?.billing_interval ?? null,
             renewsAt,
-            cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end)
+            cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
+            // Whose subscription this is, when it is a school's, and whether
+            // this teacher may manage it or is simply covered by it.
+            schoolName: subscription?.school_name ?? null,
+            canManage: subscription ? subscription.can_manage : true
           }}
         />
 

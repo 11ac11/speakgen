@@ -6,7 +6,7 @@ config();
 import { neon } from "@neondatabase/serverless";
 import { signUpTestUser } from "./lib/testAuth.mjs";
 
-const BASE = "http://localhost:3001";
+const BASE = process.env.CHECK_BASE ?? "http://localhost:3001";
 const sql = neon(process.env.DATABASE_URL);
 let failed = 0;
 const pass = (n, ok, d = "") => {

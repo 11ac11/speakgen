@@ -1,6 +1,6 @@
 import { signDummyBody } from "@/lib/billing/dummy";
 import { isBillingSimulated } from "@/lib/billing/provider";
-import { getSubscriptionForUser } from "@/lib/billing/reconcile";
+import { getSubscriptionForViewer } from "@/lib/billing/reconcile";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { processWebhook } from "@/lib/billing/webhook";
 import { NextRequest, NextResponse } from "next/server";
@@ -19,9 +19,15 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const current = await getSubscriptionForUser(userId);
+  const current = await getSubscriptionForViewer(userId);
   if (!current) {
     return NextResponse.json({ error: "Nothing to cancel" }, { status: 404 });
+  }
+  if (!current.can_manage) {
+    return NextResponse.json(
+      { error: "Your school's plan is managed by its owner or an admin." },
+      { status: 403 }
+    );
   }
 
   const body = JSON.stringify({
@@ -31,7 +37,10 @@ export async function POST(req: NextRequest) {
       provider: "stripe",
       providerCustomerId: current.provider_customer_id,
       providerSubscriptionId: current.provider_subscription_id,
-      subject: { kind: "user", userId },
+      // Whoever pays: the teacher, or the school they run.
+      subject: current.organization_id
+        ? { kind: "organization", organizationId: current.organization_id }
+        : { kind: "user", userId },
       plan: current.plan,
       status: "canceled",
       interval: current.billing_interval,
