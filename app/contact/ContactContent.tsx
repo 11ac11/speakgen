@@ -53,7 +53,7 @@ const Field = styled.div`
   }
 
   input {
-    min-height: 48px;
+    min-height: var(--control-height);
   }
 
   textarea {
@@ -169,8 +169,8 @@ const SendLink = styled.a`
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  min-height: 48px;
-  padding: 0.9rem 1.9rem;
+  min-height: var(--control-height);
+  padding: 0.6rem 1.4rem;
   border-radius: var(--radius-control);
   border: 1.5px solid transparent;
   font-family: var(--font-body), sans-serif;
@@ -212,8 +212,8 @@ const SendLink = styled.a`
    nothing — someone on a screen reader would simply not find the control and
    would have no way to learn why. */
 const SendDisabled = styled.button`
-  min-height: 48px;
-  padding: 0.9rem 1.9rem;
+  min-height: var(--control-height);
+  padding: 0.6rem 1.4rem;
   border-radius: var(--radius-control);
   border: 1.5px solid var(--off-edge);
   font-family: var(--font-body), sans-serif;

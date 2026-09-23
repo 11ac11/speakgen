@@ -62,7 +62,7 @@ export const BackLink = styled(Link)`
 export const ExamsLink = styled(Link)`
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 0.6rem 1.2rem;
   border-radius: var(--radius-control);
   border: 1.5px solid var(--green-edge);

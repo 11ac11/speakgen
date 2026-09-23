@@ -63,7 +63,7 @@ const inputStyles = `
   padding: 0.55rem 0.7rem;
   border: 1.5px solid var(--field-edge);
   border-radius: var(--radius-control);
-  min-height: 44px;
+  min-height: var(--control-height);
   box-sizing: border-box;
 `;
 
@@ -83,7 +83,7 @@ const ColourRow = styled.div`
 
   input[type="color"] {
     width: 48px;
-    height: 44px;
+    height: var(--control-height);
     padding: 2px;
     border: 1.5px solid var(--field-edge);
     border-radius: var(--radius-control);
@@ -151,7 +151,7 @@ const LogoBox = styled.div`
 const FileLabel = styled.label`
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 0.5rem 1rem;
   border-radius: var(--radius-control);
   border: 1.5px solid var(--green-edge);
@@ -234,7 +234,7 @@ const Status = styled.p<{ $error?: boolean }>`
 const UpgradeButton = styled(NextLink)`
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-height);
   margin-top: 1rem;
   padding: 0.5rem 1.1rem;
   border-radius: var(--radius-control);

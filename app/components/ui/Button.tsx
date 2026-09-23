@@ -4,6 +4,7 @@ import Image from "next/image";
 
 type StyledButtonProps = {
   $secondary?: boolean; // Optional secondary prop
+  $danger?: boolean;
   $isBigButton?: boolean;
   $isDashboardButton?: boolean;
   $width?: string | number;
@@ -18,8 +19,8 @@ const StyledButton = styled.button<StyledButtonProps>`
   font-family: var(--font-body), sans-serif;
   font-size: var(--text-base);
   font-weight: 500;
-  min-height: 48px;
-  padding: 0.8rem 1.4rem;
+  min-height: var(--control-height);
+  padding: 0.6rem 1.2rem;
   border-radius: var(--radius-control);
   border: 1.5px solid transparent;
   display: flex;
@@ -77,6 +78,30 @@ const StyledButton = styled.button<StyledButtonProps>`
     }
   `}
 
+  /* For the step that cannot be undone — stopping a share link, say — once the
+     teacher has been asked and is confirming. Red on the confirm, not on the
+     first click, so the colour means "this is the one that does it". */
+  ${({ $danger }) =>
+    $danger &&
+    `
+    background: var(--danger);
+    color: #fff;
+    box-shadow: 0 3px 0 0 #8f2c20;
+
+    &:hover {
+      background: #d4513f;
+      box-shadow: 0 5px 0 0 #8f2c20;
+    }
+
+    &:active {
+      box-shadow: 0 1px 0 0 #8f2c20;
+    }
+
+    &:focus-visible {
+      outline-color: var(--danger);
+    }
+  `}
+
   ${({ $isBigButton }) =>
     $isBigButton &&
     `
@@ -88,7 +113,7 @@ const StyledButton = styled.button<StyledButtonProps>`
   ${({ $isDashboardButton }) =>
     $isDashboardButton &&
     `
-    min-height: 44px;
+    min-height: var(--control-height);
     padding: 0.6rem 1.2rem;
     font-size: var(--text-base);
   `}
@@ -123,9 +148,15 @@ type ButtonProps = {
   isAsync?: boolean; // Determines whether the button is asynchronous
   disabled?: boolean; // Optional prop to manually disable the button
   secondary?: boolean; // Optional to use secondary styles
+  /** Red, for confirming something that cannot be undone. */
+  danger?: boolean;
   type?: "button" | "submit" | "reset" | undefined;
   className?: "text" | undefined;
   iconUrl?: "text" | undefined;
+  /** An inline icon before the text, such as LinkIcon. */
+  icon?: React.ReactNode;
+  /** An inline icon after the text, such as a tick for a state that is on. */
+  iconAfter?: React.ReactNode;
   isBigButton?: boolean | undefined;
   width?: string | number;
   isDashboardButton?: boolean | undefined;
@@ -138,9 +169,12 @@ const Button: React.FC<ButtonProps> = ({
   isAsync = false,
   disabled = false,
   secondary,
+  danger,
   type,
   className,
   iconUrl,
+  icon,
+  iconAfter,
   isBigButton,
   isDashboardButton,
   width
@@ -173,13 +207,16 @@ const Button: React.FC<ButtonProps> = ({
         onClick={handleClick}
         disabled={isLoading || disabled}
         $secondary={secondary}
+        $danger={danger}
         type={type}
         $isBigButton={isBigButton}
         $width={width}
         $isDashboardButton={isDashboardButton}
       >
         {iconUrl && <Image src={iconUrl} alt="" width={16} height={16} />}
+        {icon}
         {isLoading ? loadingText : text}
+        {iconAfter}
       </StyledButton>
       {error && <p className="error-message">{error}</p>}
     </Wrap>

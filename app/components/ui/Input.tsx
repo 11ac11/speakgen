@@ -19,8 +19,8 @@ const StyledInput = styled.input<{
   border: 1.5px solid var(--field-edge);
   border-radius: var(--radius-control);
   outline: none;
-  padding: 0.75rem 0.9rem;
-  min-height: 48px;
+  padding: 0.6rem 0.9rem;
+  min-height: var(--control-height);
   transition:
     border-color 0.12s ease,
     box-shadow 0.12s ease;

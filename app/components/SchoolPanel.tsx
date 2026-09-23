@@ -86,7 +86,7 @@ const Upgrade = styled.div`
 const UpgradeButton = styled(NextLink)`
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 0.5rem 1.1rem;
   border-radius: var(--radius-control);
   background: var(--green-600);

@@ -46,7 +46,7 @@ const Control = styled.button<{ $open: boolean }>`
   align-items: center;
   justify-content: center;
   gap: 0.35rem;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 0.6rem 1.9rem 0.6rem 0.9rem;
   cursor: pointer;
   font-family: var(--font-body), sans-serif;
@@ -123,7 +123,7 @@ const Option = styled.li<{ $selected: boolean }>`
   gap: 0.6rem;
   padding: 0.5rem 0.75rem;
   cursor: pointer;
-  min-height: 44px;
+  min-height: var(--control-height);
   box-sizing: border-box;
   border-bottom: 1px solid #eef0ec;
   background: ${(p) => (p.$selected ? "var(--green-tint)" : "transparent")};

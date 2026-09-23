@@ -119,7 +119,7 @@ const Links = styled.div`
 const Action = styled(Link)`
   display: inline-flex;
   align-items: center;
-  min-height: 44px;
+  min-height: var(--control-height);
   padding: 0.6rem 1.2rem;
   border-radius: var(--radius-control);
   font-size: var(--text-sm);

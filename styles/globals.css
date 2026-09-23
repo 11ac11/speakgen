@@ -69,6 +69,11 @@
   --text-label: #5a625a;
 
   --radius-control: 12px;
+  /* One height for every button and field, so a field and the button beside
+     it, or a link styled as a button and a real one, line up. It was 48px in
+     forms and 44px in toolbars, and anywhere the two met one stood proud. 44px
+     is the touch-target minimum and the less bulky of the two. */
+  --control-height: 44px;
   --radius-card: 18px;
   --radius-pill: 999px;
 

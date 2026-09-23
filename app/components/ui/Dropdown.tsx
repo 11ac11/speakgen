@@ -97,11 +97,26 @@ const DropdownOptions = styled.div`
   }
 `;
 
-const InputWrapper = styled.div`
+const InputWrapper = styled.div<{ $lifts?: boolean }>`
   position: relative;
   width: 100%;
   display: flex;
   align-items: center;
+
+  /* The chevron is drawn over the button rather than inside it, so it has to
+     be moved with it: up 2px on hover and down 1px when pressed, the button's
+     own travel and timing, or the button lifts away and leaves it behind. */
+  ${({ $lifts }) =>
+    $lifts &&
+    `
+    &:hover > span {
+      margin-top: -2px;
+    }
+
+    &:active > span {
+      margin-top: 1px;
+    }
+  `}
 `;
 
 const StyledInput = styled(Input)<{
@@ -114,14 +129,13 @@ const StyledInput = styled(Input)<{
     overflow: hidden;
     text-overflow: ellipsis;
 
-    /* The toolbar height, not the form height. A dropdown in a form sits in a
-       column of 48px fields and matches them; in the dashboard toolbar it sits
-       beside 44px buttons and a 44px multi-select, and being the only 48px
-       thing there left its bottom edge proud of everything next to it. */
+    /* Forms and the dashboard toolbar used to want different heights, 48px
+       and 44px. Every control is --control-height now, so compact only
+       tightens the padding it already had. */
     ${({ $compact }) =>
       $compact &&
       `
-        min-height: 44px;
+        min-height: var(--control-height);
         padding: 0.6rem 0.9rem;
       `}
   }
@@ -137,13 +151,32 @@ const StyledInput = styled(Input)<{
     `}
 `;
 
-const Arrow = styled.span<{ $isOpen: boolean }>`
+/* The chevron is drawn over the control rather than inside it, so it does not
+   inherit the control's colour and has to be told. White on a filled green
+   button, where the page's grey was nearly invisible; the button's green on an
+   outlined one; the field's own text colour otherwise. */
+const Arrow = styled.span<{
+  $isOpen: boolean;
+  $tone: "field" | "primary" | "secondary";
+}>`
+  /* Doubled so a container's own span rule cannot outrank it, which is how the
+     chevron on New exam ended up grey. */
+  && {
+    color: ${({ $tone }) =>
+      $tone === "primary"
+        ? "#fff"
+        : $tone === "secondary"
+          ? "var(--green-600)"
+          : "inherit"};
+  }
   position: absolute;
   right: 10px;
   top: 50%;
   transform: translateY(-50%)
     rotate(${({ $isOpen }) => ($isOpen ? "180deg" : "0deg")});
-  transition: transform 0.3s ease-in-out;
+  transition:
+    transform 0.3s ease-in-out,
+    margin-top 0.12s var(--lift);
   pointer-events: none;
   width: 16px;
   height: 16px;
@@ -213,7 +246,7 @@ export const Dropdown = ({
       {
         <>
           {label && <Label>{label}</Label>}
-          <InputWrapper>
+          <InputWrapper $lifts={inputAsButton && !disabled}>
             {inputAsButton ? (
               <Button
                 text={placeholder}
@@ -235,7 +268,12 @@ export const Dropdown = ({
                 disabled={disabled}
               />
             )}
-            <Arrow $isOpen={isOpen}>
+            <Arrow
+              $isOpen={isOpen}
+              $tone={
+                !inputAsButton ? "field" : secondary ? "secondary" : "primary"
+              }
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
