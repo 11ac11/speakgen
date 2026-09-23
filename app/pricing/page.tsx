@@ -72,7 +72,7 @@ function limit(value: number | null, singular: string, plural: string) {
  * the end of the list for a reason. A row that only one plan has cannot be
  * compared, so putting it among the shared rows would push everything below it
  * out of line on that card alone — the exact fault this layout was built to
- * fix. Below them it costs nothing: the seven rows above stay level across all
+ * fix. Below them it costs nothing: the eight rows above stay level across all
  * three columns, and Academy simply runs one longer.
  */
 const FEATURES: {
@@ -92,6 +92,13 @@ const FEATURES: {
   {
     key: "practices",
     of: (e) => ({ on: true, text: limit(e.practices, "practice", "practices") })
+  },
+  {
+    /* Ticked on every plan, deliberately: share links are how the product
+       reaches students and other teachers, so they are never behind a paywall.
+       Saying so on the free card is part of the pitch, not filler. */
+    key: "share",
+    of: () => ({ on: true, text: "Private links to share with students" })
   },
   {
     key: "pdf",
