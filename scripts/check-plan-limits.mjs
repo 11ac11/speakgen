@@ -1,8 +1,12 @@
 // Drives the exam write path as a real signed-in user and proves the free plan
 // limit actually bites.
+import { config } from "dotenv";
+config();
+import { neon } from "@neondatabase/serverless";
 import { signUpTestUser } from "./lib/testAuth.mjs";
 
-const BASE = "http://localhost:3001";
+const BASE = process.env.CHECK_BASE ?? "http://localhost:3001";
+const sql = neon(process.env.DATABASE_URL);
 let failed = 0;
 const pass = (n, ok, d = "") => {
   console.log(`${ok ? "  ok  " : "  FAIL"} ${n}${d ? "  " + d : ""}`);
@@ -185,5 +189,7 @@ for (const [name, path, expect] of [
 }
 
 await api(`/api/exams/${third.body.id}`, { method: "DELETE" });
+// The account goes too, and its exams with it, rather than being left behind.
+await sql(`DELETE FROM neon_auth."user" WHERE id = $1`, [me]);
 console.log(failed ? `\n${failed} FAILED` : "\nall checks passed");
 process.exit(failed ? 1 : 0);

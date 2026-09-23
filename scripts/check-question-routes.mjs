@@ -1,8 +1,12 @@
 // Exercises the question routes end to end against the running dev server,
 // as a real signed-in user.
+import { config } from "dotenv";
+config();
+import { neon } from "@neondatabase/serverless";
 import { signUpTestUser } from "./lib/testAuth.mjs";
 
-const BASE = "http://localhost:3001";
+const BASE = process.env.CHECK_BASE ?? "http://localhost:3001";
+const sql = neon(process.env.DATABASE_URL);
 
 const email = `routetest+${Date.now()}@example.com`;
 
@@ -43,8 +47,7 @@ const p1 = await api("/api/questions", {
     level: "b2",
     part: "1",
     statement: "Route test: what do you enjoy about studying?",
-    themes: ["work_education", "hobbies"],
-    public: false
+    themes: ["work_education", "hobbies"]
   })
 });
 pass("part 1 created", p1.status === 201, `id=${p1.body.id}`);
@@ -53,7 +56,7 @@ pass(
   JSON.stringify(p1.body.themes) === '["hobbies","work_education"]',
   JSON.stringify(p1.body.themes)
 );
-pass("private by default", p1.body.public === false);
+pass("private", p1.body.public === false);
 pass("owner is the session user", p1.body.owner_id === me);
 
 const p2 = await api("/api/questions", {
@@ -63,6 +66,8 @@ const p2 = await api("/api/questions", {
     part: "2",
     statement: "Route test: compare these two photographs.",
     themes: ["nature"],
+    // Sent on purpose: a teacher cannot make a question public any more, and
+    // an old client asking to is ignored rather than refused.
     public: true,
     image_ids: [2325447, 158063],
     instructions: ["Look at the pictures.", "Now compare them."]
@@ -81,7 +86,6 @@ const p3 = await api("/api/questions", {
     part: "3",
     statement: "Route test: talk about these options together.",
     themes: ["daily_life"],
-    public: true,
     prompts: ["one", "two", "three", "four", "five"]
   })
 });
@@ -101,8 +105,9 @@ pass(
   (await api(`/api/questions/${p1.body.id}`, { anon: true })).status === 404
 );
 pass(
-  "anonymous reads a public one",
-  (await api(`/api/questions/${p2.body.id}`, { anon: true })).status === 200
+  "asking for public is ignored: still private",
+  p2.body.public === false &&
+    (await api(`/api/questions/${p2.body.id}`, { anon: true })).status === 404
 );
 
 console.log("\nUPDATE");
@@ -124,8 +129,9 @@ pass(
   JSON.stringify(patched.body.themes)
 );
 pass(
-  "now visible anonymously",
-  (await api(`/api/questions/${p1.body.id}`, { anon: true })).status === 200
+  "patching public: true does not publish it",
+  patched.body.public === false &&
+    (await api(`/api/questions/${p1.body.id}`, { anon: true })).status === 404
 );
 
 console.log("\nDASHBOARD LISTS");
@@ -164,8 +170,7 @@ pass(
         level: "b2",
         part: "1",
         statement: "x",
-        themes: ["nature"],
-        public: true
+        themes: ["nature"]
       })
     })
   ).status === 401
@@ -174,7 +179,7 @@ pass(
 console.log("\nVALIDATION");
 const post = (body) =>
   api("/api/questions", { method: "POST", body: JSON.stringify(body) });
-const base = { level: "b2", part: "1", statement: "x", public: true };
+const base = { level: "b2", part: "1", statement: "x" };
 
 pass(
   "bad theme slug rejected",
@@ -183,8 +188,7 @@ pass(
 pass("missing themes rejected", (await post({ ...base })).status === 400);
 pass(
   "missing level rejected",
-  (await post({ part: "1", statement: "x", themes: ["nature"], public: true }))
-    .status === 400
+  (await post({ part: "1", statement: "x", themes: ["nature"] })).status === 400
 );
 pass(
   "invalid part rejected",
@@ -281,8 +285,7 @@ console.log("\nMALFORMED PARTS ARE REFUSED, NOT SWALLOWED");
       level: "b2",
       part: "3",
       statement: "Route test: part 3 with no prompts.",
-      themes: ["daily_life"],
-      public: true
+      themes: ["daily_life"]
     })
   });
   pass(
@@ -298,7 +301,6 @@ console.log("\nMALFORMED PARTS ARE REFUSED, NOT SWALLOWED");
       part: "2",
       statement: "Route test: part 2 with one photograph.",
       themes: ["nature"],
-      public: true,
       image_ids: [2325447]
     })
   });
@@ -315,7 +317,6 @@ console.log("\nMALFORMED PARTS ARE REFUSED, NOT SWALLOWED");
     body: JSON.stringify({
       statement: "Route test: talk about these options together.",
       themes: ["daily_life"],
-      public: true,
       prompts: ["only one"]
     })
   });
@@ -341,11 +342,14 @@ console.log("\nWRONG LEVEL IN PATH");
   );
 }
 
-// clean up
+// Clean up by removing the account, which takes its questions with it. This
+// used to soft-delete through /api/questions/b2/<part>/<id>, a route that no
+// longer exists, so nothing was removed and every run left three questions
+// behind — public ones, while that was possible, drawn by every visitor.
 console.log("\ncleanup");
-for (const q of [p2, p3]) {
-  await api(`/api/questions/b2/${q.body.part}/${q.body.id}`, {
-    method: "DELETE"
-  });
-}
-console.log(`  soft-deleted test questions; user ${me} left in place`);
+await sql(`DELETE FROM neon_auth."user" WHERE id = $1`, [me]);
+const [left] = await sql(
+  `SELECT count(*)::int AS n FROM content.questions WHERE owner_id = $1`,
+  [me]
+);
+pass("test account and its questions removed", left.n === 0, `${left.n} left`);

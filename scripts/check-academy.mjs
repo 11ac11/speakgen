@@ -5,7 +5,7 @@ config();
 import { neon } from "@neondatabase/serverless";
 import { signUpTestUser } from "./lib/testAuth.mjs";
 
-const BASE = "http://localhost:3001";
+const BASE = process.env.CHECK_BASE ?? "http://localhost:3001";
 const sql = neon(process.env.DATABASE_URL);
 let failed = 0;
 const pass = (n, ok, d = "") => {
@@ -195,13 +195,12 @@ pass(
 );
 
 console.log("\nSHARED BANK");
-const mk = (cookie, statement, isPublic = false) =>
+const mk = (cookie, statement) =>
   call("/api/questions", cookie, {
     level: "b2",
     part: "1",
     statement,
-    themes: ["hobbies"],
-    public: isPublic
+    themes: ["hobbies"]
   });
 const q = await readJson(await mk(head.cookie, "School private question"));
 pass(
