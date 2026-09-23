@@ -24,7 +24,7 @@ export type ShareViewer = {
    * Whose question pool a shared practice draws from: its author's and its
    * school's. A practice is a rule evaluated against the reader, and a student
    * has no pool of their own, so without this a shared practice would draw
-   * only public questions and silently leave out the teacher's private ones.
+   * only house questions and silently leave out the teacher's own.
    */
   ownerId: string | null;
   organizationId: string | null;
@@ -50,8 +50,9 @@ export async function getViewer(): Promise<Viewer> {
  * and one of them would be missed.
  *
  * Three ways to reach a question: it is public, you wrote it, or your school
- * owns it. House content (owner_id IS NULL) is always public, enforced by the
- * questions_house_is_public constraint, so it needs no special case.
+ * owns it. Public means house content and nothing else — a question is public
+ * exactly when it has no owner, which the questions_public_is_house constraint
+ * holds (migration 029) — so `visibility = 'public'` is the house library.
  *
  * Returns a SQL fragment plus the parameters it consumes, starting at
  * $<nextParamIndex>. The caller appends the params in the same order.
@@ -155,7 +156,7 @@ export function practiceReadPredicate(
 }
 
 /**
- * The questions a shared practice may draw: public ones, and the private ones
+ * The questions a shared practice may draw: house ones, and the private ones
  * of the teacher and school it belongs to. Their pool as a colleague would see
  * it, minus any other schools the author happens to belong to, which a link
  * made in one school has no business reaching into.

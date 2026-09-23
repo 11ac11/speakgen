@@ -90,7 +90,7 @@ export class ConstraintViolationError extends Error {}
 const CONSTRAINT_MESSAGES: Record<string, string> = {
   questions_p2_images: "A Part 2 question needs between 2 and 5 photographs",
   questions_p3_prompts: "A Part 3 question needs between 3 and 5 prompts",
-  questions_house_is_public: "House content has to be public"
+  questions_public_is_house: "Only house questions can be public"
 };
 
 async function run(query: string, params: unknown[]) {
@@ -216,7 +216,9 @@ export async function createQuestion(
       level,
       partNumber,
       ownerId,
-      payload.public ? "public" : "private",
+      // Always private: public is house content only, and house content is
+      // not written through here. questions_public_is_house holds it.
+      "private",
       payload.statement,
       payload.statement_two ?? null,
       payload.follow_up ?? null,
@@ -257,8 +259,6 @@ export async function updateQuestion(
   if (payload.image_ids !== undefined) assign("image_ids", payload.image_ids);
   if (payload.instructions !== undefined)
     assign("instructions", payload.instructions);
-  if (payload.public !== undefined)
-    assign("visibility", payload.public ? "public" : "private");
 
   // updated_at is maintained by the questions_touch trigger, so an update that
   // only changes themes still needs to touch the row to be visible as a change.

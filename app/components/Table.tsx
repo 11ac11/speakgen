@@ -24,7 +24,6 @@ interface Question {
   statement: string;
   themes: string[] | null;
   owner_id: string;
-  public: boolean;
 }
 
 /* Scrolls rather than squeezing the columns to nothing on a narrow screen. */
@@ -360,7 +359,7 @@ export default function Table({
       {
         header: "Question",
         accessorKey: "statement",
-        size: 46
+        size: 54
       },
       {
         header: "Themes",
@@ -384,27 +383,6 @@ export default function Table({
           });
         },
         size: 27
-      },
-      {
-        header: "Public",
-        accessorKey: "public",
-        size: 8,
-        cell: ({ row }) => {
-          if (row.original.public) {
-            return (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="#67cd55"
-                width="20"
-                height="20"
-              >
-                <path d="M9 16.17l-4.24-4.24-1.41 1.41L9 19 21 7l-1.41-1.41z" />
-              </svg>
-            );
-          }
-          return null;
-        }
       },
       {
         header: "",
@@ -449,9 +427,8 @@ export default function Table({
     data: visible,
     /* The sizes above are percentages of the table, not pixels. Without this
        they were silently clamped to TanStack's default minSize of 20, so every
-       column asking for less came out the same width — which is why Part,
-       Public and the actions column were all identical however they were
-       declared. */
+       column asking for less came out the same width — which is why Part and
+       the actions column were identical however they were declared. */
     defaultColumn: { minSize: 0, maxSize: 100 },
     // Keyed on the question id, so a selection survives a re-sort and means
     // the same thing after a refetch.
@@ -601,15 +578,10 @@ export default function Table({
                       <TableData
                         key={cell.id}
                         style={{
-                          // The menu sits at the end of its row, the tick in
-                          // the middle of its column, everything else reads
-                          // from the left.
+                          // The menu sits at the end of its row; everything
+                          // else reads from the left.
                           textAlign:
-                            cell.column.id === "public"
-                              ? "center"
-                              : cell.column.id === "actions"
-                                ? "right"
-                                : "left"
+                            cell.column.id === "actions" ? "right" : "left"
                         }}
                       >
                         {flexRender(

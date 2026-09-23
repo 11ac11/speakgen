@@ -140,7 +140,6 @@ const QuestionForm = ({
   const [imageIds, setImageIds] = useState<(number | null)[]>(
     question?.image_ids ?? []
   );
-  const [isPublic, setIsPublic] = useState(question?.public ?? true);
   const [loading, setLoading] = useState(false);
   const [createAnother, setCreateAnother] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
@@ -280,7 +279,6 @@ interest.`;
     const requestData = {
       statement: statement,
       themes: themes,
-      public: isPublic,
       /* Each of these travels only when the task actually has it. The update
          route assigns a column only when its key is present, so omitting one
          leaves it alone rather than blanking it — which is what lets a teacher
@@ -522,11 +520,6 @@ interest.`;
             <Hint>{`Shown in the runner under the heading “${decisionPhase.label}”.`}</Hint>
           ) : null}
           <ThemeSelector label="Themes" themes={themes} setThemes={setThemes} />
-          <Checkbox
-            checked={isPublic}
-            onChange={setIsPublic}
-            label="Public question"
-          />
           {/* Meaningless when a caller is waiting for one question back: the
               form closes the moment it is saved. */}
           {!isEdit && !onCreated && (

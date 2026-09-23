@@ -10,7 +10,8 @@ export const questionPayloadSchema = z.object({
   follow_up: z.string().trim().max(500).optional(),
   decision: z.string().trim().max(500).optional(),
   themes: z.array(z.string().trim().min(1)).min(1),
-  public: z.boolean(),
+  /* No `public`. A teacher's question is private, full stop; see migration
+     029. An old client that still sends it has it stripped, not refused. */
   image_ids: z.array(z.number().int()).optional(),
   instructions: z.array(z.string().trim().min(1)).optional(),
   prompts: z.array(z.string().trim().min(1)).optional()
