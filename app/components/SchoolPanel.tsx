@@ -167,6 +167,29 @@ export default function SchoolPanel({
     }
   };
 
+  /*
+   * TODO(email): invitations are not emailed. Neon Auth records the invitation
+   * and this panel shows a link for the admin to send on by hand. Two ways to
+   * email it, not yet decided:
+   *
+   *   1. Neon sends it. Console → Auth → Plugins → Organizations → "Send
+   *      Invitation Email". Needs "Verify email at signup" on, which applies to
+   *      every signup (and breaks the check suites' @example.com signups), and
+   *      the email is Neon's template, not ours. Its link goes to
+   *      /auth/accept-invitation?invitationId=<id>, so add a route there that
+   *      forwards to /school/join?invitation=<id>.
+   *
+   *   2. We send it, branded, straight after inviteMember succeeds. Candidates
+   *      (checked 2026-09-23): Brevo, EU-based, free 300 emails/day, Starter
+   *      €7/mo (+€9/mo to drop its logo, included from Standard €15/mo);
+   *      Resend, free 3,000/mo but 100/day, $20/mo after, logs stored in the
+   *      US; Postmark from $15/mo; Amazon SES ~$0.16 per 1,000. Needs a sending
+   *      domain with SPF/DKIM/DMARC and the provider's key in Vercel. Build it
+   *      as a port behind an env var, like lib/logoStorage.ts, and move the
+   *      contact form (lib/feedback.ts, SUPPORT_EMAIL) onto the same provider.
+   *
+   * Until then the link below is the whole delivery mechanism, so keep it.
+   */
   const invite = async () => {
     if (!school || !email.trim()) return;
     setBusy(true);
