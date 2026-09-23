@@ -45,3 +45,15 @@ export function adsConfigured() {
 
 /** Name of the cookie the consent banner writes. Read on the server too. */
 export const AD_CONSENT_COOKIE = "speakgen_ad_consent";
+
+/**
+ * Paths where nobody is even asked about ads: the student-facing share links.
+ * A consent prompt there is an ad for ads, shown to the audience the list above
+ * says must never see them, and on a school's branded page it reads as the
+ * school asking.
+ */
+const AD_FREE_PREFIXES = ["/share/"];
+
+export function isAdFreePath(pathname: string | null) {
+  return AD_FREE_PREFIXES.some((prefix) => pathname?.startsWith(prefix));
+}

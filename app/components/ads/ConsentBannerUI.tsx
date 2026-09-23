@@ -1,10 +1,10 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styled from "styled-components";
 import Button from "@/app/components/ui/Button";
-import { AD_CONSENT_COOKIE } from "@/lib/ads";
+import { AD_CONSENT_COOKIE, isAdFreePath } from "@/lib/ads";
 
 // The bar is fixed, so without this the last of the page sits underneath it and
 // cannot be scrolled into view. Caught by looking at the exam builder, where it
@@ -44,12 +44,17 @@ const Bar = styled.div`
 
 export default function ConsentBannerUI() {
   const router = useRouter();
+  const pathname = usePathname();
 
   const choose = (value: "granted" | "denied") => {
     document.cookie = `${AD_CONSENT_COOKIE}=${value}; path=/; max-age=31536000; samesite=lax`;
     // Server components decide whether an ad renders, so they have to re-run.
     router.refresh();
   };
+
+  // Asked here rather than in the server component, which renders in the root
+  // layout and cannot see the path.
+  if (isAdFreePath(pathname)) return null;
 
   return (
     <>

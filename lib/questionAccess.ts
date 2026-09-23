@@ -4,13 +4,31 @@ import { getAuthenticatedUserId } from "@/lib/session";
 /**
  * Who is asking, and which schools they belong to.
  *
- * Share links (a later migration) add a third kind here, at which point a
- * student following a teacher's link can read the private questions inside
- * that exam or practice and nothing else.
+ * The third kind is a student following a share link. It is only ever built by
+ * the share page, from the link's own row (lib/shareLinks.ts), and it reaches
+ * exactly one exam or one practice: every other page a student visits still
+ * sees an anonymous visitor, because nothing about following a link is
+ * remembered.
  */
 export type Viewer =
   | { kind: "user"; userId: string; organizationIds: string[] }
-  | { kind: "anonymous" };
+  | { kind: "anonymous" }
+  | ShareViewer;
+
+export type ShareViewer = {
+  kind: "share";
+  /** The one exam or practice the link opens. The other is null. */
+  examId: number | null;
+  practiceId: number | null;
+  /**
+   * Whose question pool a shared practice draws from: its author's and its
+   * school's. A practice is a rule evaluated against the reader, and a student
+   * has no pool of their own, so without this a shared practice would draw
+   * only public questions and silently leave out the teacher's private ones.
+   */
+  ownerId: string | null;
+  organizationId: string | null;
+};
 
 export async function getViewer(): Promise<Viewer> {
   const userId = await getAuthenticatedUserId();
@@ -42,6 +60,9 @@ export function questionReadPredicate(
   viewer: Viewer,
   nextParamIndex: number
 ): { clause: string; params: unknown[] } {
+  if (viewer.kind === "share")
+    return sharedPoolPredicate(viewer, nextParamIndex);
+
   if (viewer.kind !== "user") {
     return { clause: `q.visibility = 'public'`, params: [] };
   }
@@ -74,6 +95,14 @@ export function examReadPredicate(
   viewer: Viewer,
   nextParamIndex: number
 ): { clause: string; params: unknown[] } {
+  // The one exam on the link, and not the house exams an anonymous visitor
+  // could read: a share page shows what it was shared for.
+  if (viewer.kind === "share") {
+    return viewer.examId === null
+      ? { clause: `FALSE`, params: [] }
+      : { clause: `e.id = $${nextParamIndex}`, params: [viewer.examId] };
+  }
+
   if (viewer.kind !== "user") {
     return { clause: `e.owner_id IS NULL`, params: [] };
   }
@@ -104,6 +133,12 @@ export function practiceReadPredicate(
   viewer: Viewer,
   nextParamIndex: number
 ): { clause: string; params: unknown[] } {
+  if (viewer.kind === "share") {
+    return viewer.practiceId === null
+      ? { clause: `FALSE`, params: [] }
+      : { clause: `p.id = $${nextParamIndex}`, params: [viewer.practiceId] };
+  }
+
   if (viewer.kind !== "user") {
     return { clause: `p.owner_id IS NULL`, params: [] };
   }
@@ -114,6 +149,37 @@ export function practiceReadPredicate(
   if (viewer.organizationIds.length > 0) {
     params.push(viewer.organizationIds);
     clauses.push(`p.organization_id = ANY($${nextParamIndex + 1}::uuid[])`);
+  }
+
+  return { clause: `(${clauses.join(" OR ")})`, params };
+}
+
+/**
+ * The questions a shared practice may draw: public ones, and the private ones
+ * of the teacher and school it belongs to. Their pool as a colleague would see
+ * it, minus any other schools the author happens to belong to, which a link
+ * made in one school has no business reaching into.
+ *
+ * Only a practice needs this. A shared exam's questions come through the exam,
+ * as examReadPredicate explains, and never through here.
+ */
+function sharedPoolPredicate(
+  viewer: ShareViewer,
+  nextParamIndex: number
+): { clause: string; params: unknown[] } {
+  const clauses = [`q.visibility = 'public'`];
+  const params: unknown[] = [];
+
+  if (viewer.ownerId) {
+    params.push(viewer.ownerId);
+    clauses.push(`q.owner_id = $${nextParamIndex + params.length - 1}`);
+  }
+
+  if (viewer.organizationId) {
+    params.push(viewer.organizationId);
+    clauses.push(
+      `q.organization_id = $${nextParamIndex + params.length - 1}::uuid`
+    );
   }
 
   return { clause: `(${clauses.join(" OR ")})`, params };
