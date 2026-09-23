@@ -113,6 +113,25 @@ const FAQS: { id: string; question: string; answer: React.ReactNode }[] = [
     )
   },
   {
+    id: "a1-a2",
+    question: "Why are A1 and A2 not included?",
+    answer: (
+      <>
+        <p>
+          {`Because at those levels the speaking test is a different kind of task, and we would rather leave it out than offer a version that does not match what your students will face.`}
+        </p>
+        <p>
+          {`From B1 to C2 the tests share a shape: candidates talk about photographs, discuss a set of written ideas together, and answer broader questions. Speakgen is built around exactly those tasks. At A1 and A2 it changes. The young learners' tests — Pre A1 Starters, A1 Movers and A2 Flyers — take one child at a time with the examiner, and the tasks are built on pictures: pointing to things in a scene, spotting the differences between two pictures, telling a story from a sequence of drawings. A2 Key is taken in pairs, but its main task is a conversation around a set of pictures rather than written prompts.`}
+        </p>
+        <p>
+          {`Doing those properly means new kinds of question and illustrations drawn for the purpose, not B1 questions with the level changed. It is on the list. If your school needs A1 or A2, `}
+          <Link href="/contact">{`tell us`}</Link>
+          {` — knowing who is waiting for it is what moves it up.`}
+        </p>
+      </>
+    )
+  },
+  {
     id: "do-i-need-an-account",
     question: "Do I need an account?",
     answer: (
@@ -183,10 +202,10 @@ const FAQS: { id: string; question: string; answer: React.ReactNode }[] = [
     answer: (
       <>
         <p>
-          {`The free plan keeps one saved exam and three saved practices, with unlimited questions, and shows ads. Pro is €5 a month or €49 a year, and lifts the limits on saved exams and practices with no ads.`}
+          {`The free plan keeps one saved exam and three saved practices, with unlimited questions, and shows ads. Pro is €5 a month or €49 a year: no limits on saved exams and practices, PDF export, and no ads.`}
         </p>
         <p>
-          {`There is an Academy plan for schools in the works, which is not open for sign-ups yet. Full detail is on the `}
+          {`Academy is for schools: €29 a month or €290 a year for up to five teachers, with a shared question bank and your school's name and colours on the links and PDFs you share. Full detail is on the `}
           <Link href="/pricing">{`plans page`}</Link>
           {`.`}
         </p>
