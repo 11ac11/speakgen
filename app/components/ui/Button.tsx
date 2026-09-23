@@ -153,10 +153,6 @@ type ButtonProps = {
   type?: "button" | "submit" | "reset" | undefined;
   className?: "text" | undefined;
   iconUrl?: "text" | undefined;
-  /** An inline icon before the text, such as LinkIcon. */
-  icon?: React.ReactNode;
-  /** An inline icon after the text, such as a tick for a state that is on. */
-  iconAfter?: React.ReactNode;
   isBigButton?: boolean | undefined;
   width?: string | number;
   isDashboardButton?: boolean | undefined;
@@ -173,8 +169,6 @@ const Button: React.FC<ButtonProps> = ({
   type,
   className,
   iconUrl,
-  icon,
-  iconAfter,
   isBigButton,
   isDashboardButton,
   width
@@ -214,9 +208,7 @@ const Button: React.FC<ButtonProps> = ({
         $isDashboardButton={isDashboardButton}
       >
         {iconUrl && <Image src={iconUrl} alt="" width={16} height={16} />}
-        {icon}
         {isLoading ? loadingText : text}
-        {iconAfter}
       </StyledButton>
       {error && <p className="error-message">{error}</p>}
     </Wrap>

@@ -4,8 +4,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import Button from "@/app/components/ui/Button";
 import SharePanel from "@/app/components/SharePanel";
-import LinkIcon from "@/app/components/ui/LinkIcon";
-import TickIcon from "@/app/components/ui/TickIcon";
+import ShareLinkActive from "@/app/components/ShareLinkActive";
 
 /**
  * The one action on an exam's or a practice's own page: handing it to a class.
@@ -38,14 +37,16 @@ export default function ContentActions({
 
   return (
     <>
-      {/* The same words and icon as the badge on the dashboard card. */}
-      <Button
-        text={sharePath ? "Share link active" : "Share"}
-        icon={sharePath ? <LinkIcon /> : undefined}
-        iconAfter={sharePath ? <TickIcon /> : undefined}
-        secondary
-        onClick={() => setOpen((value) => !value)}
-      />
+      {/* Once a link exists, the button is the same "Share link active"
+          the dashboard card shows — one component, so they cannot differ. */}
+      {sharePath ? (
+        <ShareLinkActive
+          onClick={() => setOpen((value) => !value)}
+          expanded={open}
+        />
+      ) : (
+        <Button text="Share" secondary onClick={() => setOpen(true)} />
+      )}
 
       {open ? (
         <Panel className="glass">
@@ -53,7 +54,12 @@ export default function ContentActions({
             kind={kind}
             id={id}
             initialPath={sharePath}
-            onChange={setSharePath}
+            onChange={(path) => {
+              setSharePath(path);
+              // Stopping the link is the end of the job: nothing is left to
+              // do in the panel but make another, which Share offers anyway.
+              if (!path) setOpen(false);
+            }}
           />
         </Panel>
       ) : null}

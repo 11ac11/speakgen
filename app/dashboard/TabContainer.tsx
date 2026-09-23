@@ -9,8 +9,7 @@ import { SUPPORTED_LEVELS } from "@/constants";
 import DashboardTable from "./DashboardTable";
 import { ExamThemes } from "@/app/components/ExamCards";
 import RowMenu, { type RowMenuItem } from "@/app/components/ui/RowMenu";
-import LinkIcon from "@/app/components/ui/LinkIcon";
-import TickIcon from "@/app/components/ui/TickIcon";
+import ShareLinkActive from "@/app/components/ShareLinkActive";
 import Modal from "@/app/components/ui/Modal";
 import SharePanel, { type ShareKind } from "@/app/components/SharePanel";
 import { usePdfDownload } from "@/app/components/usePdfDownload";
@@ -126,36 +125,6 @@ const TitleRow = styled.div`
     padding-right: 0;
   }
 `;
-
-/* Green like the rest of the "this is on" signals in the product, with a
-   link glyph so it does not rely on colour. It says the link works right now,
-   which is the thing a teacher needs to know before handing the exam to a
-   different class. */
-const SharedBadge = styled.span`
-  && {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    margin: 0;
-    padding: 0.15rem 0.55rem;
-    border-radius: var(--radius-pill);
-    background: var(--green-tint);
-    border: 1px solid var(--green-edge);
-    color: var(--green-600);
-    font-size: var(--text-xs);
-    font-weight: 600;
-  }
-`;
-
-function Shared() {
-  return (
-    <SharedBadge title="Anyone with the link can run this">
-      <LinkIcon size={12} />
-      Share link active
-      <TickIcon size={12} />
-    </SharedBadge>
-  );
-}
 
 export type DashboardExam = {
   id: number;
@@ -339,7 +308,7 @@ export default function TabContainer({
                     >
                       <TitleRow>
                         <h3>{exam.title}</h3>
-                        {exam.shared ? <Shared /> : null}
+                        {exam.shared ? <ShareLinkActive /> : null}
                       </TitleRow>
                       <span>
                         {`${exam.level.toUpperCase()} · ${exam.question_count} questions`}
@@ -434,7 +403,7 @@ export default function TabContainer({
                     >
                       <TitleRow>
                         <h3>{practice.title}</h3>
-                        {practice.shared ? <Shared /> : null}
+                        {practice.shared ? <ShareLinkActive /> : null}
                       </TitleRow>
                       <span>{practiceSummary(practice)}</span>
                       <ExamThemes themes={practice.themes} />
@@ -474,8 +443,12 @@ export default function TabContainer({
             id={sharing.id}
             title={sharing.title}
             // The cards came from the server, so it redraws them — and
-            // their badge — when a link is made or stopped.
-            onChange={() => router.refresh()}
+            // their badge — when a link is made or stopped. Stopping also
+            // closes the dialog, as it closes the panel on the page.
+            onChange={(path) => {
+              router.refresh();
+              if (!path) setSharing(null);
+            }}
           />
         </Modal>
       ) : null}
