@@ -13,7 +13,8 @@ const SUITES = [
   "check-plan-limits",
   "check-question-routes",
   "check-ads",
-  "check-academy"
+  "check-academy",
+  "check-sharing"
 ];
 
 const PAUSE_MS = 1500;
