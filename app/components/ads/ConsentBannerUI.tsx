@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import styled from "styled-components";
 import Button from "@/app/components/ui/Button";
@@ -62,7 +63,8 @@ export default function ConsentBannerUI() {
       <Bar role="region" aria-label="Advertising consent">
         <p>
           We would like to show ads on some pages to keep the free plan free.
-          May we? Paid plans never show ads, and you can change your mind later.
+          May we? Paid plans never show ads, and you can change your mind later.{" "}
+          <Link href="/cookies">About cookies</Link>
         </p>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <Button text="Allow ads" onClick={() => choose("granted")} />

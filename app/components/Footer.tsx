@@ -113,6 +113,24 @@ const Legal = styled.div`
     max-width: 62ch;
   }
 
+  /* The policies, beside the copyright: small, because they are looked for
+     rather than read, but always on every page. */
+  nav {
+    display: flex;
+    gap: 0.4rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  nav a {
+    font-size: var(--text-xs);
+    color: var(--text-muted);
+  }
+
+  nav a:hover {
+    color: var(--green-600);
+    text-decoration: underline;
+  }
+
   @media only screen and (max-width: 768px) {
     padding: 1.25rem 1.25rem 2rem;
   }
@@ -194,6 +212,12 @@ export default function Footer() {
 
       <Legal>
         <p>{`© ${year} SpeakGen`}</p>
+        <nav aria-label="Legal">
+          <Link href="/privacy">Privacy</Link>
+          <Link href="/terms">Terms</Link>
+          <Link href="/cookies">Cookies</Link>
+          <Link href="/dpa">Data processing agreement</Link>
+        </nav>
         <p>
           Cambridge English, B2 First and C1 Advanced are trademarks of
           Cambridge University Press &amp; Assessment. SpeakGen is an
