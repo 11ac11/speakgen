@@ -16,7 +16,8 @@ const SUITES = [
   "check-academy",
   "check-sharing",
   "check-academy-billing",
-  "check-account"
+  "check-account",
+  "check-admin"
 ];
 
 const PAUSE_MS = 1500;
