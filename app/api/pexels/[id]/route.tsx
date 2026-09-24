@@ -1,23 +1,33 @@
 import { NextResponse } from "next/server";
-import { createClient } from "pexels";
+import { getPhoto } from "@/lib/pexels";
 
-// Initialize the Pexels client
-const pexels = createClient(process.env.PEXELS_API_KEY as string);
-
+/**
+ * One photograph's details. Cached at Vercel's edge for a week, as well as in
+ * lib/pexels.ts, because a photograph's details never change and Pexels allows
+ * 200 API calls an hour: a class opening the same exam should cost one.
+ */
 export async function GET(
-  req: Request,
+  _req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params; // The ID comes from the dynamic URL parameter
+  const { id } = await params;
+  if (!/^\d+$/.test(id)) {
+    return NextResponse.json({ error: "Invalid id" }, { status: 400 });
+  }
 
-  try {
-    // Fetch image by ID
-    const response = await pexels.photos.show({ id });
-    return NextResponse.json(response);
-  } catch {
+  const photo = await getPhoto(id);
+  if (!photo) {
+    // Not cached anywhere, so a moment's failure is retried next time.
     return NextResponse.json(
       { error: "Failed to fetch image by ID" },
-      { status: 500 }
+      { status: 502, headers: { "Cache-Control": "no-store" } }
     );
   }
+
+  return NextResponse.json(photo, {
+    headers: {
+      "Cache-Control":
+        "public, max-age=86400, s-maxage=604800, stale-while-revalidate=86400"
+    }
+  });
 }
