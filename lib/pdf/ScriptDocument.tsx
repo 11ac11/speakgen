@@ -5,6 +5,7 @@ import {
   Font,
   Image,
   Line,
+  Link,
   Page,
   StyleSheet,
   Svg,
@@ -18,7 +19,7 @@ import type {
   FrameSection,
   Para
 } from "@/lib/pdf/frame";
-import type { PdfImage } from "@/lib/pdf/images";
+import type { PdfImage, PdfPhoto } from "@/lib/pdf/images";
 
 /**
  * The speaking test on paper, laid out after Cambridge's own speaking papers:
@@ -35,7 +36,7 @@ import type { PdfImage } from "@/lib/pdf/images";
 type PhotoPage = Extract<BookletPage, { kind: "photos" }>;
 
 export type RenderedBooklet =
-  Exclude<BookletPage, PhotoPage> | (PhotoPage & { photos: PdfImage[] });
+  Exclude<BookletPage, PhotoPage> | (PhotoPage & { photos: PdfPhoto[] });
 
 export type ScriptBranding = {
   name: string;
@@ -255,6 +256,13 @@ function styles(accent: string) {
       justifyContent: "center"
     },
     photoBadgeText: { fontFamily: "Helvetica-Bold", fontSize: 10 },
+    photoCredits: {
+      marginTop: 10,
+      fontSize: 8.5,
+      color: "#555",
+      lineHeight: 1.4
+    },
+    creditLink: { color: "#555", textDecoration: "underline" },
     mapFrame: { borderWidth: 1, borderColor: RULE },
     mapBox: {
       position: "absolute",
@@ -453,7 +461,7 @@ function TaskRow({
  * over one for C1's three; a grid for C2's four. Numbered from three up,
  * because those are the levels whose instructions refer to them by number.
  */
-function Photos({ photos, s }: { photos: PdfImage[]; s: S }) {
+function Photos({ photos, s }: { photos: PdfPhoto[]; s: S }) {
   const gap = 14;
   const half = (CONTENT_W - gap) / 2;
   const numbered = photos.length >= 3;
@@ -470,7 +478,8 @@ function Photos({ photos, s }: { photos: PdfImage[]; s: S }) {
   );
 
   if (photos.length <= 2) {
-    const height = photos.length === 1 ? 430 : 318;
+    // 305 leaves room under a stacked pair for the credit line.
+    const height = photos.length === 1 ? 430 : 305;
     return (
       <View style={{ gap: 18 }}>
         {photos.map((image, n) => photo(image, n, CONTENT_W, height))}
@@ -594,12 +603,52 @@ function MindMap({
   );
 }
 
+/**
+ * Who took the photographs, and "Photos provided by Pexels", under each set —
+ * the credit Pexels' guidelines ask for, on paper as on screen. Numbered from
+ * three photographs up, to match the numbers on the pictures.
+ */
+function PhotoCredits({ photos, s }: { photos: PdfPhoto[]; s: S }) {
+  const credited = photos
+    .map((photo, n) => ({ ...photo, n: n + 1 }))
+    .filter((photo) => photo.photographer);
+  const numbered = photos.length >= 3;
+
+  return (
+    <Text style={s.photoCredits}>
+      {credited.length ? "Photos by " : ""}
+      {credited.map((photo, i) => (
+        <React.Fragment key={photo.n}>
+          {numbered ? `${photo.n} ` : ""}
+          {photo.pageUrl ? (
+            <Link src={photo.pageUrl} style={s.creditLink}>
+              {photo.photographer}
+            </Link>
+          ) : (
+            photo.photographer
+          )}
+          {i < credited.length - 2
+            ? ", "
+            : i === credited.length - 2
+              ? " and "
+              : ""}
+        </React.Fragment>
+      ))}
+      {credited.length ? " on Pexels. " : ""}
+      <Link src="https://www.pexels.com" style={s.creditLink}>
+        Photos provided by Pexels
+      </Link>
+    </Text>
+  );
+}
+
 function Booklet({ page, s }: { page: RenderedBooklet; s: S }) {
   if (page.kind === "photos") {
     return (
       <>
         <TaskRow task={page.task} question={page.question} s={s} />
         <Photos photos={page.photos} s={s} />
+        <PhotoCredits photos={page.photos} s={s} />
       </>
     );
   }

@@ -217,6 +217,15 @@ export default function Footer() {
           <Link href="/terms">Terms</Link>
           <Link href="/cookies">Cookies</Link>
           <Link href="/dpa">Data processing agreement</Link>
+          {/* Pexels asks for a visible link wherever its photographs appear;
+              they appear across the site, so it is on every page too. */}
+          <a
+            href="https://www.pexels.com"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Photos provided by Pexels
+          </a>
         </nav>
         <p>
           Cambridge English, B2 First and C1 Advanced are trademarks of

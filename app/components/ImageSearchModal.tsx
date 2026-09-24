@@ -6,6 +6,7 @@ import styled from "styled-components";
 import type { Photo } from "pexels";
 import { Input, Modal } from "@/app/components/ui/index";
 import useDebounce from "../utils/hooks/useDebounce";
+import { PexelsLink } from "./PexelsCredit";
 
 const ImageGrid = styled.div`
   display: flex;
@@ -54,7 +55,12 @@ const ImageSearchModal = ({
   return (
     <>
       <Modal closeModal={closeModal}>
-        <h2>Search images</h2>
+        <h2 style={{ marginBottom: "0.2rem" }}>Search images</h2>
+        {/* Where the search actually calls Pexels, so this is where their
+            guidelines most want the link. */}
+        <div style={{ marginBottom: "0.9rem" }}>
+          <PexelsLink />
+        </div>
         <Input
           type="text"
           placeholder="(e.g. nature)"
@@ -69,6 +75,7 @@ const ImageSearchModal = ({
                   style={{ height: "100px", width: "100px" }}
                   key={index}
                   onClick={() => handleOnClick(image)}
+                  title={`Photo by ${image.photographer} on Pexels`}
                 >
                   <Image
                     src={image.src.medium}

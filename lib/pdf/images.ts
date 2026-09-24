@@ -1,4 +1,4 @@
-import { createClient } from "pexels";
+import { getPhoto } from "@/lib/pexels";
 
 /**
  * Images for a PDF, fetched on the server before rendering.
@@ -45,29 +45,38 @@ export async function loadImage(url: string): Promise<PdfImage | null> {
   }
 }
 
-let pexels: ReturnType<typeof createClient> | null = null;
+/** A photograph for a PDF, with who took it, for the credit under it. */
+export type PdfPhoto = PdfImage & {
+  photographer: string | null;
+  /** The photograph's page on Pexels, which the credit links to. */
+  pageUrl: string | null;
+};
 
 /**
  * A question's photographs, in order, skipping any that cannot be loaded.
- * The landscape crop, which is what the runner shows.
+ * The landscape crop, which is what the runner shows. Looked up through
+ * lib/pexels.ts, which caches, so a PDF of a popular exam does not spend a
+ * Pexels call per photograph each time it is downloaded.
  */
-export async function loadQuestionPhotos(imageIds: number[]) {
-  if (!imageIds?.length || !process.env.PEXELS_API_KEY) return [];
-
-  pexels ??= createClient(process.env.PEXELS_API_KEY);
-  const client = pexels;
+export async function loadQuestionPhotos(
+  imageIds: number[]
+): Promise<PdfPhoto[]> {
+  if (!imageIds?.length) return [];
 
   const photos = await Promise.all(
-    imageIds.map(async (id) => {
-      try {
-        const photo = await client.photos.show({ id });
-        const src = "src" in photo ? photo.src.landscape : null;
-        return src ? await loadImage(src) : null;
-      } catch {
-        return null;
-      }
+    imageIds.map(async (id): Promise<PdfPhoto | null> => {
+      const photo = await getPhoto(id);
+      if (!photo?.src?.landscape) return null;
+      const image = await loadImage(photo.src.landscape);
+      return image
+        ? {
+            ...image,
+            photographer: photo.photographer ?? null,
+            pageUrl: photo.url ?? null
+          }
+        : null;
     })
   );
 
-  return photos.filter((photo): photo is PdfImage => photo !== null);
+  return photos.filter((photo): photo is PdfPhoto => photo !== null);
 }

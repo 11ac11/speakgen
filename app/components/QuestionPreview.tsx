@@ -5,12 +5,27 @@ import Image from "next/image";
 import styled from "styled-components";
 import Pill from "@/app/components/ui/Pill";
 import { THEME_VALUES_FOR_PILLS } from "@/constants";
+import { PEXELS_URL } from "@/app/components/PexelsCredit";
 
 const Themes = styled.div`
   display: flex;
   flex-wrap: wrap;
   gap: 0.2rem;
   margin-top: 0.4rem;
+`;
+
+const Credits = styled.p`
+  && {
+    margin: 0.35rem 0 0;
+    font-size: var(--text-xs);
+    color: var(--text-faint);
+  }
+
+  a {
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
 `;
 
 const Thumbs = styled.div`
@@ -83,8 +98,15 @@ export function ThemePills({ themes }: { themes: string[] }) {
  * rest of the app uses, at thumbnail size: this is for recognising a picture you
  * chose, not for running the exam.
  */
+type PreviewPhoto = {
+  src: string;
+  photographer?: string | null;
+  photographer_url?: string | null;
+  url?: string | null;
+};
+
 function Photos({ ids }: { ids: number[] }) {
-  const [urls, setUrls] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<PreviewPhoto[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -95,13 +117,21 @@ function Photos({ ids }: { ids: number[] }) {
           const res = await fetch(`/api/pexels/${id}`);
           if (!res.ok) return null;
           const photo = await res.json();
-          return photo?.src?.tiny ?? photo?.src?.small ?? null;
+          const src = photo?.src?.tiny ?? photo?.src?.small ?? null;
+          return src
+            ? {
+                src,
+                photographer: photo.photographer,
+                photographer_url: photo.photographer_url,
+                url: photo.url
+              }
+            : null;
         } catch {
           return null;
         }
       })
     ).then((found) => {
-      if (!cancelled) setUrls(found.filter(Boolean) as string[]);
+      if (!cancelled) setPhotos(found.filter(Boolean) as PreviewPhoto[]);
     });
 
     return () => {
@@ -112,21 +142,55 @@ function Photos({ ids }: { ids: number[] }) {
   if (!ids?.length) return null;
 
   return (
-    <Thumbs>
-      {urls.map((url, index) => (
-        <Thumb key={url}>
-          <Image
-            src={url}
-            alt={`Photograph ${index + 1}`}
-            fill
-            style={{ objectFit: "cover" }}
-          />
-        </Thumb>
-      ))}
-      {urls.length === 0
-        ? ids.map((id) => <Thumb key={id} aria-hidden />)
-        : null}
-    </Thumbs>
+    <>
+      <Thumbs>
+        {photos.map((photo, index) => (
+          <Thumb
+            key={photo.src}
+            title={
+              photo.photographer
+                ? `Photo by ${photo.photographer} on Pexels`
+                : undefined
+            }
+          >
+            <Image
+              src={photo.src}
+              alt={`Photograph ${index + 1}`}
+              fill
+              style={{ objectFit: "cover" }}
+            />
+          </Thumb>
+        ))}
+        {photos.length === 0
+          ? ids.map((id) => <Thumb key={id} aria-hidden />)
+          : null}
+      </Thumbs>
+      {/* One line for the set: thumbnails this small have no room for a
+          credit each, and naming every photographer is what Pexels asks. */}
+      {photos.some((photo) => photo.photographer) ? (
+        <Credits>
+          {"Photos by "}
+          {photos
+            .filter((photo) => photo.photographer)
+            .map((photo, index, all) => (
+              <React.Fragment key={photo.src}>
+                <a
+                  href={photo.url ?? PEXELS_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {photo.photographer}
+                </a>
+                {index < all.length - 1 ? ", " : ""}
+              </React.Fragment>
+            ))}
+          {" on "}
+          <a href={PEXELS_URL} target="_blank" rel="noopener noreferrer">
+            Pexels
+          </a>
+        </Credits>
+      ) : null}
+    </>
   );
 }
 

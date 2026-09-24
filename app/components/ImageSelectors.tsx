@@ -8,6 +8,7 @@ import ImageSearchModal from "./ImageSearchModal";
 import { Label } from "./ui";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
 import useDisableScroll from "../utils/hooks/useDisableScroll";
+import { PhotoCredit } from "./PexelsCredit";
 
 const Wrap = styled.div`
   display: flex;
@@ -86,6 +87,7 @@ const ImageSelector: React.FC<ImageSelectorProps> = ({
         }}
         alt={image?.alt || "Selected image"}
       />
+      <PhotoCredit photo={image} />
       <XIcon
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 24 24"

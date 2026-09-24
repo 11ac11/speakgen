@@ -12,6 +12,15 @@ import {
   NewPart1QStructure
 } from "@/types/types";
 import { LoadingSpinner } from "./ui/LoadingSpinner";
+import { PexelsLink, PhotoCredit } from "./PexelsCredit";
+
+/* Right-aligned under the photographs, small: Pexels asks for a prominent
+   link wherever its photographs are fetched, and this is where they are. */
+const Provided = styled.div`
+  width: 100%;
+  margin-top: 0.4rem;
+  text-align: right;
+`;
 
 const ImagesContainer = styled.div`
   width: 100%;
@@ -254,12 +263,18 @@ const Part2 = ({
                 style={{ objectFit: "cover" }}
                 fill
               />
+              <PhotoCredit photo={image} variant="overlay" />
             </ImageContainer>
           ))
         ) : (
           <LoadingSpinner />
         )}
       </ImagesContainer>
+      {!loading && images?.length ? (
+        <Provided>
+          <PexelsLink />
+        </Provided>
+      ) : null}
     </>
   );
 };
