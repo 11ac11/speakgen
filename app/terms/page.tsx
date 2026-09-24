@@ -146,10 +146,10 @@ export default function TermsPage() {
 
       <h2>Ending the agreement</h2>
       <p>
-        You can stop using SpeakGen and ask us to delete your account at any
-        time. We may close an account that seriously or repeatedly breaks these
-        terms. We may also change or stop the service, and will give reasonable
-        notice before stopping it, so you can export what you need.
+        You can stop using SpeakGen and delete your account at any time, from
+        Settings. We may close an account that seriously or repeatedly breaks
+        these terms. We may also change or stop the service, and will give
+        reasonable notice before stopping it, so you can export what you need.
       </p>
 
       <h2>Changes to these terms</h2>

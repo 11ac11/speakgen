@@ -191,8 +191,15 @@ export default function PrivacyPage() {
         You can ask to see the data we hold about you, to correct it, to delete
         it, to restrict or object to how we use it, or to have a copy to take
         elsewhere. Where we rely on your consent, as for ads, you can withdraw
-        it at any time. To do any of these, including deleting your account,
-        contact us through {contact}; we reply within a month.
+        it at any time. For any of these, contact us through {contact}; we reply
+        within a month.
+      </p>
+      <p>
+        You can delete your account yourself, at any time, from{" "}
+        <Link href="/settings">Settings</Link>. It shows what will be deleted
+        before you confirm. Content you wrote inside a school stays with the
+        school, passed to a colleague there, because it belongs to the school as
+        well as to you.
       </p>
       <p>
         If you are unhappy with how we have handled your data, you can complain

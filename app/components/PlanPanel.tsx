@@ -55,6 +55,25 @@ const Bar = styled.div<{ $full: boolean }>`
   }
 `;
 
+/* Green, not amber: nothing is wrong, and the suggestion saves them money. */
+const Nudge = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin: 0 0 1.5rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--radius-control);
+  background: var(--green-tint);
+  border: 1px solid var(--green-edge);
+
+  p {
+    margin: 0;
+    font-size: var(--text-sm);
+    color: var(--text-body);
+  }
+`;
+
 const Notice = styled.p`
   font-size: var(--text-sm);
   color: var(--text-muted);
@@ -77,6 +96,11 @@ export type PlanPanelProps = {
     schoolName?: string | null;
     /** False for a teacher covered by their school, who cannot cancel it. */
     canManage?: boolean;
+    /**
+     * They still pay for their own Pro, though their school's Academy covers
+     * everything it does: the panel suggests cancelling it.
+     */
+    ownPlanCoveredBySchool?: boolean;
   };
 };
 
@@ -111,11 +135,17 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
     }
   };
 
-  const manage = async () => {
-    setBusy("portal");
+  /* "personal" opens the teacher's own subscription even when their school's
+     is the one in force, which is the point of the nudge below. */
+  const manage = async (scope: "effective" | "personal" = "effective") => {
+    setBusy(scope === "personal" ? "personal" : "portal");
     setError(null);
     try {
-      const res = await fetch("/api/billing/portal", { method: "POST" });
+      const res = await fetch("/api/billing/portal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scope })
+      });
       const body = await res.json();
       if (!res.ok) {
         setError(body.error ?? "Could not open the billing portal");
@@ -147,6 +177,20 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
                   billing.renewsAt ? `, renews ${billing.renewsAt}` : ""
                 }.`}
       </Meta>
+
+      {billing.ownPlanCoveredBySchool ? (
+        <Nudge>
+          <p>
+            {`${billing.schoolName}'s Academy plan now covers you, and it includes everything Pro does. You are still paying for your own Pro — cancel it to stop being charged twice.`}
+          </p>
+          <Button
+            text={busy === "personal" ? "Opening…" : "Cancel my Pro"}
+            secondary
+            disabled={busy !== null}
+            onClick={() => manage("personal")}
+          />
+        </Nudge>
+      ) : null}
 
       <UsageRow>
         <span>Questions</span>
@@ -211,7 +255,7 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
           <Button
             text={busy === "portal" ? "Opening…" : "Manage or cancel"}
             disabled={busy !== null}
-            onClick={manage}
+            onClick={() => manage()}
           />
         )}
         <Button

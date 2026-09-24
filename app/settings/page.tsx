@@ -4,7 +4,10 @@ import { getAuthenticatedUserId } from "@/lib/session";
 import { ensureProfile } from "@/lib/profile";
 import { getUsage } from "@/lib/limits";
 import { isBillingEnabled, isBillingSimulated } from "@/lib/billing/provider";
-import { getSubscriptionForViewer } from "@/lib/billing/reconcile";
+import {
+  getSubscriptionForViewer,
+  getSubscriptionInScope
+} from "@/lib/billing/reconcile";
 import {
   getMembers,
   getSeatUsage,
@@ -13,6 +16,8 @@ import {
 import PlanPanel from "@/app/components/PlanPanel";
 import SchoolPanel from "@/app/components/SchoolPanel";
 import BrandingPanel from "@/app/components/BrandingPanel";
+import DeleteAccountPanel from "@/app/components/DeleteAccountPanel";
+import { sql } from "@/lib/db";
 import { getBrandingSettings, isBrandingEntitled } from "@/lib/branding";
 import { isLogoStorageEnabled } from "@/lib/logoStorage";
 import type { Metadata } from "next";
@@ -35,11 +40,27 @@ export default async function SettingsPage() {
 
   // Server-side, so the plan and usage come straight from the database with no
   // extra round trip and no chance of the client being told a plan it can edit.
-  const [usage, subscription, organizations] = await Promise.all([
-    getUsage(userId),
-    getSubscriptionForViewer(userId),
-    getUserOrganizations(userId)
-  ]);
+  const [usage, subscription, personalSubscription, organizations] =
+    await Promise.all([
+      getUsage(userId),
+      getSubscriptionForViewer(userId),
+      getSubscriptionInScope(userId, "personal"),
+      getUserOrganizations(userId)
+    ]);
+
+  // Paying twice: their own Pro is still live, but the plan in force is their
+  // school's Academy, which already includes everything Pro does.
+  const paysTwice =
+    Boolean(subscription?.organization_id) &&
+    Boolean(personalSubscription) &&
+    !personalSubscription?.cancel_at_period_end;
+
+  // For the delete-account confirmation, which asks for it to be typed.
+  const [account] = (await sql(
+    `SELECT email FROM neon_auth."user" WHERE id = $1`,
+    [userId]
+  )) as unknown as { email: string }[];
+  const email = account?.email ?? "";
 
   const school = organizations[0] ?? null;
   const canAdmin = ["owner", "admin"].includes(school?.role ?? "");
@@ -84,7 +105,8 @@ export default async function SettingsPage() {
             // Whose subscription this is, when it is a school's, and whether
             // this teacher may manage it or is simply covered by it.
             schoolName: subscription?.school_name ?? null,
-            canManage: subscription ? subscription.can_manage : true
+            canManage: subscription ? subscription.can_manage : true,
+            ownPlanCoveredBySchool: paysTwice
           }}
         />
 
@@ -119,6 +141,10 @@ export default async function SettingsPage() {
             }}
           />
         ) : null}
+
+        {/* Last on the page, and asked for rather than offered: it cannot be
+            undone. */}
+        <DeleteAccountPanel email={email} />
       </div>
     </div>
   );
