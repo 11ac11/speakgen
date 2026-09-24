@@ -46,12 +46,12 @@ export type Subprocessor = {
 };
 
 /*
- * TODO(region): the database and sign-in run in London (AWS eu-west-2), but no
- * Vercel function region is configured, so server code runs in Vercel's
- * default region, which is in the United States. Setting it to London (lhr1)
- * in the Vercel project would keep processing in the UK/EU and put the
- * functions next to the database, which is also faster. Update Vercel's
- * location below if it changes.
+ * Everything that holds or processes personal data runs in London: the
+ * database and sign-in on AWS eu-west-2, and the server code in Vercel's
+ * London region (lhr1), set in the Vercel project's Functions settings on
+ * 2026-09-24. Vercel's edge network still receives requests at the location
+ * nearest the visitor before passing them to London. If the region is changed
+ * there, change the location below to match.
  */
 export const SUBPROCESSORS: Subprocessor[] = [
   {
@@ -64,7 +64,8 @@ export const SUBPROCESSORS: Subprocessor[] = [
     name: "Vercel",
     purpose: "Hosting the website and running its server code",
     data: "Requests to the site, including IP address and browser, in server logs",
-    location: "Global network; server code currently runs in the United States"
+    location:
+      "London, UK (lhr1); requests arrive through Vercel's global network"
   },
   {
     name: "Google",

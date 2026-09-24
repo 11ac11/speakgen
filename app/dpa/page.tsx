@@ -123,7 +123,10 @@ export default function DpaPage() {
           that the school can stop at any time;
         </li>
         <li>no advertising or tracking on anything shown to students;</li>
-        <li>the database and sign-in service hosted in the UK.</li>
+        <li>
+          the website&apos;s server code, database and sign-in service all run
+          in London, UK.
+        </li>
       </ul>
 
       <h2>5. Sub-processors</h2>
