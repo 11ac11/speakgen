@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
-import { AD_CONSENT_COOKIE, adsEnabled } from "@/lib/ads";
+import { AD_CONSENT_COOKIE } from "@/lib/ads";
+import { viewerSeesAds } from "@/lib/adAudience";
 import ConsentBannerUI from "./ConsentBannerUI";
 
 /**
@@ -15,7 +16,9 @@ import ConsentBannerUI from "./ConsentBannerUI";
  * served in the EEA.
  */
 export default async function ConsentBanner() {
-  if (!adsEnabled()) return null;
+  // Nobody is asked about ads they will never see: not while ads are switched
+  // off, and not on a plan that has none — Pro, or a school's Academy.
+  if (!(await viewerSeesAds())) return null;
 
   const answered = (await cookies()).get(AD_CONSENT_COOKIE);
   if (answered) return null;
