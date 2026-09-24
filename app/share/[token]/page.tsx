@@ -11,6 +11,7 @@ import ExamRunner from "@/app/components/ExamRunner";
 import PracticeRunner from "@/app/components/PracticeRunner";
 import SharedHeader from "@/app/components/SharedHeader";
 import { SITE_NAME } from "@/lib/site";
+import { recordUsage } from "@/lib/usage";
 
 // A link can be revoked at any moment and a practice draws afresh each visit.
 export const dynamic = "force-dynamic";
@@ -73,7 +74,13 @@ export default async function SharedPage({
 
   const [level, branding] = await Promise.all([
     getLevel(link.level),
-    loadBranding(link.organizationId)
+    loadBranding(link.organizationId),
+    // A view of the link, counted without anything about who opened it.
+    recordUsage("share_view", {
+      level: link.level,
+      examId: link.kind === "exam" ? link.id : null,
+      practiceId: link.kind === "practice" ? link.id : null
+    })
   ]);
   if (!level) notFound();
 

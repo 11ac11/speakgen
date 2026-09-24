@@ -3,6 +3,7 @@ import { getExam } from "@/lib/exams";
 import { pdfFilename, renderExamPdf } from "@/lib/pdf/script";
 import { pdfResponse, refusePdfExport } from "@/lib/pdfAccess";
 import { getViewer } from "@/lib/questionAccess";
+import { recordUsage } from "@/lib/usage";
 
 /**
  * The exam as an examiner's script. Anything the viewer can run, they can
@@ -21,7 +22,9 @@ export async function GET(
     if (!exam)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    return pdfResponse(await renderExamPdf(exam), pdfFilename(exam.title));
+    const pdf = await renderExamPdf(exam);
+    await recordUsage("pdf_export", { level: exam.level, examId: exam.id });
+    return pdfResponse(pdf, pdfFilename(exam.title));
   } catch (error) {
     console.error("Exam PDF failed:", error);
     return NextResponse.json(

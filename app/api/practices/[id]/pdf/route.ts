@@ -3,6 +3,7 @@ import { getPractice } from "@/lib/practices";
 import { pdfFilename, renderPracticePdf } from "@/lib/pdf/script";
 import { pdfResponse, refusePdfExport } from "@/lib/pdfAccess";
 import { getViewer } from "@/lib/questionAccess";
+import { recordUsage } from "@/lib/usage";
 
 /** One draw of the practice, on paper. Each request draws again. */
 export async function GET(
@@ -19,10 +20,12 @@ export async function GET(
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
 
-    return pdfResponse(
-      await renderPracticePdf(practice),
-      pdfFilename(practice.title)
-    );
+    const pdf = await renderPracticePdf(practice);
+    await recordUsage("pdf_export", {
+      level: practice.level,
+      practiceId: practice.id
+    });
+    return pdfResponse(pdf, pdfFilename(practice.title));
   } catch (error) {
     console.error("Practice PDF failed:", error);
     return NextResponse.json(
