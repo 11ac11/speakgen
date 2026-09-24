@@ -25,7 +25,11 @@ import { getAuthenticatedUserId } from "@/lib/session";
 import { getEffectivePlan } from "@/lib/profile";
 import PlanActions from "./PlanActions";
 
-export const metadata = { title: "Plans — SpeakGen" };
+export const metadata = {
+  title: "Plans",
+  description:
+    "SpeakGen is free to start. Pro is €5 a month for unlimited exams, practices and PDF export; Academy is €29 a month for a school of up to five teachers."
+};
 
 const BLURBS: Record<string, string> = {
   free: "Everything you need to try it with a class.",

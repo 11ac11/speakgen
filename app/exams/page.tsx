@@ -9,6 +9,13 @@ import {
   ExamThemes,
   ExamTitle
 } from "@/app/components/ExamCards";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Free Cambridge speaking exams",
+  description:
+    "Complete B1, B2, C1 and C2 speaking tests, free and with no account: every part in order, with the timings of the real exam."
+};
 
 export const dynamic = "force-dynamic";
 

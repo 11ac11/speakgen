@@ -1,3 +1,5 @@
+import { cache } from "react";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLevel } from "@/lib/levels";
 import { getPractice } from "@/lib/practices";
@@ -7,6 +9,24 @@ import { BackLink } from "@/app/components/ExamCards";
 import ContentActions from "@/app/components/ContentActions";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { getShareLink, sharePath } from "@/lib/shareLinks";
+import { privatePage } from "@/lib/site";
+
+/* One draw per request. Without the cache the title would run the practice's
+   random draw a second time, and throw the result away. */
+const loadPractice = cache(async (id: string) =>
+  getPractice(await getViewer(), id)
+);
+
+// Practices are a teacher's own, so they are titled but never indexed.
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const practice = await loadPractice(id);
+  return practice ? privatePage(practice.title) : {};
+}
 import { THEME_VALUES_FOR_PILLS } from "@/constants";
 
 // A practice draws a new set on every render, so this must never be cached.
@@ -21,7 +41,7 @@ export default async function PracticePage({
   const level = await getLevel(code);
   if (!level) notFound();
 
-  const practice = await getPractice(await getViewer(), id);
+  const practice = await loadPractice(id);
   if (!practice) notFound();
 
   // The level in the path has to agree with the row, as the exam pages do.

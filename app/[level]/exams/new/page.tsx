@@ -5,6 +5,19 @@ import { getLevel } from "@/lib/levels";
 import { listQuestions } from "@/lib/questions";
 import { getViewer } from "@/lib/questionAccess";
 import { BackLink } from "@/app/components/ExamCards";
+import type { Metadata } from "next";
+import { privatePage } from "@/lib/site";
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ level: string }>;
+}): Promise<Metadata> {
+  const { level } = await params;
+  const row = await getLevel(level);
+  if (!row) return {};
+  return privatePage(`New ${row.label} exam`);
+}
 
 export const dynamic = "force-dynamic";
 

@@ -1,6 +1,10 @@
 import Dashboard from "./Dashboard";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { ensureProfile } from "@/lib/profile";
+import type { Metadata } from "next";
+import { privatePage } from "@/lib/site";
+
+export const metadata: Metadata = privatePage("My work");
 
 export default async function Page({
   searchParams

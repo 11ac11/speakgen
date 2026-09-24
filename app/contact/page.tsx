@@ -1,5 +1,6 @@
 import ContactContent from "./ContactContent";
 import { supportEmail } from "@/lib/feedback";
+import type { Metadata } from "next";
 
 /* Read on the server and passed down, so SUPPORT_EMAIL stays a server variable
    rather than becoming NEXT_PUBLIC_ anything. It still reaches the browser —
@@ -9,6 +10,12 @@ import { supportEmail } from "@/lib/feedback";
    No AdSlot. About and the FAQs carry one; a page somebody opens to report that
    something is broken is not the place to sell them anything, and "contact" is
    deliberately absent from AD_PLACEMENTS in lib/ads.ts. */
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Get in touch with SpeakGen about a question, a bug, your school, or a level you would like to see."
+};
+
 export default function ContactPage() {
   return <ContactContent supportEmail={supportEmail()} />;
 }

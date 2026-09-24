@@ -5,6 +5,21 @@ import { listQuestions } from "@/lib/questions";
 import { getViewer } from "@/lib/questionAccess";
 import { isValidLevelPart } from "@/lib/questionRules";
 import type { QuestionStructures } from "@/types/types";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ level: string; part: string }>;
+}): Promise<Metadata> {
+  const { level, part } = await params;
+  const row = await getLevel(level);
+  if (!row) return {};
+  return {
+    title: `${row.label} Part ${part} speaking questions`,
+    description: `A random ${row.label} Part ${part} speaking question, with the phases and timing of the real test. Free, no account needed.`
+  };
+}
 
 // A different question on every render, so this must never be cached.
 export const dynamic = "force-dynamic";

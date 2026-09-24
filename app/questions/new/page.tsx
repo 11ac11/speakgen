@@ -1,8 +1,9 @@
 import { listLevels } from "@/lib/levels";
 import { Lead } from "@/app/components/Lead";
 import { ExamsLink } from "@/app/components/ExamCards";
+import { privatePage } from "@/lib/site";
 
-export const metadata = { title: "New question — SpeakGen" };
+export const metadata = privatePage("New question");
 export const dynamic = "force-dynamic";
 
 /**

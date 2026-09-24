@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getLevel } from "@/lib/levels";
 import QuestionForm from "@/app/components/QuestionForm";
+import { privatePage } from "@/lib/site";
 
 export async function generateMetadata({
   params
@@ -10,7 +11,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { level } = await params;
   const row = await getLevel(level);
-  return { title: row ? `New ${row.label} question — SpeakGen` : "SpeakGen" };
+  return row ? privatePage(`New ${row.label} question`) : {};
 }
 
 export const dynamic = "force-dynamic";

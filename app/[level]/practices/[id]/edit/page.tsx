@@ -5,6 +5,10 @@ import { getPractice } from "@/lib/practices";
 import { getViewer } from "@/lib/questionAccess";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { BackLink } from "@/app/components/ExamCards";
+import type { Metadata } from "next";
+import { privatePage } from "@/lib/site";
+
+export const metadata: Metadata = privatePage("Edit practice");
 
 export const dynamic = "force-dynamic";
 

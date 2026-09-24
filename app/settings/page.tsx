@@ -15,6 +15,10 @@ import SchoolPanel from "@/app/components/SchoolPanel";
 import BrandingPanel from "@/app/components/BrandingPanel";
 import { getBrandingSettings, isBrandingEntitled } from "@/lib/branding";
 import { isLogoStorageEnabled } from "@/lib/logoStorage";
+import type { Metadata } from "next";
+import { privatePage } from "@/lib/site";
+
+export const metadata: Metadata = privatePage("Settings");
 
 export const dynamic = "force-dynamic";
 

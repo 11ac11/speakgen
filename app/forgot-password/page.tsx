@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import ForgotPasswordForm from "./ForgotPasswordForm";
+import { privatePage } from "@/lib/site";
 
-export const metadata = { title: "Forgotten password — SpeakGen" };
+export const metadata = privatePage("Forgotten password");
 
 /* No wrapping div, for the reason the login page gives: main is a centred flex
    column, so a bare div becomes a shrink-to-fit item and the form's max-width

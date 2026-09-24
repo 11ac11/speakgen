@@ -30,8 +30,11 @@ export async function generateMetadata({
   const row = await getLevel(level);
 
   return row
-    ? { title: `${row.label} speaking exam format — SpeakGen` }
-    : { title: "SpeakGen" };
+    ? {
+        title: `${row.label} speaking exam format`,
+        description: `How the ${row.label} speaking test runs, part by part: what each task asks of the candidates and how long it lasts, with free exams and questions to practise.`
+      }
+    : {};
 }
 
 export const dynamic = "force-dynamic";

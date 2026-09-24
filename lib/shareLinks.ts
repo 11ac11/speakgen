@@ -24,6 +24,8 @@ export type ResolvedShareLink = {
   kind: ShareKind;
   id: number;
   level: string;
+  /** The exam's or practice's title, for the page's title and link preview. */
+  title: string;
   /** The school that owns the target, which is whose branding it wears. */
   organizationId: string | null;
   viewer: ShareViewer;
@@ -173,6 +175,7 @@ export async function resolveShareLink(
     `SELECT s.level,
             s.exam_id::int     AS exam_id,
             s.practice_id::int AS practice_id,
+            COALESCE(e.title, p.title)                     AS title,
             COALESCE(e.owner_id, p.owner_id)               AS owner_id,
             COALESCE(e.organization_id, p.organization_id) AS organization_id
        FROM content.share_links s
@@ -185,6 +188,7 @@ export async function resolveShareLink(
     level: string;
     exam_id: number | null;
     practice_id: number | null;
+    title: string;
     owner_id: string | null;
     organization_id: string | null;
   }[];
@@ -198,6 +202,7 @@ export async function resolveShareLink(
     kind,
     id: (row.exam_id ?? row.practice_id) as number,
     level: row.level,
+    title: row.title,
     organizationId: row.organization_id,
     viewer: {
       kind: "share",

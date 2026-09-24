@@ -3,6 +3,10 @@ import QuestionForm from "@/app/components/QuestionForm";
 import { getQuestionById } from "@/lib/questions";
 import { getViewer } from "@/lib/questionAccess";
 import { getLevel } from "@/lib/levels";
+import type { Metadata } from "next";
+import { privatePage } from "@/lib/site";
+
+export const metadata: Metadata = privatePage("Edit question");
 
 export const dynamic = "force-dynamic";
 

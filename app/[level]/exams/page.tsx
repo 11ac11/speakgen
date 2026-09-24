@@ -13,6 +13,21 @@ import {
   ExamThemes,
   ExamTitle
 } from "@/app/components/ExamCards";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params
+}: {
+  params: Promise<{ level: string }>;
+}): Promise<Metadata> {
+  const { level } = await params;
+  const row = await getLevel(level);
+  if (!row) return {};
+  return {
+    title: `${row.label} speaking exams`,
+    description: `Full ${row.label} speaking tests, free and with no account: every part in order, timed as on the day.`
+  };
+}
 
 export const dynamic = "force-dynamic";
 

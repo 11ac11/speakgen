@@ -4,6 +4,10 @@ import { isBillingSimulated } from "@/lib/billing/provider";
 import { formatPrice, getPrice } from "@/lib/billing/prices";
 import DummyCheckout from "./DummyCheckout";
 import { sql } from "@/lib/db";
+import type { Metadata } from "next";
+import { privatePage } from "@/lib/site";
+
+export const metadata: Metadata = privatePage("Checkout");
 
 export const dynamic = "force-dynamic";
 

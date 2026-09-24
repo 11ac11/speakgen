@@ -3,6 +3,10 @@ import { isBillingSimulated } from "@/lib/billing/provider";
 import DummyPortal from "./DummyPortal";
 import { getSubscriptionForViewer } from "@/lib/billing/reconcile";
 import { getAuthenticatedUserId } from "@/lib/session";
+import type { Metadata } from "next";
+import { privatePage } from "@/lib/site";
+
+export const metadata: Metadata = privatePage("Manage your plan");
 
 export const dynamic = "force-dynamic";
 

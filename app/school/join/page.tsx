@@ -2,6 +2,10 @@ import { notFound, redirect } from "next/navigation";
 import { sql } from "@/lib/db";
 import { getAuthenticatedUserId } from "@/lib/session";
 import JoinSchool from "./JoinSchool";
+import type { Metadata } from "next";
+import { privatePage } from "@/lib/site";
+
+export const metadata: Metadata = privatePage("Join a school");
 
 export const dynamic = "force-dynamic";
 
