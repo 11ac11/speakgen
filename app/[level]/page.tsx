@@ -30,8 +30,8 @@ export async function generateMetadata({
   const row = await getLevel(level);
 
   return row
-    ? { title: `${row.label} speaking exam format — Speakgen` }
-    : { title: "Speakgen" };
+    ? { title: `${row.label} speaking exam format — SpeakGen` }
+    : { title: "SpeakGen" };
 }
 
 export const dynamic = "force-dynamic";

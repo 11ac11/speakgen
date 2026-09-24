@@ -10,7 +10,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { level } = await params;
   const row = await getLevel(level);
-  return { title: row ? `New ${row.label} question — Speakgen` : "Speakgen" };
+  return { title: row ? `New ${row.label} question — SpeakGen` : "SpeakGen" };
 }
 
 export const dynamic = "force-dynamic";

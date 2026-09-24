@@ -25,7 +25,7 @@ import { getAuthenticatedUserId } from "@/lib/session";
 import { getEffectivePlan } from "@/lib/profile";
 import PlanActions from "./PlanActions";
 
-export const metadata = { title: "Plans — Speakgen" };
+export const metadata = { title: "Plans — SpeakGen" };
 
 const BLURBS: Record<string, string> = {
   free: "Everything you need to try it with a class.",

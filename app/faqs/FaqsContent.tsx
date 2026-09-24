@@ -73,7 +73,7 @@ const Contents = styled.nav`
 const FAQS: { id: string; question: string; answer: React.ReactNode }[] = [
   {
     id: "what-is-speakgen",
-    question: "What is Speakgen?",
+    question: "What is SpeakGen?",
     answer: (
       <>
         <p>
@@ -121,7 +121,7 @@ const FAQS: { id: string; question: string; answer: React.ReactNode }[] = [
           {`Because at those levels the speaking test is a different kind of task, and we would rather leave it out than offer a version that does not match what your students will face.`}
         </p>
         <p>
-          {`From B1 to C2 the tests share a shape: candidates talk about photographs, discuss a set of written ideas together, and answer broader questions. Speakgen is built around exactly those tasks. At A1 and A2 it changes. The young learners' tests — Pre A1 Starters, A1 Movers and A2 Flyers — take one child at a time with the examiner, and the tasks are built on pictures: pointing to things in a scene, spotting the differences between two pictures, telling a story from a sequence of drawings. A2 Key is taken in pairs, but its main task is a conversation around a set of pictures rather than written prompts.`}
+          {`From B1 to C2 the tests share a shape: candidates talk about photographs, discuss a set of written ideas together, and answer broader questions. SpeakGen is built around exactly those tasks. At A1 and A2 it changes. The young learners' tests — Pre A1 Starters, A1 Movers and A2 Flyers — take one child at a time with the examiner, and the tasks are built on pictures: pointing to things in a scene, spotting the differences between two pictures, telling a story from a sequence of drawings. A2 Key is taken in pairs, but its main task is a conversation around a set of pictures rather than written prompts.`}
         </p>
         <p>
           {`Doing those properly means new kinds of question and illustrations drawn for the purpose, not B1 questions with the level changed. It is on the list. If your school needs A1 or A2, `}
@@ -217,7 +217,7 @@ const FAQS: { id: string; question: string; answer: React.ReactNode }[] = [
     question: "Is this an official Cambridge product?",
     answer: (
       <p>
-        {`No. Speakgen is independent and is not affiliated with or endorsed by Cambridge University Press & Assessment. Cambridge English, B2 First, C1 Advanced and C2 Proficiency are their trademarks. The exam formats are followed as published so that practice is realistic, but the questions are written for this app.`}
+        {`No. SpeakGen is independent and is not affiliated with or endorsed by Cambridge University Press & Assessment. Cambridge English, B2 First, C1 Advanced and C2 Proficiency are their trademarks. The exam formats are followed as published so that practice is realistic, but the questions are written for this app.`}
       </p>
     )
   },
@@ -228,7 +228,7 @@ const FAQS: { id: string; question: string; answer: React.ReactNode }[] = [
       <p>
         {`There is a `}
         <Link href="/contact">{`contact page`}</Link>
-        {` — pick what it is about, write what happened, and it comes straight to me. Speakgen is built by one person, so a feature request is read by the person who would build it.`}
+        {` — pick what it is about, write what happened, and it comes straight to me. SpeakGen is built by one person, so a feature request is read by the person who would build it.`}
       </p>
     )
   },
@@ -248,7 +248,7 @@ export default function FaqsContent() {
     <Prose className={"container"}>
       <h1>Frequently asked questions</h1>
       <Lead>
-        {`Everything about what Speakgen does, what it costs, and what you can do without signing up.`}
+        {`Everything about what SpeakGen does, what it costs, and what you can do without signing up.`}
       </Lead>
 
       <Contents aria-labelledby="faq-contents">

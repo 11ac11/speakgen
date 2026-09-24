@@ -15,12 +15,12 @@ const Section = styled.div`
 export default function AboutContent() {
   return (
     <Prose className={"container"}>
-      <h1>About Speakgen</h1>
+      <h1>About SpeakGen</h1>
       <Section>
         <h2>{`Why this exists`}</h2>
         <p>
           {`Hi! I’m the creator of `}
-          <strong>{`Speakgen`}</strong>
+          <strong>{`SpeakGen`}</strong>
           {`—a simple, modern tool built to help teachers and students prepare for English speaking exams more effectively.`}
         </p>
         <p>
@@ -35,14 +35,14 @@ export default function AboutContent() {
       </Section>
 
       <Section>
-        <h2>{`💡 Why I Built Speakgen`}</h2>
+        <h2>{`💡 Why I Built SpeakGen`}</h2>
         <p>
           {`After switching careers into tech, I saw a clear opportunity: `}
           <br />
           <strong>{`Why not build a digital tool`}</strong>
           {` that makes it easy to generate and organize realistic speaking practice—without the admin hassle?`}
         </p>
-        <p>{`Speakgen is the result:`}</p>
+        <p>{`SpeakGen is the result:`}</p>
         <ul>
           <li>
             {`A platform where `}
@@ -115,7 +115,7 @@ export default function AboutContent() {
       <Section>
         <h2>{`🤝 Thanks for Visiting`}</h2>
         <p>
-          {`Whether you're a teacher prepping your class or a student working on your own, I hope Speakgen helps make your journey to fluency a little smoother—and a lot more efficient.`}
+          {`Whether you're a teacher prepping your class or a student working on your own, I hope SpeakGen helps make your journey to fluency a little smoother—and a lot more efficient.`}
         </p>
       </Section>
     </Prose>

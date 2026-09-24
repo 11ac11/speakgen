@@ -2,7 +2,7 @@ import { listLevels } from "@/lib/levels";
 import { Lead } from "@/app/components/Lead";
 import { ExamsLink } from "@/app/components/ExamCards";
 
-export const metadata = { title: "New question — Speakgen" };
+export const metadata = { title: "New question — SpeakGen" };
 export const dynamic = "force-dynamic";
 
 /**

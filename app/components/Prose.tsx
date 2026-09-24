@@ -10,7 +10,7 @@ import styled from "styled-components";
  *
  *   The ladder.  The global h2 is --text-2xl, one step under the h1's
  *                --text-3xl. On a page whose body is --text-lg that made three
- *                sizes within a whisker of each other, so "About Speakgen" and
+ *                sizes within a whisker of each other, so "About SpeakGen" and
  *                "Why this exists" read as the same level and neither read as
  *                the title. --text-xl for a section heading puts a real gap
  *                above the body and a clearer one below the title.

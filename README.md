@@ -1,4 +1,4 @@
-# Speakgen FCE
+# SpeakGen FCE
 
 https://speakgen.vercel.app/
 _README last updated: Sept 2024_
@@ -8,7 +8,7 @@ _README last updated: Sept 2024_
 
 ## App description
 
-Speakgen is a generator that helps First Certificate English (FCE) students practise the speaking exam. It has example questions from all 4 parts and timers showing how long they have left to continue answering the question.
+SpeakGen is a generator that helps First Certificate English (FCE) students practise the speaking exam. It has example questions from all 4 parts and timers showing how long they have left to continue answering the question.
 
 ## Repo Description
 

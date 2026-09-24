@@ -3,6 +3,7 @@
 import Link from "next/link";
 import styled from "styled-components";
 import { SUPPORTED_LEVELS } from "@/constants";
+import LogoMark from "@/app/components/ui/LogoMark";
 
 /* margin-top: auto so the footer is pushed to the bottom of short pages rather
    than floating halfway up one. */
@@ -45,9 +46,11 @@ const Brand = styled.div`
 const BrandName = styled(Link)`
   font-family: var(--font-display), sans-serif;
   font-size: var(--text-lg);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-weight: 700;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
+  letter-spacing: -0.025em;
   color: var(--text-heading);
 
   &:hover {
@@ -122,7 +125,10 @@ export default function Footer() {
     <Wrapper>
       <Inner>
         <Brand>
-          <BrandName href="/">Speakgen</BrandName>
+          <BrandName href="/">
+            <LogoMark size={28} />
+            SpeakGen
+          </BrandName>
           <p>
             Cambridge speaking exam practice for teachers. Build an exam, or run
             a free one straight from the page.
@@ -153,7 +159,7 @@ export default function Footer() {
         </nav>
 
         <nav aria-labelledby="footer-product">
-          <ColumnHeading id="footer-product">Speakgen</ColumnHeading>
+          <ColumnHeading id="footer-product">SpeakGen</ColumnHeading>
           <Links>
             <li>
               <Link href="/pricing">Plans and pricing</Link>
@@ -187,10 +193,10 @@ export default function Footer() {
       </Inner>
 
       <Legal>
-        <p>{`© ${year} Speakgen`}</p>
+        <p>{`© ${year} SpeakGen`}</p>
         <p>
           Cambridge English, B2 First and C1 Advanced are trademarks of
-          Cambridge University Press &amp; Assessment. Speakgen is an
+          Cambridge University Press &amp; Assessment. SpeakGen is an
           independent practice tool and is not affiliated with or endorsed by
           them.
         </p>

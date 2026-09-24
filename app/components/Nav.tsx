@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import styled from "styled-components";
 import { SUPPORTED_LEVELS } from "@/constants";
+import LogoMark from "@/app/components/ui/LogoMark";
 
 const Navbar = styled.nav`
   background: linear-gradient(to right, var(--leafgreen), var(--limegreen));
@@ -37,12 +38,21 @@ const NavContainer = styled.div`
    top-level heading competing with the one that actually describes it. The
    site name is a landmark, not the page's title. */
 const Title = styled.div`
+  /* Flex, not block: as a block the link sat on a text line taller than itself,
+     pinned to its top, so the logo rode 5px above the menu beside it. */
+  display: flex;
+  align-items: center;
   font-family: var(--font-display), sans-serif;
   font-size: var(--text-xl);
   font-weight: 700;
-  letter-spacing: -0.02em;
-  text-transform: uppercase;
+  letter-spacing: -0.025em;
   color: var(--text-heading);
+
+  a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
 
   a:hover {
     color: var(--text-heading);
@@ -478,7 +488,8 @@ export default function Nav() {
       <NavContainer>
         <Title>
           <Link href="/" onClick={closeEverything}>
-            Speakgen
+            <LogoMark size={34} />
+            SpeakGen
           </Link>
         </Title>
 
@@ -637,7 +648,7 @@ export default function Nav() {
               >
                 <li>
                   <MenuLink href="/about">
-                    <strong>About Speakgen</strong>
+                    <strong>About SpeakGen</strong>
                     <small>Why it exists</small>
                   </MenuLink>
                 </li>

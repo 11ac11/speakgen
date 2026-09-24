@@ -298,7 +298,7 @@ export default function ContactContent({
   const mailto = useMemo(() => {
     if (!supportEmail) return null;
 
-    const subject = `[${feedbackTopicLabel(topic)}] Speakgen`;
+    const subject = `[${feedbackTopicLabel(topic)}] SpeakGen`;
     const body = [
       message,
       "",

@@ -72,7 +72,7 @@ function messageFor(thrown: unknown) {
  *
  * Only a path on this site. callbackUrl arrives from the query string, and
  * router.push will follow an absolute URL to anywhere — so without this,
- * /login?callbackUrl=https://example.com is a link that wears Speakgen's domain
+ * /login?callbackUrl=https://example.com is a link that wears SpeakGen's domain
  * and lands somewhere else, which is the shape a phishing link wants. A leading
  * "//" is the same trick with the scheme left off.
  */
