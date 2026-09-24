@@ -186,6 +186,41 @@ export async function getSubscriptionForViewer(
   return rows[0] ?? null;
 }
 
+/**
+ * Which subscription a billing action is about. "effective" is the one in
+ * force (getSubscriptionForViewer); "personal" is the teacher's own, even when
+ * their school's Academy outranks it — which is exactly the one to cancel once
+ * the school is paying, and the one "effective" would never pick.
+ */
+export type SubscriptionScope = "effective" | "personal";
+
+export async function getSubscriptionInScope(
+  userId: string,
+  scope: SubscriptionScope
+): Promise<ViewerSubscription | null> {
+  if (scope === "effective") return getSubscriptionForViewer(userId);
+
+  const rows = (await sql(
+    `SELECT s.id::int AS id, s.plan, s.status, s.billing_interval, s.seats,
+            s.provider, s.provider_customer_id, s.provider_subscription_id,
+            s.current_period_end, s.cancel_at_period_end,
+            s.user_id, s.organization_id,
+            NULL::text AS school_name,
+            true AS can_manage
+       FROM content.subscriptions s
+      WHERE s.user_id = $1
+        AND s.status IN ('trialing', 'active', 'past_due')
+      LIMIT 1`,
+    [userId]
+  )) as unknown as ViewerSubscription[];
+
+  return rows[0] ?? null;
+}
+
+export function parseScope(value: unknown): SubscriptionScope {
+  return value === "personal" ? "personal" : "effective";
+}
+
 /** The live subscription for a user, if any. */
 export async function getSubscriptionForUser(userId: string) {
   const rows = (await sql(

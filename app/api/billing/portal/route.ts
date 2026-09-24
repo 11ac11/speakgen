@@ -1,5 +1,5 @@
 import { getBillingProvider, isBillingEnabled } from "@/lib/billing/provider";
-import { getSubscriptionForViewer } from "@/lib/billing/reconcile";
+import { getSubscriptionInScope, parseScope } from "@/lib/billing/reconcile";
 import { BillingNotConfiguredError } from "@/lib/billing/types";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
@@ -24,8 +24,12 @@ export async function POST(req: NextRequest) {
     }
 
     // Their own subscription, or their school's if they run it. A teacher
-    // covered by their school can see the plan but not cancel it.
-    const subscription = await getSubscriptionForViewer(userId);
+    // covered by their school can see the plan but not cancel it. Asked for
+    // with scope "personal", it is their own Pro regardless — the nudge to
+    // cancel it once the school pays uses that.
+    const body = await req.json().catch(() => null);
+    const scope = parseScope(body?.scope);
+    const subscription = await getSubscriptionInScope(userId, scope);
     const customerId = subscription?.provider_customer_id ?? undefined;
     if (!subscription || !customerId) {
       return NextResponse.json(
@@ -45,7 +49,14 @@ export async function POST(req: NextRequest) {
       returnUrl: `${new URL(req.url).origin}/settings`
     });
 
-    return NextResponse.json({ url });
+    // A real provider's portal is already the right customer's. The simulated
+    // one is a page of ours, which needs telling which subscription it is for.
+    const portalUrl =
+      scope === "personal" && url.startsWith("/billing/portal")
+        ? `${url}&scope=personal`
+        : url;
+
+    return NextResponse.json({ url: portalUrl });
   } catch (error) {
     if (error instanceof BillingNotConfiguredError) {
       return NextResponse.json(

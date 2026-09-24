@@ -23,9 +23,15 @@ const Banner = styled.div`
 
 export default function DummyPortal({
   returnUrl,
-  schoolName
+  schoolName,
+  coveredBy,
+  scope = "effective"
 }: {
+  /** The school whose Academy still covers them after cancelling their own. */
+  coveredBy?: string | null;
   returnUrl: string;
+  /** Which subscription this page cancels; "personal" is the teacher's own. */
+  scope?: "effective" | "personal";
   /** Set when the plan being managed is a school's Academy subscription. */
   schoolName?: string | null;
 }) {
@@ -36,7 +42,11 @@ export default function DummyPortal({
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/billing/dummy/cancel", { method: "POST" });
+      const res = await fetch("/api/billing/dummy/cancel", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ scope })
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         setError(body.error ?? "Could not cancel");
@@ -59,9 +69,11 @@ export default function DummyPortal({
 
       <h1 style={{ fontSize: "1.3rem", marginTop: 0 }}>Manage your plan</h1>
       <p style={{ fontSize: "var(--text-base)" }}>
-        {schoolName
-          ? `Cancelling returns every teacher at ${schoolName} to their own plan immediately, and turns off its branding. The school's questions, exams and practices are kept.`
-          : "Cancelling returns you to the free plan immediately. Your questions are kept; exams beyond the free limit stay saved but you will not be able to create more until you are under it."}
+        {coveredBy
+          ? `Cancelling ends your own Pro subscription. You stay on ${coveredBy}'s Academy plan, so nothing else changes.`
+          : schoolName
+            ? `Cancelling returns every teacher at ${schoolName} to their own plan immediately, and turns off its branding. The school's questions, exams and practices are kept.`
+            : "Cancelling returns you to the free plan immediately. Your questions are kept; exams beyond the free limit stay saved but you will not be able to create more until you are under it."}
       </p>
 
       {error ? (

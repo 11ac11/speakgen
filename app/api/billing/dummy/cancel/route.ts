@@ -1,6 +1,6 @@
 import { signDummyBody } from "@/lib/billing/dummy";
 import { isBillingSimulated } from "@/lib/billing/provider";
-import { getSubscriptionForViewer } from "@/lib/billing/reconcile";
+import { getSubscriptionInScope, parseScope } from "@/lib/billing/reconcile";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { processWebhook } from "@/lib/billing/webhook";
 import { NextRequest, NextResponse } from "next/server";
@@ -19,7 +19,11 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const current = await getSubscriptionForViewer(userId);
+  const requested = await req.json().catch(() => null);
+  const current = await getSubscriptionInScope(
+    userId,
+    parseScope(requested?.scope)
+  );
   if (!current) {
     return NextResponse.json({ error: "Nothing to cancel" }, { status: 404 });
   }
