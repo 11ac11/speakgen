@@ -10,6 +10,7 @@ import Button from "@/app/components/ui/Button";
 import { Notice } from "@/app/components/ui/Notice";
 import QuestionPreview, { ThemePills } from "@/app/components/QuestionPreview";
 import type { ExamSlot } from "@/lib/cambridgeBlueprints";
+import WaitlistButton from "@/app/components/Waitlist";
 
 const Wrap = styled.div`
   width: 100%;
@@ -257,7 +258,13 @@ export default function ExamBuilder({
   );
   const [search, setSearch] = useState<Record<string, string>>({});
   const [error, setError] = useState<string | null>(null);
-  const [limitReached, setLimitReached] = useState(false);
+  /* Set by a 402: the limit, and whether the waitlist stands in for checkout
+     and this teacher is on it already. */
+  const [limitReached, setLimitReached] = useState<{
+    limit: number;
+    waitlist: boolean;
+    joined: boolean;
+  } | null>(null);
   const [saving, setSaving] = useState(false);
   /* The server sent the pool for this page, so a question written without
      leaving has to be added to it here. */
@@ -358,8 +365,13 @@ export default function ExamBuilder({
       });
 
       if (res.status === 402) {
-        // Plan limit, not a bad request. Show the upgrade path, not an error.
-        setLimitReached(true);
+        // Plan limit, not a bad request. Show the way on, not an error.
+        const body = await res.json().catch(() => null);
+        setLimitReached({
+          limit: body?.limit ?? 2,
+          waitlist: body?.waitlist?.mode ?? false,
+          joined: body?.waitlist?.joined ?? false
+        });
         return;
       }
       if (!res.ok) {
@@ -379,25 +391,66 @@ export default function ExamBuilder({
   };
 
   if (limitReached && !isEdit) {
+    const { limit, waitlist, joined } = limitReached;
+    const used = `You have used your ${limit === 1 ? "free exam" : `${limit} saved exams`}`;
+    const back = (
+      <Button
+        text="Back to my exams"
+        secondary
+        onClick={() => router.push("/dashboard?tab=exams")}
+      />
+    );
+
+    /* Joining earns a saved exam, so the exam on screen — still held in this
+       component's state — is saved the moment the dialog is dismissed, rather
+       than asking them to find the Save button again. */
+    if (waitlist && !joined) {
+      return (
+        <Wrap>
+          <Notice>
+            <p>
+              <strong>{used}</strong>
+            </p>
+            <p>
+              Pro, with unlimited exams and practices, PDF export and no ads, is
+              coming soon. Join the waitlist and your free account gets one more
+              saved exam straight away, so you can save this one.
+            </p>
+          </Notice>
+          <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+            <WaitlistButton
+              plan="pro"
+              trigger="exam_limit"
+              signedIn
+              text="Join the waitlist and save"
+              onJoined={() => {
+                setLimitReached(null);
+                void save();
+              }}
+            />
+            {back}
+          </div>
+        </Wrap>
+      );
+    }
+
     return (
       <Wrap>
         <Notice>
           <p>
-            <strong>You have used your free exam</strong>
+            <strong>{used}</strong>
           </p>
           <p>
-            The free plan includes one saved exam. Upgrade for unlimited exams
-            and practices, PDF export and no ads — or delete an existing exam to
-            make room.
+            {waitlist
+              ? "You are on the Pro waitlist, and we will tell you when it opens. Until then, delete an exam you no longer need to make room for this one."
+              : "Upgrade for unlimited exams and practices, PDF export and no ads — or delete an existing exam to make room."}
           </p>
         </Notice>
-        <div style={{ display: "flex", gap: "0.75rem" }}>
-          <Button text="See plans" onClick={() => router.push("/pricing")} />
-          <Button
-            text="Back to my exams"
-            secondary
-            onClick={() => router.push("/dashboard?tab=exams")}
-          />
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          {waitlist ? null : (
+            <Button text="See plans" onClick={() => router.push("/pricing")} />
+          )}
+          {back}
         </div>
       </Wrap>
     );

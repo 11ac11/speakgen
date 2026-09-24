@@ -122,6 +122,16 @@ function StatTile({
   );
 }
 
+const TRIGGER_LABELS: Record<string, string> = {
+  exam_limit: "Exam limit",
+  practice_limit: "Practice limit",
+  pdf: "PDF export",
+  branding: "School branding",
+  seats: "School seats",
+  pricing_page: "Plans page",
+  settings: "Settings"
+};
+
 function weekLabel(iso: string, index: number) {
   if (index === 0) return "This week";
   return `w/c ${new Date(iso).toLocaleDateString("en-GB", {
@@ -137,8 +147,19 @@ export default function AdminDashboard({
   metrics: Metrics;
   generatedAt: string;
 }) {
-  const { teachers, plans, content, usage, weeks, topShared, byLevel } =
-    metrics;
+  const {
+    teachers,
+    plans,
+    content,
+    usage,
+    weeks,
+    topShared,
+    byLevel,
+    waitlist,
+    triggers,
+    limitHits,
+    recentWaitlist
+  } = metrics;
   const free = Math.max(
     0,
     teachers.total - plans.proPersonal - plans.coveredBySchools
@@ -162,6 +183,73 @@ export default function AdminDashboard({
           detail={`${teachers.active30} in the last 30 days`}
         />
       </Tiles>
+
+      {/* The free launch's go/no-go numbers: how often the limits bite, and
+          how many of those teachers ask for more. */}
+      <h2>Waitlist</h2>
+      <Tiles>
+        <StatTile
+          value={waitlist.total}
+          label="On the waitlist"
+          detail={`+${waitlist.new7} this week · ${waitlist.withAccount} with an account`}
+        />
+        <StatTile value={waitlist.pro} label="Want Pro" />
+        <StatTile
+          value={waitlist.academy}
+          label="Want Academy"
+          detail={`${waitlist.academyTeachers} teachers between them, where given`}
+        />
+        <StatTile
+          value={waitlist.newsConsent}
+          label="Agreed to news"
+          detail="The only ones to email beyond the launch notice"
+        />
+      </Tiles>
+
+      <h2>Limits reached</h2>
+      <Tiles>
+        <StatTile
+          value={limitHits.exam30}
+          label="Exam limit, 30 days"
+          detail={`${limitHits.examAll} in all`}
+        />
+        <StatTile
+          value={limitHits.practice30}
+          label="Practice limit, 30 days"
+          detail={`${limitHits.practiceAll} in all`}
+        />
+        <StatTile
+          value={limitHits.pdf30}
+          label="PDF refused, 30 days"
+          detail={`${limitHits.pdfAll} in all`}
+        />
+      </Tiles>
+
+      <h2>What brought them to the waitlist</h2>
+      {triggers.length ? (
+        <Scroll>
+          <Table>
+            <thead>
+              <tr>
+                <th>Prompt</th>
+                <th>Pro</th>
+                <th>Academy</th>
+              </tr>
+            </thead>
+            <tbody>
+              {triggers.map((row) => (
+                <tr key={row.trigger}>
+                  <td>{TRIGGER_LABELS[row.trigger] ?? row.trigger}</td>
+                  <td>{row.pro}</td>
+                  <td>{row.academy}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Scroll>
+      ) : (
+        <Empty>Nobody has joined the waitlist yet.</Empty>
+      )}
 
       <h2>Plans</h2>
       <Tiles>
@@ -262,6 +350,40 @@ export default function AdminDashboard({
         </Scroll>
       ) : (
         <Empty>No share links have been opened in the last 30 days.</Empty>
+      )}
+
+      <h2>Latest waitlist entries</h2>
+      {recentWaitlist.length ? (
+        <Scroll>
+          <Table>
+            <thead>
+              <tr>
+                <th>Email</th>
+                <th>Plan</th>
+                <th>From</th>
+                <th>School</th>
+                <th>Teachers</th>
+                <th>News</th>
+                <th>Joined</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recentWaitlist.map((row) => (
+                <tr key={`${row.email}-${row.plan}`} title={row.note ?? ""}>
+                  <td>{row.email}</td>
+                  <td>{row.plan}</td>
+                  <td>{TRIGGER_LABELS[row.trigger] ?? row.trigger}</td>
+                  <td>{row.school_name ?? ""}</td>
+                  <td>{row.teacher_count ?? ""}</td>
+                  <td>{row.news_consent ? "Yes" : "No"}</td>
+                  <td>{row.created_at}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </Scroll>
+      ) : (
+        <Empty>No entries yet.</Empty>
       )}
 
       <h2>By level</h2>

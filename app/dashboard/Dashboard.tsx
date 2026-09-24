@@ -10,6 +10,7 @@ import { listPractices } from "@/lib/practices";
 import { getViewer } from "@/lib/questionAccess";
 import AdSlot from "@/app/components/ads/AdSlot";
 import { entitlementsFor } from "@/lib/entitlements";
+import { isWaitlistMode } from "@/lib/waitlist";
 
 const validTabs = ["questions", "exams", "practices"] as const;
 type Tab = (typeof validTabs)[number];
@@ -70,6 +71,7 @@ export default async function Dashboard({ tab }: { tab: string | undefined }) {
           activeTab={activeTab}
           usage={{ exams: usage.exams, practices: usage.practices }}
           pdfExport={entitlementsFor(usage.plan).pdfExport}
+          waitlist={{ mode: isWaitlistMode(), joined: usage.joinedWaitlist }}
           exams={myExams}
           practices={myPractices}
         />

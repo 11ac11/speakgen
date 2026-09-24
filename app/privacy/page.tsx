@@ -75,6 +75,13 @@ export default function PrivacyPage() {
           provider and never reach us.
         </li>
         <li>
+          <strong>The waitlist.</strong> If you join the waitlist for a paid
+          plan: your email address, which plan, which part of the site you
+          joined from, and anything you choose to add — your school&apos;s name,
+          how many teachers, what you would use it for — and whether you agreed
+          to hear other news from us.
+        </li>
+        <li>
           <strong>Messages you send us</strong>, and our replies.
         </li>
         <li>
@@ -82,8 +89,9 @@ export default function PrivacyPage() {
           from which countries and on what kind of device, counted by Vercel Web
           Analytics without cookies and without anything that identifies you.
           Pages students open from a shared link are not counted at all. We also
-          count how often exams are exported as PDFs and how often a shared link
-          is opened — how many times, not by whom.
+          count how often exams are exported as PDFs, how often a shared link is
+          opened and how often the free plan&apos;s limits are reached — how
+          many times, not by whom.
         </li>
         <li>
           <strong>Server logs.</strong> Like any website, our hosting provider
@@ -117,6 +125,12 @@ export default function PrivacyPage() {
           <strong>To keep it secure and working</strong> — sessions, server
           logs, fixing faults — because we have a legitimate interest in running
           a safe, reliable service.
+        </li>
+        <li>
+          <strong>To tell you when a paid plan opens</strong>, if you joined its
+          waitlist, because you asked us to. Anything else — product news,
+          early-access offers — only if you ticked the box that says so, and you
+          can ask us to stop or to remove you at any time.
         </li>
         <li>
           <strong>To bill for paid plans</strong> and keep the records tax law

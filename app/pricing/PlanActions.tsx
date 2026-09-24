@@ -6,6 +6,7 @@ import styled from "styled-components";
 import Button from "@/app/components/ui/Button";
 import { Input } from "@/app/components/ui";
 import { authClient } from "@/lib/auth-client";
+import WaitlistButton from "@/app/components/Waitlist";
 
 /* Academy is bought by a school, so a teacher with no school names one here
    and carries straight on to checkout, rather than being sent to Settings to
@@ -50,12 +51,15 @@ export default function PlanActions({
   plan,
   currentPlan,
   signedIn,
-  billingEnabled
+  billingEnabled,
+  waitlist
 }: {
   plan: "free" | "pro" | "academy";
   currentPlan: string | null;
   signedIn: boolean;
   billingEnabled: boolean;
+  /** While paid plans are not on sale, one waitlist button replaces checkout. */
+  waitlist: { mode: boolean; joined: boolean; bonusAvailable: boolean };
 }) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
@@ -76,6 +80,20 @@ export default function PlanActions({
         <Button
           text="Create a free account"
           onClick={() => router.push("/signup")}
+        />
+      </Row>
+    );
+  }
+
+  if (waitlist.mode) {
+    return (
+      <Row>
+        <WaitlistButton
+          plan={plan}
+          trigger="pricing_page"
+          signedIn={signedIn}
+          joined={waitlist.joined}
+          bonusAvailable={waitlist.bonusAvailable}
         />
       </Row>
     );

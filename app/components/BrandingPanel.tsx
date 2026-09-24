@@ -6,6 +6,7 @@ import NextLink from "next/link";
 import styled from "styled-components";
 import Button from "@/app/components/ui/Button";
 import { Notice } from "@/app/components/ui/Notice";
+import WaitlistButton from "@/app/components/Waitlist";
 import {
   accentTokens,
   contrastWithWhite,
@@ -320,6 +321,8 @@ export type BrandingPanelProps = {
   entitled: boolean;
   /** Whether logo storage is configured on this deployment. */
   logoStorageEnabled: boolean;
+  /** While Academy is not on sale, the prompt opens the waitlist instead. */
+  waitlist: { mode: boolean; joined: boolean; bonusAvailable: boolean };
   initial: {
     displayName: string | null;
     accentColor: string | null;
@@ -332,6 +335,7 @@ export default function BrandingPanel({
   organizationName,
   entitled,
   logoStorageEnabled,
+  waitlist,
   initial
 }: BrandingPanelProps) {
   const router = useRouter();
@@ -364,7 +368,20 @@ export default function BrandingPanel({
           Put your school&apos;s name, colour and logo on the links you share
           with students and on the PDFs you print. Part of the Academy plan.
         </p>
-        <UpgradeButton href="/pricing">See Academy</UpgradeButton>
+        {waitlist.mode ? (
+          <div style={{ marginTop: "1rem" }}>
+            <WaitlistButton
+              plan="academy"
+              trigger="branding"
+              signedIn
+              joined={waitlist.joined}
+              bonusAvailable={waitlist.bonusAvailable}
+              text="Join the Academy waitlist"
+            />
+          </div>
+        ) : (
+          <UpgradeButton href="/pricing">See Academy</UpgradeButton>
+        )}
       </Panel>
     );
   }

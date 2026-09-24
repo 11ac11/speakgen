@@ -22,6 +22,7 @@ import { getBrandingSettings, isBrandingEntitled } from "@/lib/branding";
 import { isLogoStorageEnabled } from "@/lib/logoStorage";
 import type { Metadata } from "next";
 import { privatePage } from "@/lib/site";
+import { getWaitlistPlans, isWaitlistMode } from "@/lib/waitlist";
 
 export const metadata: Metadata = privatePage("Settings");
 
@@ -40,13 +41,15 @@ export default async function SettingsPage() {
 
   // Server-side, so the plan and usage come straight from the database with no
   // extra round trip and no chance of the client being told a plan it can edit.
-  const [usage, subscription, personalSubscription, organizations] =
+  const [usage, subscription, personalSubscription, organizations, lists] =
     await Promise.all([
       getUsage(userId),
       getSubscriptionForViewer(userId),
       getSubscriptionInScope(userId, "personal"),
-      getUserOrganizations(userId)
+      getUserOrganizations(userId),
+      getWaitlistPlans(userId)
     ]);
+  const waitlistMode = isWaitlistMode();
 
   // Paying twice: their own Pro is still live, but the plan in force is their
   // school's Academy, which already includes everything Pro does.
@@ -108,6 +111,11 @@ export default async function SettingsPage() {
             canManage: subscription ? subscription.can_manage : true,
             ownPlanCoveredBySchool: paysTwice
           }}
+          waitlist={{
+            mode: waitlistMode,
+            joined: lists.includes("pro"),
+            bonusAvailable: lists.length === 0
+          }}
         />
 
         <SchoolPanel
@@ -126,6 +134,11 @@ export default async function SettingsPage() {
           }}
           canAdmin={canAdmin}
           origin={origin}
+          waitlist={{
+            mode: waitlistMode,
+            joined: lists.includes("academy"),
+            bonusAvailable: lists.length === 0
+          }}
         />
 
         {school && canAdmin && branding ? (
@@ -133,6 +146,11 @@ export default async function SettingsPage() {
             organizationId={school.id}
             organizationName={branding.organizationName}
             entitled={brandingEntitled}
+            waitlist={{
+              mode: waitlistMode,
+              joined: lists.includes("academy"),
+              bonusAvailable: lists.length === 0
+            }}
             logoStorageEnabled={isLogoStorageEnabled()}
             initial={{
               displayName: branding.displayName,

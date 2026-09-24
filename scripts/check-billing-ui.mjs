@@ -125,10 +125,11 @@ const mk = (title) =>
   });
 const a = await mk("Pro exam one");
 const b = await mk("Pro exam two");
+const c = await mk("Pro exam three");
 pass(
-  "two exams allowed on pro",
-  a.status === 201 && b.status === 201,
-  `${a.status}/${b.status} — free plan caps at 1`
+  "three exams allowed on pro",
+  a.status === 201 && b.status === 201 && c.status === 201,
+  `${a.status}/${b.status}/${c.status} — free plan caps at 2`
 );
 
 console.log("\nCANCELLING");
@@ -162,7 +163,7 @@ pass(
     await sql(`SELECT count(*)::int n FROM content.exams WHERE owner_id=$1`, [
       me
     ])
-  )[0].n === 2
+  )[0].n === 3
 );
 
 console.log("\nSAFETY");

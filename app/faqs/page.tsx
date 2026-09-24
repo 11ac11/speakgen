@@ -1,6 +1,7 @@
 import FaqsContent from "./FaqsContent";
 import AdSlot from "@/app/components/ads/AdSlot";
 import type { Metadata } from "next";
+import { isWaitlistMode } from "@/lib/waitlist";
 
 export const metadata: Metadata = {
   title: "Frequently asked questions",
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 export default function FaqsPage() {
   return (
     <>
-      <FaqsContent />
+      <FaqsContent waitlist={isWaitlistMode()} />
       <AdSlot placement="faqs" />
     </>
   );

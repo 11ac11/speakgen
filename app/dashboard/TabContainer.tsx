@@ -13,6 +13,7 @@ import ShareLinkActive from "@/app/components/ShareLinkActive";
 import Modal from "@/app/components/ui/Modal";
 import SharePanel, { type ShareKind } from "@/app/components/SharePanel";
 import { usePdfDownload } from "@/app/components/usePdfDownload";
+import WaitlistButton, { WaitlistDialog } from "@/app/components/Waitlist";
 
 /* stretch, not center: the page sets the measure now, so everything inside
    lines up on the same left edge instead of each block centring itself at
@@ -152,6 +153,7 @@ export default function TabContainer({
   activeTab,
   usage,
   pdfExport,
+  waitlist,
   exams,
   practices
 }: {
@@ -160,8 +162,11 @@ export default function TabContainer({
     exams: { used: number; limit: number | null };
     practices: { used: number; limit: number | null };
   };
-  /** Whether the plan includes PDF export; if not, the item leads to pricing. */
+  /** Whether the plan includes PDF export; if not, the item leads to pricing
+      or, while paid plans are not on sale, to the waitlist. */
   pdfExport: boolean;
+  /** Whether the waitlist stands in for checkout, and whether they are on it. */
+  waitlist: { mode: boolean; joined: boolean };
   exams: DashboardExam[];
   practices: DashboardPractice[];
 }) {
@@ -174,6 +179,8 @@ export default function TabContainer({
     title: string;
   } | null>(null);
   const pdf = usePdfDownload();
+  // The PDF item opens the waitlist from a menu, which has closed by then.
+  const [pdfWaitlist, setPdfWaitlist] = useState(false);
 
   /* The actions every card of this kind carries, beside Edit and Delete.
      Share opens the same panel the page has, in a dialog; the menu closes as
@@ -190,7 +197,47 @@ export default function TabContainer({
   const pdfItem = (kind: ShareKind, id: number): RowMenuItem =>
     pdfExport
       ? { label: "Export as PDF", onSelect: () => pdf.download(kind, id) }
-      : { label: "Export as PDF (Pro)", href: "/pricing" };
+      : !waitlist.mode
+        ? { label: "Export as PDF (Pro)", href: "/pricing" }
+        : waitlist.joined
+          ? { label: "Export as PDF (Pro, coming soon)", href: "/pricing" }
+          : {
+              label: "Export as PDF (Pro, coming soon)",
+              onSelect: () => setPdfWaitlist(true)
+            };
+
+  /* What sits where "New exam" would once the limit is reached: checkout when
+     it is on sale, the waitlist while it is not, and a plain line for a
+     teacher who has joined already. */
+  const limitAction = (
+    resource: "exams" | "practices",
+    upgradeText: string,
+    waitlistText: string
+  ) =>
+    !waitlist.mode ? (
+      <Link
+        href="/pricing"
+        className="glass"
+        style={{
+          padding: "0.5rem 1rem",
+          borderRadius: "0.6rem",
+          color: "var(--text-body)",
+          fontWeight: 500,
+          fontSize: "var(--text-sm)"
+        }}
+      >
+        {upgradeText}
+      </Link>
+    ) : (
+      <WaitlistButton
+        plan="pro"
+        trigger={resource === "exams" ? "exam_limit" : "practice_limit"}
+        signedIn
+        joined={waitlist.joined}
+        text={waitlistText}
+        variant="chip"
+      />
+    );
 
   const handleDeleteExam = async (id: number) => {
     setExamError(null);
@@ -256,19 +303,11 @@ export default function TabContainer({
                 : `${usage.exams.used} of ${usage.exams.limit} exams used`}
             </span>
             {atExamLimit ? (
-              <Link
-                href="/pricing"
-                className="glass"
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "0.6rem",
-                  color: "var(--text-body)",
-                  fontWeight: 500,
-                  fontSize: "var(--text-sm)"
-                }}
-              >
-                Upgrade for more exams
-              </Link>
+              limitAction(
+                "exams",
+                "Upgrade for more exams",
+                "Join the waitlist for another exam"
+              )
             ) : (
               <Dropdown
                 options={SUPPORTED_LEVELS}
@@ -352,19 +391,11 @@ export default function TabContainer({
                 : `${usage.practices.used} of ${usage.practices.limit} practices used`}
             </span>
             {atPracticeLimit ? (
-              <Link
-                href="/pricing"
-                className="glass"
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "0.6rem",
-                  color: "var(--text-body)",
-                  fontWeight: 500,
-                  fontSize: "var(--text-sm)"
-                }}
-              >
-                Upgrade for more practices
-              </Link>
+              limitAction(
+                "practices",
+                "Upgrade for more practices",
+                "Join the Pro waitlist"
+              )
             ) : (
               <Dropdown
                 options={SUPPORTED_LEVELS}
@@ -451,6 +482,16 @@ export default function TabContainer({
             }}
           />
         </Modal>
+      ) : null}
+
+      {pdfWaitlist ? (
+        <WaitlistDialog
+          plan="pro"
+          trigger="pdf"
+          signedIn
+          onClose={() => setPdfWaitlist(false)}
+          onJoined={() => router.refresh()}
+        />
       ) : null}
     </Container>
   );

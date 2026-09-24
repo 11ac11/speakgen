@@ -243,7 +243,28 @@ const FAQS: { id: string; question: string; answer: React.ReactNode }[] = [
   }
 ];
 
-export default function FaqsContent() {
+/* The cost answer while paid plans are not on sale: the limits, what lifts
+   them, and no amounts, since there is nothing to pay yet. */
+const COST_WHILE_WAITLISTED: React.ReactNode = (
+  <>
+    <p>
+      {`SpeakGen is free. The free plan keeps two saved exams and three saved practices, with unlimited questions, and share links for your students.`}
+    </p>
+    <p>
+      {`Pro, for unlimited exams and practices and PDF export, and Academy, for a school of up to five teachers with a shared question bank and your school's branding, are coming later. Join a waitlist on the `}
+      <Link href="/pricing">{`plans page`}</Link>
+      {` to hear when they open — with a free account, joining also adds an extra saved exam.`}
+    </p>
+  </>
+);
+
+export default function FaqsContent({ waitlist }: { waitlist: boolean }) {
+  const faqs = waitlist
+    ? FAQS.map((faq) =>
+        faq.id === "cost" ? { ...faq, answer: COST_WHILE_WAITLISTED } : faq
+      )
+    : FAQS;
+
   return (
     <Prose className={"container"}>
       <h1>Frequently asked questions</h1>
@@ -254,7 +275,7 @@ export default function FaqsContent() {
       <Contents aria-labelledby="faq-contents">
         <h2 id="faq-contents">On this page</h2>
         <ol>
-          {FAQS.map((faq) => (
+          {faqs.map((faq) => (
             <li key={faq.id}>
               <a href={`#${faq.id}`}>{faq.question}</a>
             </li>
@@ -262,7 +283,7 @@ export default function FaqsContent() {
         </ol>
       </Contents>
 
-      {FAQS.map((faq) => (
+      {faqs.map((faq) => (
         <Section key={faq.id} id={faq.id}>
           <h2>{faq.question}</h2>
           {faq.answer}

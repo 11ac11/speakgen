@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import NextLink from "next/link";
 import Button from "@/app/components/ui/Button";
+import WaitlistButton from "@/app/components/Waitlist";
 import { authClient } from "@/lib/auth-client";
 
 const Panel = styled.div`
@@ -126,7 +127,8 @@ export default function SchoolPanel({
   seats,
   canAdmin,
   origin,
-  plan
+  plan,
+  waitlist
 }: {
   school: { id: string; name: string } | null;
   members: SchoolMember[];
@@ -134,8 +136,27 @@ export default function SchoolPanel({
   canAdmin: boolean;
   origin: string;
   plan: string;
+  /**
+   * While Academy is not on sale, its prompts open the waitlist instead.
+   * `joined` is the Academy list; `bonusAvailable` is false once any join has
+   * earned the extra exam.
+   */
+  waitlist: { mode: boolean; joined: boolean; bonusAvailable: boolean };
 }) {
   const isAcademy = plan === "academy";
+
+  const academyAction = waitlist.mode ? (
+    <WaitlistButton
+      plan="academy"
+      trigger="seats"
+      signedIn
+      joined={waitlist.joined}
+      bonusAvailable={waitlist.bonusAvailable}
+      text="Join the Academy waitlist"
+    />
+  ) : (
+    <UpgradeButton href="/pricing">Upgrade to Academy</UpgradeButton>
+  );
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
@@ -242,10 +263,9 @@ export default function SchoolPanel({
         {isAcademy ? null : (
           <Upgrade>
             <p>
-              A school is free to create, and the question bank is shared from
-              the moment it exists. Inviting colleagues into it needs Academy.
+              {`A school is free to create, and the question bank is shared from the moment it exists. Inviting colleagues into it needs Academy${waitlist.mode ? ", which is coming soon" : ""}.`}
             </p>
-            <UpgradeButton href="/pricing">Upgrade to Academy</UpgradeButton>
+            {academyAction}
           </Upgrade>
         )}
       </Panel>
@@ -257,7 +277,9 @@ export default function SchoolPanel({
       <h2>{school.name}</h2>
       <p style={{ color: "var(--text-muted)", fontSize: "var(--text-sm)" }}>
         {seats.seats === 0
-          ? "No seats. An Academy subscription is needed to add teachers."
+          ? waitlist.mode
+            ? "No seats yet. Adding teachers comes with Academy."
+            : "No seats. An Academy subscription is needed to add teachers."
           : `${seats.used} of ${seats.seats} seats used${
               seats.pending ? ` (${seats.pending} invited)` : ""
             }.`}
@@ -280,9 +302,11 @@ export default function SchoolPanel({
               members.length === 1 ? "you are" : "its teachers are"
             } the only ${
               members.length === 1 ? "member" : "members"
-            }. Academy opens it up to your colleagues.`}
+            }. Academy opens it up to your colleagues${
+              waitlist.mode ? ", and it is coming soon" : ""
+            }.`}
           </p>
-          <UpgradeButton href="/pricing">Upgrade to Academy</UpgradeButton>
+          {academyAction}
         </Upgrade>
       ) : null}
 

@@ -2,7 +2,11 @@ import { z } from "zod";
 import { createExam, listExams } from "@/lib/exams";
 import { getViewer } from "@/lib/questionAccess";
 import { getRequiredSlots } from "@/lib/cambridgeBlueprints";
-import { assertWithinPlan, PlanLimitError } from "@/lib/limits";
+import {
+  assertWithinPlan,
+  PlanLimitError,
+  planLimitResponse
+} from "@/lib/limits";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -90,7 +94,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await assertWithinPlan(ownerId, "exams");
+    try {
+      await assertWithinPlan(ownerId, "exams");
+    } catch (error) {
+      // 402 so the client can tell "you have reached a limit" apart from
+      // "your request was wrong".
+      if (error instanceof PlanLimitError) {
+        return planLimitResponse(error, ownerId, level);
+      }
+      throw error;
+    }
 
     const exam = await createExam(ownerId, level.toLowerCase(), title, slots);
     if (!exam) {
@@ -102,19 +115,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(exam, { status: 201 });
   } catch (error) {
-    // 402 so the client can tell "upgrade to continue" apart from "your
-    // request was wrong".
-    if (error instanceof PlanLimitError) {
-      return NextResponse.json(
-        {
-          error: "Plan limit reached",
-          resource: error.resource,
-          limit: error.limit,
-          plan: error.plan
-        },
-        { status: 402 }
-      );
-    }
     // A question that does not match its slot's level or part trips the
     // composite foreign key.
     if ((error as { code?: string })?.code === "23503") {

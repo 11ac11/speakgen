@@ -31,7 +31,9 @@ export type Entitlements = {
 
 export const ENTITLEMENTS: Record<Plan, Entitlements> = {
   free: {
-    exams: 1,
+    /* Two rather than one: enough to use it with a real class before the
+       limit arrives. Joining the waitlist adds one more (lib/limits.ts). */
+    exams: 2,
     practices: 3,
     questions: null,
     ads: true,

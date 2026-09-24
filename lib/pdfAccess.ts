@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getEntitlements } from "@/lib/profile";
 import { getAuthenticatedUserId } from "@/lib/session";
+import { recordUsage } from "@/lib/usage";
 
 /**
  * PDF export is a Pro feature, so it needs an account and a plan that has it.
@@ -20,6 +21,7 @@ export async function refusePdfExport(): Promise<NextResponse | null> {
 
   const { pdfExport } = await getEntitlements(userId);
   if (!pdfExport) {
+    await recordUsage("pdf_limit");
     return NextResponse.json(
       { error: "PDF export is part of Pro", reason: "upgrade" },
       { status: 402 }

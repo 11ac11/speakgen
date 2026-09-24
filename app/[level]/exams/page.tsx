@@ -4,6 +4,8 @@ import { getLevel } from "@/lib/levels";
 import { getViewer } from "@/lib/questionAccess";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { getUsage } from "@/lib/limits";
+import { isWaitlistMode } from "@/lib/waitlist";
+import WaitlistButton from "@/app/components/Waitlist";
 import { Lead } from "@/app/components/Lead";
 import {
   ExamCard,
@@ -87,9 +89,27 @@ export default async function LevelExamsPage({
             </span>
             {/* This page is the free ones only, so a signed-in teacher needs a
                 way across to their own rather than finding them mixed in. */}
-            <ExamsLink href={atLimit ? "/pricing" : "/dashboard?tab=exams"}>
-              {atLimit ? "Upgrade for more exams" : "My exams"}
-            </ExamsLink>
+            {atLimit && isWaitlistMode() && !usage.joinedWaitlist ? (
+              <WaitlistButton
+                plan="pro"
+                trigger="exam_limit"
+                signedIn
+                text="Join the waitlist for another exam"
+                variant="chip"
+              />
+            ) : (
+              <ExamsLink
+                href={
+                  atLimit && !isWaitlistMode()
+                    ? "/pricing"
+                    : "/dashboard?tab=exams"
+                }
+              >
+                {atLimit && !isWaitlistMode()
+                  ? "Upgrade for more exams"
+                  : "My exams"}
+              </ExamsLink>
+            )}
           </div>
         ) : null}
 

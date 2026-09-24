@@ -121,35 +121,116 @@ pass(
   ).status === 400
 );
 
-console.log("\nFREE PLAN LIMIT (1 exam)");
-const first = await api("/api/exams", {
-  method: "POST",
-  body: JSON.stringify({
-    level: "b2",
-    title: "My first mock",
-    slots: fullSlots
-  })
-});
-pass("first exam created", first.status === 201, `id=${first.body.id}`);
+console.log("\nFREE PLAN LIMIT (2 exams)");
+const create = (title) =>
+  api("/api/exams", {
+    method: "POST",
+    body: JSON.stringify({ level: "b2", title, slots: fullSlots })
+  });
 
-const second = await api("/api/exams", {
-  method: "POST",
-  body: JSON.stringify({
-    level: "b2",
-    title: "My second mock",
-    slots: fullSlots
-  })
-});
+const first = await create("My first mock");
+pass("first exam created", first.status === 201, `id=${first.body.id}`);
+const second = await create("My second mock");
+pass("second exam created", second.status === 201, `id=${second.body.id}`);
+
+const refused = await create("My third mock");
 pass(
-  "second exam refused with 402",
-  second.status === 402,
-  JSON.stringify(second.body)
+  "third exam refused with 402",
+  refused.status === 402,
+  JSON.stringify(refused.body)
 );
 pass(
   "402 says which resource and limit",
-  second.body.resource === "exams" &&
-    second.body.limit === 1 &&
-    second.body.plan === "free"
+  refused.body.resource === "exams" &&
+    refused.body.limit === 2 &&
+    refused.body.plan === "free"
+);
+pass(
+  "402 says the waitlist is open and they are not on it",
+  refused.body.waitlist?.mode === true &&
+    refused.body.waitlist?.joined === false,
+  JSON.stringify(refused.body.waitlist)
+);
+
+console.log("\nWAITLIST");
+pass(
+  "unknown trigger rejected",
+  (
+    await api("/api/waitlist", {
+      method: "POST",
+      body: JSON.stringify({ plan: "pro", trigger: "made_up" })
+    })
+  ).status === 400
+);
+pass(
+  "signed out without an email rejected",
+  (
+    await api("/api/waitlist", {
+      method: "POST",
+      anon: true,
+      body: JSON.stringify({ plan: "pro", trigger: "pricing_page" })
+    })
+  ).status === 400
+);
+const anonJoin = await api("/api/waitlist", {
+  method: "POST",
+  anon: true,
+  body: JSON.stringify({
+    plan: "pro",
+    trigger: "pricing_page",
+    email: `${me}@example.com`
+  })
+});
+pass(
+  "signed out joins by email, with no bonus",
+  anonJoin.status === 200 && anonJoin.body.bonus === 0,
+  JSON.stringify(anonJoin.body)
+);
+
+const join = await api("/api/waitlist", {
+  method: "POST",
+  body: JSON.stringify({
+    plan: "pro",
+    trigger: "exam_limit",
+    note: "check suite",
+    newsConsent: false
+  })
+});
+pass(
+  "signed in joins and earns one exam",
+  join.status === 200 && join.body.bonus === 1,
+  JSON.stringify(join.body)
+);
+const [row] = await sql(
+  `SELECT trigger, user_id FROM content.waitlist WHERE user_id = $1`,
+  [me]
+);
+pass("trigger stored from the button", row?.trigger === "exam_limit");
+
+const again = await api("/api/waitlist", {
+  method: "POST",
+  body: JSON.stringify({
+    plan: "academy",
+    trigger: "seats",
+    schoolName: "Check School",
+    teacherCount: 4
+  })
+});
+pass(
+  "a second list earns no second exam",
+  again.status === 200 && again.body.bonus === 0,
+  JSON.stringify(again.body)
+);
+
+const third = await create("Bonus mock");
+pass("third exam allowed after joining", third.status === 201);
+const fourth = await create("One too many");
+pass(
+  "fourth exam refused, limit now 3, joined",
+  fourth.status === 402 &&
+    fourth.body.limit === 3 &&
+    fourth.body.waitlist?.joined === true,
+  JSON.stringify(fourth.body)
 );
 
 console.log("\nAFTER DELETING, ROOM AGAIN");
@@ -158,15 +239,8 @@ pass(
   (await api(`/api/exams/${first.body.id}`, { method: "DELETE" })).status ===
     200
 );
-const third = await api("/api/exams", {
-  method: "POST",
-  body: JSON.stringify({
-    level: "b2",
-    title: "Replacement mock",
-    slots: fullSlots
-  })
-});
-pass("can create again once under the limit", third.status === 201);
+const replacement = await create("Replacement mock");
+pass("can create again once under the limit", replacement.status === 201);
 
 console.log("\nOWNERSHIP");
 pass(
@@ -188,7 +262,11 @@ for (const [name, path, expect] of [
   pass(name, res.status === expect, `${res.status}`);
 }
 
-await api(`/api/exams/${third.body.id}`, { method: "DELETE" });
+// Deleting the user takes their exams and signed-in waitlist rows with it;
+// the signed-out row is keyed by email alone.
+await sql(`DELETE FROM content.waitlist WHERE email = $1`, [
+  `${me}@example.com`
+]);
 // The account goes too, and its exams with it, rather than being left behind.
 await sql(`DELETE FROM neon_auth."user" WHERE id = $1`, [me]);
 console.log(failed ? `\n${failed} FAILED` : "\nall checks passed");

@@ -1,7 +1,11 @@
 import { z } from "zod";
 import { countAvailable, createPractice, listPractices } from "@/lib/practices";
 import { getViewer } from "@/lib/questionAccess";
-import { assertWithinPlan, PlanLimitError } from "@/lib/limits";
+import {
+  assertWithinPlan,
+  PlanLimitError,
+  planLimitResponse
+} from "@/lib/limits";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -77,7 +81,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    await assertWithinPlan(ownerId, "practices");
+    try {
+      await assertWithinPlan(ownerId, "practices");
+    } catch (error) {
+      // 402 so the client can tell "you have reached a limit" apart from
+      // "your request was wrong".
+      if (error instanceof PlanLimitError) {
+        return planLimitResponse(error, ownerId, code);
+      }
+      throw error;
+    }
 
     const practice = await createPractice(ownerId, {
       level: code,
@@ -96,17 +109,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json(practice, { status: 201 });
   } catch (error) {
-    if (error instanceof PlanLimitError) {
-      return NextResponse.json(
-        {
-          error: "Plan limit reached",
-          resource: error.resource,
-          limit: error.limit,
-          plan: error.plan
-        },
-        { status: 402 }
-      );
-    }
     // An unknown theme, level or part trips a foreign key.
     if ((error as { code?: string })?.code === "23503") {
       return NextResponse.json(

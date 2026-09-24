@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Button from "@/app/components/ui/Button";
+import WaitlistButton from "@/app/components/Waitlist";
 
 const Panel = styled.div`
   width: 100%;
@@ -102,13 +103,23 @@ export type PlanPanelProps = {
      */
     ownPlanCoveredBySchool?: boolean;
   };
+  /**
+   * While paid plans are not on sale the waitlist replaces the upgrade
+   * buttons, and any paid plan in force is a free pilot set up by hand.
+   */
+  waitlist: { mode: boolean; joined: boolean; bonusAvailable: boolean };
 };
 
 function limitText(used: number, limit: number | null) {
   return limit === null ? `${used} · unlimited` : `${used} of ${limit}`;
 }
 
-export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
+export default function PlanPanel({
+  plan,
+  usage,
+  billing,
+  waitlist
+}: PlanPanelProps) {
   const router = useRouter();
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -169,13 +180,17 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
       <Meta>
         {isFree
           ? "You are on the free plan."
-          : coveredBySchool
-            ? `Covered by ${billing.schoolName}'s Academy plan. Its owner or an admin manages billing.`
-            : billing.cancelAtPeriodEnd
-              ? `Cancels on ${billing.renewsAt ?? "the end of the period"}.`
-              : `Billed ${billing.interval === "year" ? "yearly" : "monthly"}${forSchool}${
-                  billing.renewsAt ? `, renews ${billing.renewsAt}` : ""
-                }.`}
+          : waitlist.mode
+            ? `A free pilot of ${plan === "academy" ? "Academy" : "Pro"}${forSchool}${
+                billing.renewsAt ? `, until ${billing.renewsAt}` : ""
+              }.`
+            : coveredBySchool
+              ? `Covered by ${billing.schoolName}'s Academy plan. Its owner or an admin manages billing.`
+              : billing.cancelAtPeriodEnd
+                ? `Cancels on ${billing.renewsAt ?? "the end of the period"}.`
+                : `Billed ${billing.interval === "year" ? "yearly" : "monthly"}${forSchool}${
+                    billing.renewsAt ? `, renews ${billing.renewsAt}` : ""
+                  }.`}
       </Meta>
 
       {billing.ownPlanCoveredBySchool ? (
@@ -237,7 +252,16 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
           flexWrap: "wrap"
         }}
       >
-        {isFree ? (
+        {isFree && waitlist.mode ? (
+          <WaitlistButton
+            plan="pro"
+            trigger="settings"
+            signedIn
+            joined={waitlist.joined}
+            bonusAvailable={waitlist.bonusAvailable}
+            text="Join the Pro waitlist"
+          />
+        ) : isFree ? (
           <>
             <Button
               text={busy === "month" ? "Opening…" : "Upgrade — €5/month"}
@@ -251,7 +275,7 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
               onClick={() => start("year")}
             />
           </>
-        ) : coveredBySchool ? null : (
+        ) : coveredBySchool || !billing.enabled ? null : (
           <Button
             text={busy === "portal" ? "Opening…" : "Manage or cancel"}
             disabled={busy !== null}
@@ -265,7 +289,17 @@ export default function PlanPanel({ plan, usage, billing }: PlanPanelProps) {
         />
       </div>
 
-      {!billing.enabled ? (
+      {waitlist.mode ? (
+        isFree ? (
+          <Notice>
+            {waitlist.joined
+              ? "Pro and Academy are not on sale yet. You are on the waitlist, and we will tell you when they open."
+              : waitlist.bonusAvailable
+                ? "Pro and Academy are not on sale yet. Joining the waitlist adds an extra saved exam to your free account."
+                : "Pro and Academy are not on sale yet. Join the waitlist to hear when they open."}
+          </Notice>
+        ) : null
+      ) : !billing.enabled ? (
         <Notice>
           Paid plans are not available to buy yet. The limits above are live.
         </Notice>

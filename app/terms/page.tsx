@@ -47,7 +47,9 @@ export default function TermsPage() {
         <li>
           The free plan is free, with the limits shown on the{" "}
           <Link href="/pricing">plans page</Link>. Pro and Academy are paid
-          subscriptions, billed monthly or yearly in advance.
+          subscriptions, billed monthly or yearly in advance, once they are on
+          sale. Until then nothing is charged, and joining a waitlist commits
+          you to nothing.
         </li>
         <li>
           Subscriptions renew automatically until cancelled. You can cancel at

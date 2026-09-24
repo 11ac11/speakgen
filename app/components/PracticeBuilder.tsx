@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import styled from "styled-components";
 import Button from "@/app/components/ui/Button";
 import { Notice } from "@/app/components/ui/Notice";
+import WaitlistButton from "@/app/components/Waitlist";
 import ThemeSelector from "@/app/components/ThemeSelector";
 import { getQuestionPartOptions, THEME_VALUES_FOR_PILLS } from "@/constants";
 
@@ -220,6 +221,13 @@ export default function PracticeBuilder({
   const [count, setCount] = useState(practice?.question_count ?? 10);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /* Set by a 402. Practices earn no bonus for joining, so this only says where
+     more is coming from, and the form stays as it was. */
+  const [limitReached, setLimitReached] = useState<{
+    limit: number;
+    waitlist: boolean;
+    joined: boolean;
+  } | null>(null);
 
   /* Derived from the two controls rather than stored. A preset is a shortcut
      that sets them, so the chip that lights up is whichever one describes where
@@ -333,6 +341,16 @@ export default function PracticeBuilder({
         }
       );
 
+      if (res.status === 402) {
+        const body = await res.json().catch(() => null);
+        setLimitReached({
+          limit: body?.limit ?? 3,
+          waitlist: body?.waitlist?.mode ?? false,
+          joined: body?.waitlist?.joined ?? false
+        });
+        setSaving(false);
+        return;
+      }
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         setError(
@@ -562,6 +580,37 @@ export default function PracticeBuilder({
 
       {/* Red, and separate: this one is a save that actually failed. */}
       {error ? <FormError>{error}</FormError> : null}
+
+      {limitReached ? (
+        <Notice>
+          <p>
+            <strong>{`You have used your ${limitReached.limit} practices`}</strong>
+          </p>
+          <p>
+            {limitReached.waitlist
+              ? limitReached.joined
+                ? "You are on the Pro waitlist, and we will tell you when unlimited practices open. Until then, delete a practice you no longer need to make room."
+                : "Pro, with unlimited practices and exams, is coming soon. Join the waitlist to hear when it opens, or delete a practice you no longer need to make room."
+              : "Upgrade for unlimited practices and exams, or delete a practice you no longer need to make room."}
+          </p>
+        </Notice>
+      ) : null}
+      {limitReached && !limitReached.joined ? (
+        <div>
+          {limitReached.waitlist ? (
+            <WaitlistButton
+              plan="pro"
+              trigger="practice_limit"
+              signedIn
+              onJoined={() =>
+                setLimitReached({ ...limitReached, joined: true })
+              }
+            />
+          ) : (
+            <Button text="See plans" onClick={() => router.push("/pricing")} />
+          )}
+        </div>
+      ) : null}
 
       <Actions>
         <Button

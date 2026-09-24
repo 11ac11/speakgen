@@ -24,11 +24,12 @@ import { isBillingEnabled, isBillingSimulated } from "@/lib/billing/provider";
 import { getAuthenticatedUserId } from "@/lib/session";
 import { getEffectivePlan } from "@/lib/profile";
 import PlanActions from "./PlanActions";
+import { getWaitlistPlans, isWaitlistMode } from "@/lib/waitlist";
 
 export const metadata = {
   title: "Plans",
   description:
-    "SpeakGen is free to start. Pro is €5 a month for unlimited exams, practices and PDF export; Academy is €29 a month for a school of up to five teachers."
+    "SpeakGen is free to start, with unlimited questions. Pro lifts the limits on saved exams and practices and adds PDF export; Academy is for a school of up to five teachers."
 };
 
 const BLURBS: Record<string, string> = {
@@ -39,7 +40,15 @@ const BLURBS: Record<string, string> = {
 
 // Amounts come from the billing price catalogue, so this page and the checkout
 // cannot quote different numbers.
-function priceLabels(plan: string) {
+function priceLabels(plan: string, waitlist: boolean) {
+  /* No amounts at all while paid plans are not on sale: a price with no way
+     to pay it is a promise, and the prices are not settled. */
+  if (waitlist) {
+    return plan === "free"
+      ? { monthly: "Free", yearly: "No card needed" }
+      : { monthly: "Coming soon", yearly: "Join the waitlist to hear first" };
+  }
+
   /* "No card needed" rather than an em dash. The band under the price is the
      second thing you read about the cost, and on the free plan the honest
      answer to "and then what?" is that there is no payment step at all — a
@@ -168,6 +177,8 @@ export default async function PricingPage() {
      sell them Pro. */
   const currentPlan = userId ? await getEffectivePlan(userId) : null;
   const billingEnabled = isBillingEnabled();
+  const waitlistMode = isWaitlistMode();
+  const lists = userId ? await getWaitlistPlans(userId) : [];
 
   return (
     <div className="page" style={{ paddingTop: "4rem" }}>
@@ -181,7 +192,7 @@ export default async function PricingPage() {
         <PlanGrid $rows={CARD_ROWS}>
           {PLANS.map((plan) => {
             const e = ENTITLEMENTS[plan];
-            const price = priceLabels(plan);
+            const price = priceLabels(plan, waitlistMode);
             const isCurrent = currentPlan === plan;
 
             return (
@@ -192,7 +203,9 @@ export default async function PricingPage() {
 
                 <Price>
                   {price.monthly}
-                  {plan !== "free" ? <span>{" / month"}</span> : null}
+                  {plan !== "free" && !waitlistMode ? (
+                    <span>{" / month"}</span>
+                  ) : null}
                 </Price>
 
                 <Yearly>{price.yearly}</Yearly>
@@ -217,6 +230,11 @@ export default async function PricingPage() {
                     currentPlan={currentPlan}
                     signedIn={Boolean(userId)}
                     billingEnabled={billingEnabled}
+                    waitlist={{
+                      mode: waitlistMode,
+                      joined: plan !== "free" && lists.includes(plan),
+                      bonusAvailable: lists.length === 0
+                    }}
                   />
                 </Actions>
               </Card>
@@ -231,11 +249,13 @@ export default async function PricingPage() {
             fontSize: "var(--text-sm)"
           }}
         >
-          {!billingEnabled
-            ? "Paid plans are not available to buy yet. The limits above are live."
-            : isBillingSimulated()
-              ? "Checkout is simulated while a payment provider is being chosen. No card is collected and nothing is charged."
-              : "Prices include VAT where applicable."}
+          {waitlistMode
+            ? "Pro and Academy are not on sale yet. Join a waitlist and we will tell you when they open — and if you have a free account, joining adds an extra saved exam to it."
+            : !billingEnabled
+              ? "Paid plans are not available to buy yet. The limits above are live."
+              : isBillingSimulated()
+                ? "Checkout is simulated while a payment provider is being chosen. No card is collected and nothing is charged."
+                : "Prices include VAT where applicable."}
         </p>
       </div>
     </div>
