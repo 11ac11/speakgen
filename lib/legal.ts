@@ -62,8 +62,9 @@ export const SUBPROCESSORS: Subprocessor[] = [
   },
   {
     name: "Vercel",
-    purpose: "Hosting the website and running its server code",
-    data: "Requests to the site, including IP address and browser, in server logs",
+    purpose:
+      "Hosting the website, running its server code, and counting page views",
+    data: "Requests to the site, including IP address and browser, in server logs; page views, counted without cookies or anything that identifies a visitor",
     location:
       "London, UK (lhr1); requests arrive through Vercel's global network"
   },

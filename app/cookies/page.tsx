@@ -71,6 +71,13 @@ export default function CookiesPage() {
         in your browser and you will be asked again.
       </p>
 
+      <h2>Site statistics</h2>
+      <p>
+        We count page views with Vercel Web Analytics, which uses no cookies and
+        stores nothing on your device, so it is not in the table above and does
+        not need your consent. Links shared with students are not counted.
+      </p>
+
       <h2>No local storage</h2>
       <p>
         SpeakGen does not keep anything else in your browser&apos;s storage.

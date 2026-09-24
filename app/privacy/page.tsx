@@ -78,6 +78,14 @@ export default function PrivacyPage() {
           <strong>Messages you send us</strong>, and our replies.
         </li>
         <li>
+          <strong>Site statistics.</strong> How many people visit which pages,
+          from which countries and on what kind of device, counted by Vercel Web
+          Analytics without cookies and without anything that identifies you.
+          Pages students open from a shared link are not counted at all. We also
+          count how often exams are exported as PDFs and how often a shared link
+          is opened — how many times, not by whom.
+        </li>
+        <li>
           <strong>Server logs.</strong> Like any website, our hosting provider
           records requests to the site — the page, the time, the IP address and
           the browser — to keep it running and secure.

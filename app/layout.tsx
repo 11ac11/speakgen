@@ -8,6 +8,7 @@ import Navbar from "@/app/components/Nav";
 import Providers from "./providers";
 import ConsentBanner from "@/app/components/ads/ConsentBanner";
 import Footer from "@/app/components/Footer";
+import SiteAnalytics from "@/app/components/SiteAnalytics";
 import { SITE_DESCRIPTION, SITE_NAME, siteUrl } from "@/lib/site";
 // Library styles first, ours second. auth-ui ships Tailwind's preflight, which
 // includes h1..h6 { font-size: inherit; font-weight: inherit } — loaded after
@@ -85,6 +86,7 @@ export default function RootLayout({
               <Footer />
               <ConsentBanner />
             </div>
+            <SiteAnalytics />
             {/* <BackgroundToggle /> */}
           </StyledComponentsRegistry>
         </Providers>
